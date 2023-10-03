@@ -1,0 +1,894 @@
+{
+  "_id": {
+    "$oid": "6468cb1aca755b75f6ae150e"
+  },
+  "restaurantName": "Example Restaurant",
+  "contact": {
+    "email": "johndoe@example.com",
+    "phone": "(555) 123-4567",
+    "locationLink": "",
+    "address": {
+      "street": "123 Main Street",
+      "city": "Cityville",
+      "state": "State",
+      "zipcode": "12345",
+      "country": "Country"
+    }
+  },
+  "openTime": "8:00 AM",
+  "closeTime": "8:00 PM",
+  "gstNumber": "34567899",
+  "rating": {
+    "$numberInt": "4"
+  },
+  "reviewCount": {
+    "$numberInt": "200"
+  },
+  "fssaiLicenseNumber": "12345678",
+  "socialLinks": [
+    {
+      "name": "Facebook",
+      "link": "https://www.facebook.com/example"
+    },
+    {
+      "name": "Twitter",
+      "link": "https://www.twitter.com/example"
+    },
+    {
+      "name": "Instagram",
+      "link": "https://www.instagram.com/example"
+    },
+    {
+      "name": "LinkedIn",
+      "link": "https://www.linkedin.com/company/example"
+    },
+    {
+      "name": "YouTube",
+      "link": "https://www.youtube.com/channel/example"
+    }
+  ],
+  "photos": [
+    {
+      "name": "Photo 1",
+      "url": "https://images.pexels.com/photos/1322184/pexels-photo-1322184.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "description": "Description of the first photo"
+    },
+    {
+      "name": "Photo 2",
+      "url": "https://images.pexels.com/photos/4450334/pexels-photo-4450334.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "description": "Description of the second photo"
+    },
+    {
+      "name": "Photo 3",
+      "url": "https://images.pexels.com/photos/4450334/pexels-photo-4450334.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "description": "Description of the third photo"
+    }
+  ],
+  "menu": {
+    "starters": [
+      {
+        "name": "Biryani",
+        "_id": "1",
+        "availableFlag": true,
+        "imageUrl": "",
+        "key": "Starters",
+        "description": "Toasted bread topped with tomatoes, garlic, and basil",
+        "price": {
+          "$numberInt": "1000"
+        },
+        "discountPercentage": {
+          "$numberInt": "10"
+        },
+        "discountPrice": {
+          "$numberInt": "900"
+        },
+        "type": "Veg",
+        "spicyFlag": true,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "600"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "900"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Chicken Wings",
+        "_id": "2",
+        "imageUrl": "",
+        "availableFlag": true,
+        "key": "Starters",
+        "description": "Crispy chicken wings served with choice of sauce",
+        "price": {
+          "$numberInt": "900"
+        },
+        "discountPercentage": {
+          "$numberInt": "10"
+        },
+        "discountPrice": {
+          "$numberInt": "900"
+        },
+        "type": "Non Veg",
+        "spicyFlag": false,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "600"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "900"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Palak Paneer",
+        "_id": "3",
+        "availableFlag": true,
+        "imageUrl": "",
+        "key": "Starters",
+        "description": "Toasted bread topped with tomatoes, garlic, and basil",
+        "price": {
+          "$numberInt": "800"
+        },
+        "discountPercentage": {
+          "$numberInt": "10"
+        },
+        "discountPrice": {
+          "$numberInt": "700"
+        },
+        "type": "Veg",
+        "spicyFlag": true,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "400"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "700"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Tandoori Chicken",
+        "_id": "4",
+        "imageUrl": "",
+        "availableFlag": true,
+        "key": "Starters",
+        "description": "Crispy chicken wings served with choice of sauce",
+        "price": {
+          "$numberInt": "900"
+        },
+        "discountPercentage": {
+          "$numberInt": "10"
+        },
+        "discountPrice": {
+          "$numberInt": "900"
+        },
+        "type": "Non Veg",
+        "spicyFlag": false,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "500"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "900"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      }
+    ],
+    "mainCourse": [
+      {
+        "name": "Chole Bhature",
+        "_id": "5",
+        "availableFlag": true,
+        "imageUrl": "",
+        "key": "Main Course",
+        "description": "Toasted bread topped with tomatoes, garlic, and basil",
+        "price": {
+          "$numberInt": "250"
+        },
+        "discountPrice": {
+          "$numberInt": "200"
+        },
+        "discountPercentage": {
+          "$numberInt": "20"
+        },
+        "type": "Veg",
+        "spicyFlag": true
+      },
+      {
+        "name": "Butter Chicken",
+        "_id": "6",
+        "imageUrl": "",
+        "availableFlag": true,
+        "key": "Starters",
+        "description": "Crispy chicken wings served with choice of sauce",
+        "price": {
+          "$numberInt": "500"
+        },
+        "discountPercentage": {
+          "$numberInt": "10"
+        },
+        "discountPrice": {
+          "$numberInt": "400"
+        },
+        "type": "Non Veg",
+        "spicyFlag": false,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "250"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "400"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Chicken Shawarma",
+        "_id": "7",
+        "availableFlag": true,
+        "imageUrl": "",
+        "key": "Starters",
+        "description": "Toasted bread topped with tomatoes, garlic, and basil",
+        "price": {
+          "$numberInt": "800"
+        },
+        "discountPercentage": {
+          "$numberInt": "10"
+        },
+        "discountPrice": {
+          "$numberInt": "700"
+        },
+        "type": "Non Veg",
+        "spicyFlag": true,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "500"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "700"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Mutton Kheema",
+        "_id": "8",
+        "imageUrl": "",
+        "availableFlag": true,
+        "key": "Starters",
+        "description": "Crispy chicken wings served with choice of sauce",
+        "price": {
+          "$numberInt": "1000"
+        },
+        "discountPercentage": {
+          "$numberInt": "10"
+        },
+        "discountPrice": {
+          "$numberInt": "900"
+        },
+        "type": "Non Veg",
+        "spicyFlag": false,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "500"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "900"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      }
+    ],
+    "deserts": [
+      {
+        "name": "Jalebi",
+        "_id": "9",
+        "availableFlag": true,
+        "imageUrl": "",
+        "key": "Deserts",
+        "description": "Toasted bread topped with tomatoes, garlic, and basil",
+        "price": {
+          "$numberInt": "250"
+        },
+        "discountPrice": {
+          "$numberInt": "200"
+        },
+        "discountPercentage": {
+          "$numberInt": "20"
+        },
+        "type": "Veg",
+        "spicyFlag": true,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "200"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Rasgulla",
+        "_id": "10",
+        "imageUrl": "",
+        "availableFlag": false,
+        "key": "Starters",
+        "description": "Crispy chicken wings served with choice of sauce",
+        "price": {
+          "$numberInt": "250"
+        },
+        "discountPrice": {
+          "$numberInt": "200"
+        },
+        "discountPercentage": {
+          "$numberInt": "20"
+        },
+        "type": "Veg",
+        "spicyFlag": false,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "250"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "200"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Goan Prawn Curry",
+        "_id": "11",
+        "availableFlag": true,
+        "imageUrl": "",
+        "key": "Starters",
+        "description": "Toasted bread topped with tomatoes, garlic, and basil",
+        "price": {
+          "$numberInt": "250"
+        },
+        "discountPrice": {
+          "$numberInt": "200"
+        },
+        "discountPercentage": {
+          "$numberInt": "20"
+        },
+        "type": "Non Veg",
+        "spicyFlag": true,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "200"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Chicken Vindaloo",
+        "_id": "12",
+        "imageUrl": "",
+        "availableFlag": false,
+        "key": "Starters",
+        "description": "Crispy chicken wings served with choice of sauce",
+        "price": {
+          "$numberInt": "900"
+        },
+        "discountPercentage": {
+          "$numberInt": "10"
+        },
+        "discountPrice": {
+          "$numberInt": "900"
+        },
+        "type": "Non Veg",
+        "spicyFlag": false,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "500"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "900"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      }
+    ],
+    "drinks": [
+      {
+        "name": "Rose Milk",
+        "_id": "13",
+        "availableFlag": true,
+        "imageUrl": "",
+        "key": "Drinks",
+        "description": "Toasted bread topped with tomatoes, garlic, and basil",
+        "price": {
+          "$numberInt": "150"
+        },
+        "discountPrice": {
+          "$numberInt": "100"
+        },
+        "discountPercentage": {
+          "$numberInt": "20"
+        },
+        "discount": {
+          "$numberInt": "5"
+        },
+        "type": "Veg",
+        "spicyFlag": true,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "70"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "100"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Kokum Sherbe",
+        "_id": "14",
+        "imageUrl": "",
+        "availableFlag": false,
+        "key": "Starters",
+        "description": "Crispy chicken wings served with choice of sauce",
+        "price": {
+          "$numberInt": "150"
+        },
+        "discountPercentage": {
+          "$numberInt": "10"
+        },
+        "discountPrice": {
+          "$numberInt": "100"
+        },
+        "type": "Non Veg",
+        "spicyFlag": false,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "70"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "100"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Badam Milk",
+        "_id": "15",
+        "availableFlag": true,
+        "imageUrl": "",
+        "key": "Starters",
+        "description": "Toasted bread topped with tomatoes, garlic, and basil",
+        "price": {
+          "$numberInt": "150"
+        },
+        "discountPrice": {
+          "$numberInt": "100"
+        },
+        "discountPercentage": {
+          "$numberInt": "20"
+        },
+        "type": "Veg",
+        "spicyFlag": true,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "70"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "100"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Thandai",
+        "_id": "16",
+        "imageUrl": "",
+        "availableFlag": false,
+        "key": "Starters",
+        "description": "Crispy chicken wings served with choice of sauce",
+        "price": {
+          "$numberInt": "150"
+        },
+        "discountPrice": {
+          "$numberInt": "100"
+        },
+        "discountPercentage": {
+          "$numberInt": "20"
+        },
+        "type": "Non Veg",
+        "spicyFlag": false,
+        "sizeAvailable": [
+          {
+            "name": "Small",
+            "price": {
+              "$numberInt": "70"
+            }
+          },
+          {
+            "name": "Large",
+            "price": {
+              "$numberInt": "100"
+            }
+          }
+        ],
+        "extraIngredents": [
+          {
+            "name": "Extra Cheese",
+            "price": {
+              "$numberInt": "100"
+            }
+          },
+          {
+            "name": "Olives",
+            "price": {
+              "$numberInt": "50"
+            }
+          },
+          {
+            "name": "Mushrooms",
+            "price": {
+              "$numberInt": "150"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

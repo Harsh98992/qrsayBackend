@@ -1,0 +1,7 @@
+services:
+  - name: node-app
+    routes:
+      - path: /
+        port: 8080 # Port for one part of your Node.js app
+      - path: /
+        port: 8001 # Port for another part of your Node.js app
