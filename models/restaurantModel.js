@@ -303,12 +303,8 @@ const restaurantSchema = new mongoose.Schema({
         default: "",
     },
     openTime: {
-        type: String,
-        default: "9:00 AM",
     },
     closeTime: {
-        type: String,
-        default: "9:00 PM",
     },
     openDays: {
         type: [String],
