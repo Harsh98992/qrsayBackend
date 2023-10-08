@@ -200,11 +200,11 @@ const restaurantSchema = new mongoose.Schema({
         default: 5,
     },
 
-    
+
     placeId: {
         type: "string",
     },
-    
+
 
     addOns: [
         {
@@ -228,7 +228,7 @@ const restaurantSchema = new mongoose.Schema({
             default: {},
         },
     ],
-    
+
 
     cuisine: [
         {
@@ -301,6 +301,18 @@ const restaurantSchema = new mongoose.Schema({
         type: String,
 
         default: "",
+    },
+    openTime: {
+        type: String,
+        default: "10:00 AM",
+    },
+    closeTime: {
+        type: String,
+        default: "10:00 PM",
+    },
+    openDays: {
+        type: [String],
+        default: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
     },
 });
 
