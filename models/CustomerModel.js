@@ -17,7 +17,6 @@ const previousRestaurantSearch = new mongoose.Schema({
 const addressSchema = new mongoose.Schema({
     address: {
         type: String,
-        required: [true, "Please provide your address"],
     },
 
     latitude: {
@@ -61,6 +60,7 @@ const customerSchema = new mongoose.Schema({
         select: false, // not show password in output
     },
     addresses: [addressSchema],
+    pastLocations: [addressSchema],
 
     socialLogin: {
         type: String,

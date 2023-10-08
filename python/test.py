@@ -1,15 +1,15 @@
 import requests
+from bs4 import BeautifulSoup
 
-url = 'http://localhost:8080/api'
+# Make a request to the webpage
+url = 'https://www.example.com'
+response = requests.get(url)
 
-body = {
-    "phoneNumber": "7428449707",
-    "countryCode": "91"
+# Parse the HTML content using BeautifulSoup
+soup = BeautifulSoup(response.content, 'html.parser')
 
-}
+# Find the data you want to scrape
+data = soup.find('div', {'class': 'example-class'}).text
 
-response = requests.post(url + '/v1/customer/sendPhoneVerificationCode', json=body)
-print(response.status_code)
-print(response.text)
-print(response.json())
-print(response.headers)
+# Print the scraped data
+print(data)

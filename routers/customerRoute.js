@@ -121,6 +121,12 @@ router.get(
     customerController.isDineInAvailable
 );
 
+router.post(
+    "/addPastLocation",
+    customerAuthenticationController.customerProtect,
+    customerController.addPastLocation
+);
+
 
 
 module.exports = router;

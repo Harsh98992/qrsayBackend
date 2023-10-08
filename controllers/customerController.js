@@ -9,7 +9,6 @@ const PromoCode = require("../models/promoCodeModel");
 const sendEmail = require("../helpers/email");
 const Table = require("../models/tableModel");
 
-
 exports.customerStoreRestaurant = catchAsync(async (req, res, next) => {
     if (!req.body.email || !req.body.restaurantId) {
         res.status(200).json({});
@@ -639,4 +638,44 @@ exports.isDineInAvailable = catchAsync(async (req, res, next) => {
             isDineInAvailable: false,
         },
     });
+});
+
+exports.addPastLocation = catchAsync(async (req, res, next) => {
+    customerId = req.user._id;
+    const address = req.body.address;
+    const latitude = address.latitude;
+
+    const longitude = address.longitude;
+
+    const customer = await Customer.findById(customerId);
+
+    // get all the past locations of the customer
+    const pastLocations = customer.pastLocations;
+
+    // check if the customer has any past locations which are near to the current location
+    const pastLocation = pastLocations.find((pastLocation) => {
+        const distance = calculateDistance(
+            pastLocation.latitude,
+            pastLocation.longitude,
+            latitude,
+            longitude
+        );
+        return distance < 0.2;
+    });
+
+    // if the customer has a past location which is near to the current location
+
+    if (pastLocation) {
+        // update the past location with the current location
+        pastLocation.latitude = latitude;
+        pastLocation.longitude = longitude;
+    } else {
+        // if the customer does not have any past location which is near to the current location
+
+        // add the current location to the past locations
+        pastLocations.push(address);
+    }
+
+    // save the customer
+    await customer.save();
 });
