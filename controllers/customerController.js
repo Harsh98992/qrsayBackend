@@ -641,7 +641,7 @@ exports.isDineInAvailable = catchAsync(async (req, res, next) => {
 });
 
 exports.addPastLocation = catchAsync(async (req, res, next) => {
-    customerId = req.user._id;
+    let customerId = req.user._id;
     const address = req.body.address;
     const latitude = address.latitude;
 
