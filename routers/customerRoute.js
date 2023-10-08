@@ -127,6 +127,11 @@ router.post(
     customerController.addPastLocation
 );
 
+// router.get(
+//     "/getPastLocations",
+//     customerAuthenticationController.customerProtect,
+//     customerController.getPastLocations
+// );
 
 
 module.exports = router;

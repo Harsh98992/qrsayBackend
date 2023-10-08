@@ -679,3 +679,20 @@ exports.addPastLocation = catchAsync(async (req, res, next) => {
     // save the customer
     await customer.save();
 });
+
+exports.getCustomerPastLocations = catchAsync(async (req, res, next) => {
+    let customerId = req.user._id;
+
+    const customer = await Customer.findById(customerId);
+
+    // get all the past locations of the customer
+
+    const pastLocations = customer.pastLocations;
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            pastLocations,
+        },
+    });
+});
