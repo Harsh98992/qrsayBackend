@@ -10,6 +10,7 @@ const {
     getCustomerPaymentPendingOrder,
     changeOrderStatusByUser,
     changeOrderStatusByUserForCashOnDelivery,
+    generateBill
 } = require("../controllers/OrderController");
 const authenticateController = require("../controllers/authenticaionController");
 const { getPaymentGatewayCredentials } = require("../helpers/razorPayHelper");
@@ -45,9 +46,9 @@ router.patch(
     customerProtect,
     changeOrderStatusByUserForCashOnDelivery
 );
-// router.get(
-//     "/generateBill/:orderId",
+router.get(
+    "/generateBill/:orderId",
 
-//     generateBill
-// );
+    generateBill
+);
 module.exports = router;

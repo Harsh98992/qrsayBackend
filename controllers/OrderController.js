@@ -3,7 +3,7 @@ const catchAsync = require("../helpers/catchAsync");
 const { checkDineInTableAvailability } = require("../helpers/dineInHelper");
 const generateOrderID = require("../helpers/orderIdGenerator");
 const { fetchOrderById } = require("../helpers/razorPayHelper");
-// const easyinvoice = require("easyinvoice");
+const easyinvoice = require("easyinvoice");
 const sendMail = require("../helpers/email");
 
 const Order = require("../models/OrderModel");
@@ -307,9 +307,6 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
 
         if (orderData.customerPreferences.preference === "Dine In") {
             await unlockTable(orderData, req, res, next);
-
-
-
         }
     } else if (req.body.orderStatus === "accepted") {
         if (!orderData) {
@@ -435,7 +432,6 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         // send a mail to the restaurant that order has been placed successfully
 
         const restaurantDetail = await Restaurant.findOne({
-
             _id: orderData.restaurantId,
         });
 
@@ -506,7 +502,6 @@ exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
         Order Date: ${new Date().toLocaleString()}
 
         Order Status: Processing`
-
     );
 
     // send a mail to the restaurant that order has been placed successfully
@@ -527,11 +522,7 @@ exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
         Order Date: ${new Date().toLocaleString()}
 
         Order Status: Processing`
-
     );
-
-    
-
 
     res.status(200).json({
         status: "success",
@@ -600,7 +591,6 @@ exports.changeOrderStatusByUserForCashOnDelivery = catchAsync(
             Order Date: ${new Date().toLocaleString()}
 
             Order Status: Processing`
-
         );
 
         res.status(200).json({
@@ -613,118 +603,111 @@ exports.changeOrderStatusByUserForCashOnDelivery = catchAsync(
     }
 );
 
-// exports.generateBill = catchAsync(async (req, res, next) => {
-//     if (!req.params.orderId) {
-//         return next(new AppError("Missing Order Id!", 400));
-//     }
-//     const orderData = await Order.findOne({ _id: req.params.orderId });
-//     if (!orderData) {
-//         return next(new AppError("Order Data is missing!"));
-//     }
-//     const restaurantDetail = await Restaurant.findOne({
-//         _id: orderData.restaurantId,
-//     });
-//     const customerDetail = await Customer.findOne({
-//         _id: orderData.customerId,
-//     });
+exports.generateBill = catchAsync(async (req, res, next) => {
+    if (!req.params.orderId) {
+        return next(new AppError("Missing Order Id!", 400));
+    }
 
-//     var data = {
-//         // Customize enables you to provide your own templates
-//         // Please review the documentation for instructions and examples
-//         customize: {
-//             //  "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html
-//         },
-//         images: {
-//             // The logo on top of your invoice
-//             logo: "https://public.easyinvoice.cloud/img/logo_en_original.png",
-//             // The invoice background
-//             // background:
-//             //     "https://public.easyinvoice.cloud/img/watermark-draft.jpg",
-//         },
-//         // Your own data
-//         sender: {
-//             company: restaurantDetail.restaurantName,
-//             address: restaurantDetail.address.street,
-//             city: restaurantDetail.address.city,
-//             state: restaurantDetail.address.state,
-//             pinCode: restaurantDetail.address.pinCode,
+    try {
+        const orderData = await Order.findOne({ _id: req.params.orderId });
 
-//             //"custom1": "custom value 1",
-//             //"custom2": "custom value 2",
-//             //"custom3": "custom value 3"
-//         },
-//         // Your recipient
-//         client: {
-//             company: customerDetail.name,
-//             phoneNumber: customerDetail.phoneNumber,
-//             // "custom1": "custom value 1",
-//             // "custom2": "custom value 2",
-//             // "custom3": "custom value 3"
-//         },
-//         information: {
-//             // Invoice number
-//             number: orderData.orderId,
-//             // Invoice data
-//             date: orderData.orderDate,
-//         },
-//         // The products you would like to see on your invoice
-//         // Total values are being calculated automatically
-//         products: [
-//             {
-//                 quantity: 2,
-//                 description: "Product 1",
-//                 "tax-rate": 6,
-//                 price: 33.87,
-//             },
-//             {
-//                 quantity: 4.1,
-//                 description: "Product 2",
-//                 "tax-rate": 6,
-//                 price: 12.34,
-//             },
-//             {
-//                 quantity: 4.5678,
-//                 description: "Product 3",
-//                 "tax-rate": 21,
-//                 price: 6324.453456,
-//             },
-//         ],
+        if (!orderData) {
+            return next(new AppError("Order Data is missing!"));
+        }
 
-//         // Settings to customize your invoice
-//         settings: {
-//             currency: "ISD", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
-//             // "locale": "nl-NL", // Defaults to en-US, used for number formatting (See documentation 'Locales and Currency')
-//             // "margin-top": 25, // Defaults to '25'
-//             // "margin-right": 25, // Defaults to '25'
-//             // "margin-left": 25, // Defaults to '25'
-//             // "margin-bottom": 25, // Defaults to '25'
-//             // "format": "A4", // Defaults to A4, options: A3, A4, A5, Legal, Letter, Tabloid
-//             // "height": "1000px", // allowed units: mm, cm, in, px
-//             // "width": "500px", // allowed units: mm, cm, in, px
-//             // "orientation": "landscape", // portrait or landscape, defaults to portrait
-//         },
-//         // Translate your invoice to your preferred language
-//         translate: {
-//             // "invoice": "FACTUUR",  // Default to 'INVOICE'
-//             // "number": "Nummer", // Defaults to 'Number'
-//             // "date": "Datum", // Default to 'Date'
-//             // "due-date": "Verloopdatum", // Defaults to 'Due Date'
-//             // "subtotal": "Subtotaal", // Defaults to 'Subtotal'
-//             // "products": "Producten", // Defaults to 'Products'
-//             // "quantity": "Aantal", // Default to 'Quantity'
-//             // "price": "Prijs", // Defaults to 'Price'
-//             // "product-total": "Totaal", // Defaults to 'Total'
-//             // "total": "Totaal", // Defaults to 'Total'
-//             // "vat": "btw" // Defaults to 'vat'
-//         },
-//     };
-//     const easyInvoice = await easyinvoice.createInvoice(data);
+        const restaurantDetail = await Restaurant.findOne({
+            _id: orderData.restaurantId,
+        });
 
-//     res.status(200).json({
-//         status: "success",
+        const customerDetail = await Customer.findOne({
+            _id: orderData.customerId,
+        });
 
-//         data: {
-//             invoiceData: easyInvoice,
-//         },
-//     });
-// });
+        const orderAmount = orderData.orderDetails.reduce(
+            (total, detail) => total + detail.orderAmount,
+            0
+        );
+
+        products = [];
+
+        // for (let i = 0; i < orderData.orderDetails[0].orderSummary.length; i++) {
+        //     products.push({
+        //         quantity: orderData.orderDetails.orderSummary[i].dishQuantity,
+        //         description: orderData.orderDetails.orderSummary[i].dishName,
+        //         // "tax-rate": 6, // Assuming a constant tax rate for all products
+        //         price: orderData.orderDetails.orderSummary[i].priceOneItem,
+        //     });
+        // }
+
+        for(let i = 0; i < orderData.orderDetails.length; i++){
+            for(let j = 0; j < orderData.orderDetails[i].orderSummary.length; j++){
+                products.push({
+                    quantity: orderData.orderDetails[i].orderSummary[j].dishQuantity,
+                    description: orderData.orderDetails[i].orderSummary[j].dishName,
+                    "tax-rate": 0, // Assuming a constant tax rate for all products
+                    price: orderData.orderDetails[i].orderSummary[j].priceOneItem,
+                });
+            }
+
+        }
+
+
+
+        // Define dynamic data for the invoice
+        const data = {
+            customize: {
+                // Customize enables you to provide your own templates
+                // Please review the documentation for instructions and examples
+                // "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html
+            },
+            images: {
+                // The logo on top of your invoice
+                logo: "https://public.easyinvoice.cloud/img/logo_en_original.png",
+                // The invoice background
+                // background: "https://public.easyinvoice.cloud/img/watermark-draft.jpg",
+            },
+            sender: {
+                company: restaurantDetail.restaurantName,
+                address: restaurantDetail.address.street,
+                city: restaurantDetail.address.city,
+                state: restaurantDetail.address.state,
+                pinCode: restaurantDetail.address.pinCode,
+            },
+            client: {
+                company: customerDetail.name,
+                phoneNumber: customerDetail.phoneNumber,
+            },
+            information: {
+                number: orderData.orderId,
+                date: orderData.orderDate,
+            },
+            // products: orderData.orderDetails.map((detail) => ({
+            //     quantity: detail.dishQuantity,
+            //     description: detail.dishName,
+            //     "tax-rate": 6, // Assuming a constant tax rate for all products
+            //     price: detail.totalPrice,
+            // })),
+
+            products : products,
+
+            settings: {
+                currency: "INR",
+            },
+        };
+
+        const easyInvoice = await easyinvoice.createInvoice(data);
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                invoiceData: easyInvoice,
+                totalAmount: orderAmount,
+            },
+        });
+    } catch (error) {
+        console.log(error);
+        return next(
+            new AppError("An error occurred while generating the invoice.", 500)
+        );
+    }
+});
