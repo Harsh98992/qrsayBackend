@@ -1,0 +1,15 @@
+@startuml
+start
+:Customer places order;
+:Frontend sends order request;
+:Backend retrieves restaurant information;
+if (Restaurant accepts order?) then (yes)
+  :Backend saves order information;
+  :Backend sends order confirmation;
+  :Frontend displays order confirmation;
+else (no)
+  :Backend sends order rejection;
+  :Frontend displays order rejection;
+endif
+stop
+@enduml

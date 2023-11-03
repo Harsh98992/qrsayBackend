@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     # C:\AM\Github\DigitalMenuBackend\models
 
-    files = get_files("C:/AM/Github/DigitalMenuBackend/models")
+    files = get_files("/workspaces/qrsayBackend/models")
 
     # C:\AM\Github\DigitalMenuBackend\controllers
 

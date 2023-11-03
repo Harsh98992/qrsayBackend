@@ -1,0 +1,22 @@
+@startuml
+actor Customer
+participant "Frontend" as Frontend
+participant "Backend" as Backend
+participant "Database" as Database
+participant "Restaurant" as Restaurant
+
+Customer -> Frontend: Places order
+Frontend -> Backend: Sends order request
+Backend -> Database: Retrieves restaurant information
+Database --> Backend: Returns restaurant information
+Backend -> Database: Saves order information
+Database --> Backend: Returns order confirmation
+Backend -> Restaurant: Sends order notification
+Restaurant -> Backend: Receives order notification
+Restaurant -> Backend: Retrieves order information
+Backend -> Restaurant: Sends order details
+Restaurant -> Backend: Confirms order details
+Backend -> Database: Updates order status
+Database --> Backend: Returns order status confirmation
+Backend -> Frontend: Sends order status update
+@enduml

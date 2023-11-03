@@ -1,0 +1,82 @@
+@startuml
+class Customer {
+    -name: string
+    -email: string
+    -phone: string
+    +placeOrder(): void
+}
+
+class Frontend {
+    +sendOrderRequest(): void
+    +displayOrderConfirmation(): void
+    +displayOrderStatusUpdate(): void
+}
+
+class Backend {
+    -restaurantInfo: Restaurant
+    -orderInfo: Order
+    +retrieveRestaurantInfo(): Restaurant
+    +saveOrderInfo(): void
+    +sendOrderConfirmation(): void
+    +sendOrderNotification(): void
+    +retrieveOrderInfo(): Order
+    +sendOrderDetails(): void
+    +updateOrderStatus(): void
+    +sendOrderStatusUpdate(): void
+}
+
+class Database {
+    +retrieveRestaurantInfo(): Restaurant
+    +saveOrderInfo(): void
+    +retrieveOrderInfo(): Order
+    +updateOrderStatus(): void
+}
+
+class Restaurant {
+    -name: string
+    -email: string
+    -phone: string
+    +receiveOrderNotification(): void
+    +confirmOrderDetails(): void
+}
+
+class Order {
+    -orderId: int
+    -orderItems: List<Item>
+    -orderStatus: string
+    +getOrderId(): int
+    +getOrderItems(): List<Item>
+    +getOrderStatus(): string
+}
+
+class Item {
+    -itemId: int
+    -itemName: string
+    -itemPrice: float
+    +getItemId(): int
+    +getItemName(): string
+    +getItemPrice(): float
+}
+
+class RestaurantInfo {
+    -restaurantId: int
+    -restaurantName: string
+    -restaurantAddress: string
+    -restaurantPhone: string
+    -restaurantEmail: string
+    +getRestaurantId(): int
+    +getRestaurantName(): string
+    +getRestaurantAddress(): string
+    +getRestaurantPhone(): string
+    +getRestaurantEmail(): string
+}
+
+Customer -> Frontend
+Frontend -> Backend
+Backend -> Database
+Backend -> Restaurant
+Database --> Backend
+Restaurant --> Backend
+Order --> Item
+Backend --> Frontend
+@enduml
