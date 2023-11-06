@@ -289,7 +289,17 @@ exports.getNearbyRestaurants = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllRestaurants = catchAsync(async (req, res, next) => {
-    const restaurants = await Restaurant.find();
+    let restaurants = await Restaurant.find();
+
+    // select the fields to be sent in the response as only restaurantUrl and restaurantName is required and not the whole restaurant object
+    restaurants = restaurants.map((restaurant) => {
+        return {
+            restaurantUrl: restaurant.restaurantUrl,
+
+            restaurantName: restaurant.restaurantName,
+            _id: restaurant._id,
+        };
+    });
 
     res.status(200).json({
         status: "success",

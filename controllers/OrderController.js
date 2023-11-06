@@ -247,11 +247,11 @@ const unlockTable = async (orderData, req, res, next) => {
         }
     );
 
-    if (updateRes?.modifiedCount === 0) {
-        return next(
-            new AppError("Some errors occurred during table unlocking.", 400)
-        );
-    }
+    // if (updateRes?.modifiedCount === 0) {
+    //     return next(
+    //         new AppError("Some errors occurred during table unlocking.", 400)
+    //     );
+    // }
 };
 
 exports.changeOrderStatus = catchAsync(async (req, res, next) => {
