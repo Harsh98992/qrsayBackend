@@ -621,6 +621,15 @@ exports.isDineInAvailable = catchAsync(async (req, res, next) => {
         }
     }
 
+    if (!req.user) {
+        return res.status(200).json({
+            status: "success",
+            data: {
+                isDineInAvailable: true,
+            },
+        });
+    }
+
     let customer_id = req.user._id;
 
     // // check if the orders table have any orders with the customer id same as the user is and the status is pending

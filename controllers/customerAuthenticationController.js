@@ -70,6 +70,39 @@ exports.customerProtect = catchAsync(async (req, res, next) => {
     req.user = customer;
     next();
 });
+
+exports.customerProtectNoError = catchAsync(async (req, res, next) => {
+    let token = null;
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith("Bearer")
+    ) {
+        token = req.headers.authorization.split(" ")[1];
+    }
+    if (!token) {
+        return next();
+    }
+
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+    const customer = await Customer.findById(decoded.id);
+    if (!customer) {
+        return next(new AppError("User does not exist!", 401));
+    }
+
+    if (customer.changedPasswordAfter(decoded.iat)) {
+        return next(
+            new AppError(
+                "User recently changed password, please log in again!",
+                401
+            )
+        );
+    }
+
+    req.user = customer;
+    next();
+});
+
 function isOtpExpired(otpCreatedAt) {
     const expirationTimeInSeconds = 1800;
     const currentTime = new Date();
