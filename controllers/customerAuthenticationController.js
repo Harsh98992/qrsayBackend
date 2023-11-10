@@ -160,6 +160,9 @@ exports.sendPhoneVerificationCode = catchAsync(async (req, res, next) => {
             identifier: phoneNumber,
             otp: OTP,
             attempts: 1,
+            otpCreatedAt: new Date(),
+            firstAttempt: new Date(),
+
         });
     }
 
