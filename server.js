@@ -20,7 +20,7 @@ const userRoute = require("./routers/userRoute");
 const globalHandler = require("./controllers/errorController");
 const orderSchema = require("./models/OrderModel");
 dotenv.config({ path: "./config.env" });
-
+const axios = require('axios');
 const app = express();
 
 app.use(express.json({ limit: "50mb" }));
@@ -61,7 +61,13 @@ cron.schedule("*/10 * * * *", async function () {
     console.log("job executed");
     const tenMinutesAgo = new Date();
     tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
-
+    try {
+        // Replace 'http://your-server-endpoint' with the actual endpoint of your server
+        const response = await axios.get('https://qrsay-backend.onrender.com/api/v1/customer/getAllRestaurants');
+        console.log('Server hit successful:', response.data);
+    } catch (error) {
+        console.error('Error hitting server:', error.message);
+    }
     const res = await orderSchema.updateMany(
         { orderDate: { $lte: tenMinutesAgo }, orderStatus: "pending" },
         {
