@@ -18,12 +18,20 @@ exports.checkDineInTableAvailability = async (
         return { result: false, message: "The table name was not found!" };
     }
     const tableData = queryResult.tables[0];
-
+    console.log(tableData);
+    
     if (!tableData?.isAvailable) {
         if (
             tableData.customerId &&
             tableData.customerId.valueOf() !== userId.valueOf()
         ) {
+            return {
+                result: false,
+                message:
+                    "The table has been reserved.Please choose any other table or please get in touch with the owner of the restaurant.!",
+            };
+        }
+        else if(!tableData?.customerId){
             return {
                 result: false,
                 message:
