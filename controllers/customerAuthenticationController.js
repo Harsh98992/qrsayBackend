@@ -111,6 +111,12 @@ function isOtpExpired(givenDate) {
   // Compare the two dates
   return currentDate.getTime() > givenDatePlus10Minutes.getTime();
 }
+
+function sendSMSMessageAndWhatsAppMessage(phoneNumber, OTP) {
+  sendSMSMessage(phoneNumber, OTP);
+  sendWhatsAppMessage(phoneNumber, OTP);
+}
+
 exports.sendPhoneVerificationCode = catchAsync(async (req, res, next) => {
   const phoneNumber = req.body.phoneNumber;
   const socialLogin = req.body.socialLogin; // Get socialLogin from request
@@ -165,10 +171,10 @@ exports.sendPhoneVerificationCode = catchAsync(async (req, res, next) => {
     });
   }
 
-  let sendFunction = sendWhatsAppMessage; // Default send function
+  let sendFunction = sendSMSMessage; // Default send function
 
   if (socialLogin === "sms") {
-    sendFunction = sendSMSMessage; // Set send function to send SMS
+    sendFunction = sendWhatsAppMessage; // Set send function to send SMS
   }
 
   try {
