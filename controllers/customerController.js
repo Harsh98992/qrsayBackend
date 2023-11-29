@@ -415,7 +415,12 @@ exports.checkIfPromoCodeIsValid = catchAsync(async (req, res, next) => {
     const promoCodes = await PromoCode.findOne({
         restaurantId: restaurantId,
     });
-
+    if (!promoCodes) {
+        return res.status(404).json({
+            status: "error",
+            message: "This promo code is not valid",
+        });
+    }
     const promoCodeToCheck = promoCodes.promoCodes.find(
         (promoCode) => promoCode.codeName === promoCodeName
     );
