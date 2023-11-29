@@ -174,7 +174,7 @@ exports.sendPhoneVerificationCode = catchAsync(async (req, res, next) => {
   let sendFunction = sendSMSMessage; // Default send function
 
   if (socialLogin === "sms") {
-    sendFunction = sendWhatsAppMessage; // Set send function to send SMS
+    sendFunction = sendSMSMessage; // Set send function to send SMS
   }
 
   try {
