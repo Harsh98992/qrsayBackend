@@ -185,3 +185,84 @@ endif
 ```plantuml
 @startuml
 actor Customer as C
+actor Restaurant as R
+actor DeliveryPerson as DP
+
+== Dine-In ==
+C -> R: Place dine-in order
+activate R
+R --> C: Confirm order
+C -> R: Arrive at restaurant
+R --> C: Seat customer
+C -> R: Choose table
+C -> R: Order food
+R --> C: Serve food
+C -> R: Pay bill
+R --> C: Thank customer
+deactivate R
+
+== Takeaway ==
+C -> R: Place takeaway order
+activate R
+R --> C: Confirm order
+C -> R: Arrive at restaurant
+R --> C: Collect order
+C -> R: Pay bill
+R --> C: Thank customer
+deactivate R
+
+== Delivery ==
+C -> R: Place delivery order
+activate R
+R --> C: Confirm order
+C -> R: Provide delivery address
+R -> DP: Assign delivery person
+activate DP
+DP -> R: Collect order
+R --> DP: Hand over order
+DP -> C: Deliver order
+C -> DP: Pay bill
+DP --> C: Thank customer
+deactivate DP
+deactivate R
+@enduml
+```
+
+## Entity Relationship Diagrams
+
+```plantuml
+@startuml
+entity Customer {
+    * id: int
+    --
+    name: String
+    address: String
+    phone: String
+    email: String
+    paymentMethod: String
+}
+
+entity Restaurant {
+    * id: int
+    --
+    name: String
+    address: String
+    phone: String
+    email: String
+    paymentMethod: String
+}
+
+entity DeliveryPerson {
+    * id: int
+    --
+    name: String
+    address: String
+    phone: String
+    email: String
+    paymentMethod: String
+}
+
+Customer "1" -- "1..*" Restaurant
+Restaurant "1" -- "1..*" DeliveryPerson
+@enduml
+```
