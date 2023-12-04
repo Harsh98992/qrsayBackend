@@ -144,3 +144,89 @@ sequenceDiagram
     Customer->>DeliveryPerson: Pay bill
     DeliveryPerson->>Customer: Thank customer
 ```
+
+# Diagrams
+
+## Use Case Diagrams
+
+```mermaid
+graph LR
+    A[Customer] --> B[Place order]
+    B --> C[Choose table]
+    C --> D[Order food]
+    D --> E[Pay bill]
+    E --> F[Leave restaurant]
+```
+
+```mermaid
+graph LR
+    A[Customer] --> B[Place order]
+    B --> C[Provide delivery address]
+    C --> D[Pay bill]
+    D --> E[Leave restaurant]
+```
+
+```mermaid
+graph LR
+    A[Customer] --> B[Place order]
+    B --> C[Provide delivery address]
+    C --> D[Pay bill]
+    D --> E[Leave restaurant]
+```
+
+## Class Diagrams
+
+```mermaid
+classDiagram
+    class Customer
+    class Restaurant
+    class DeliveryPerson
+    class Order
+    class Table
+    class User
+    class IdentifierOTP
+    class PromoCode
+
+    Customer "1" *-- "1..*" Order
+    Customer "1" *-- "1..*" IdentifierOTP
+    Restaurant "1" *-- "1..*" Order
+    Restaurant "1" *-- "1..*" PromoCode
+    Restaurant "1" *-- "1..*" Table
+    Restaurant "1" *-- "1..*" User
+```
+
+```mermaid
+classDiagram
+    class Customer
+    class Restaurant
+    class DeliveryPerson
+    class Order
+    class Table
+    class User
+    class IdentifierOTP
+    class PromoCode
+
+    Customer "1" *-- "1..*" Order
+    Customer "1" *-- "1..*" IdentifierOTP
+    Restaurant "1" *-- "1..*" Order
+    Restaurant "1" *-- "1..*" PromoCode
+    Restaurant "1" *-- "1..*" Table
+    Restaurant "1" *-- "1..*" User
+```
+
+```mermaid
+classDiagram
+    class Customer
+    class Restaurant
+    class DeliveryPerson
+    class Order
+    class Table
+    class User
+    class IdentifierOTP
+    class PromoCode
+
+    Customer "1" *-- "1..*" Order
+    Customer "1" *-- "1..*" IdentifierOTP
+    Restaurant "1" *-- "1..*" Order
+    Restaurant "1" *-- "1..*" PromoCode
+    Restaurant "1" *-- "1..*" Table
