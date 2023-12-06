@@ -29,7 +29,7 @@ exports.customerStoreRestaurant = catchAsync(async (req, res, next) => {
 });
 
 exports.addCustomerAddress = catchAsync(async (req, res, next) => {
-    address = req.body;
+    let address = req.body;
 
     // we have to update the addresses of the customer
 
@@ -42,12 +42,17 @@ exports.addCustomerAddress = catchAsync(async (req, res, next) => {
             { _id: req.user._id },
             { $push: { addresses: address } }
         );
+
+
+        address = customer.addresses[customer.addresses.length - 1];
     }
 
     res.status(200).json({
         status: "success",
         data: {
-            customer,
+            customer : customer,
+            address : address
+
         },
     });
 });
