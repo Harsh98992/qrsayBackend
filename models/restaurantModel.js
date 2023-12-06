@@ -152,6 +152,10 @@ const restaurantSchema = new mongoose.Schema({
         required: true,
         maxLength: 50,
     },
+    disabled: {
+        type: "boolean",
+        default: false,
+    },
     restaurantVerified: {
         type: "boolean",
         default: false,
