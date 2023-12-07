@@ -56,12 +56,15 @@ const dishSchema = new mongoose.Schema({
         type: [],
         default: [],
     },
+    days: {
+        type: [String],
+        default: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    },
 });
 const categorySchema = new mongoose.Schema({
     categoryName: {
         type: String,
         default:''
-        // unique: [true, "category name already exists!"],
     },
     items: [dishSchema],
 });
