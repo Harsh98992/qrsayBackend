@@ -176,12 +176,7 @@ exports.editRestaurant = catchAsync(async (req, res, next) => {
 });
 
 exports.sendEmailToRestaurant = catchAsync(async (req, res, next) => {
-    // const data = {
-    //     restaurantEmail:
-    //         this.restaurantForm.get("restaurantEmail").value,
-    //     subject: "Email from Digital Menu",
-    //     message: message,
-    // };
+
     data = req.body;
 
     await sendEmail(data.restaurantEmail, data.subject, data.message);
