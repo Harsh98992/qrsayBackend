@@ -204,7 +204,6 @@ exports.updatePaymentGateway = catchAsync(async (req, res, next) => {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(algorithm, Buffer.from(secretKey), iv);
 
-    // Encrypt the data
     let encryptedData = cipher.update(
         JSON.stringify(secretData),
         "utf8",
@@ -225,6 +224,15 @@ exports.updatePaymentGateway = catchAsync(async (req, res, next) => {
             },
         }
     );
+
+    if (!updateData) {
+        console.log(
+            "the restaurant data is not found for the id",
+            req.body.restaurantId,
+            "so it is not updated   "
+        );
+    }
+
 
     res.status(200).json({
         status: "success",
