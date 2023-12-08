@@ -6,9 +6,6 @@ const User = require("../models/userModel");
 const sendEmail = require("../helpers/email");
 const crypto = require("crypto");
 exports.getRestaurantsByStatus = catchAsync(async (req, res, next) => {
-    // restaurantVerified = req.body.restaurantVerified ? true : false;
-
-    // return this.http.get(`${this.apiUrl}/v1/admin/getRestaurantsByStatus/${restaurantVerified}`);
 
     const restaurantVerified = req.params.restaurantVerified;
 
@@ -68,10 +65,7 @@ exports.changeRestaurantStatus = catchAsync(async (req, res, next) => {
 exports.editRestaurant = catchAsync(async (req, res, next) => {
     const id = req.params.id;
 
-    // find all the existing data
     let restaurantData = await Restaurant.find({ _id: id });
-
-    // if the data is not found then return with error
 
     if (!restaurantData) {
         console.log("the restaurant data is not found for the id", id);
