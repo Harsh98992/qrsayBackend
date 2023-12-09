@@ -5,7 +5,7 @@ function initializeSocket(server) {
     const io = socketIo(server, {
         cors: {
             origin: "*",
-        },
+        },rejectUnauthorized: false
     });
 
     io.on("connection", (socket) => {

@@ -19,6 +19,10 @@ const sizeSchema = new mongoose.Schema({
     },
 });
 const dishSchema = new mongoose.Schema({
+    dishPriority: {
+        type: "Number",
+        default: 1000,
+    },
     dishName: {
         type: "String",
     },
@@ -56,12 +60,23 @@ const dishSchema = new mongoose.Schema({
         type: [],
         default: [],
     },
+    days: {
+        type: [String],
+        default: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ],
+    },
 });
 const categorySchema = new mongoose.Schema({
     categoryName: {
         type: String,
-        default:''
-        // unique: [true, "category name already exists!"],
+        default: "",
     },
     items: [dishSchema],
 });
@@ -152,6 +167,10 @@ const restaurantSchema = new mongoose.Schema({
         required: true,
         maxLength: 50,
     },
+    disabled: {
+        type: "boolean",
+        default: false,
+    },
     restaurantVerified: {
         type: "boolean",
         default: false,
@@ -200,11 +219,9 @@ const restaurantSchema = new mongoose.Schema({
         default: 5,
     },
 
-
     placeId: {
         type: "string",
     },
-
 
     addOns: [
         {
@@ -229,7 +246,6 @@ const restaurantSchema = new mongoose.Schema({
         },
     ],
 
-
     cuisine: [
         {
             type: categorySchema,
@@ -242,8 +258,6 @@ const restaurantSchema = new mongoose.Schema({
             default: {},
         },
     ],
-
-
 
     showGoogleReview: {
         type: Boolean,
@@ -302,13 +316,19 @@ const restaurantSchema = new mongoose.Schema({
 
         default: "",
     },
-    openTime: {
-    },
-    closeTime: {
-    },
+    openTime: {},
+    closeTime: {},
     openDays: {
         type: [String],
-        default: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        default: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ],
     },
 });
 

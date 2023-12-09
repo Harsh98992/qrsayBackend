@@ -92,7 +92,6 @@ router.get(
 
 router.get(
     "/getRestaurantDetailsFromRestaurantUrl/:restaurantUrl",
-    cache(cacheOptions),
     getRestaurantDetailsFromRestaurantUrl
 );
 
