@@ -4,6 +4,8 @@ This is the backend for the Digital Menu project. It is a REST API built with No
 
 ## Installation
 
+
+
 1. Clone the repository
 2. Run `npm install` to install the dependencies
 3. Create a `.env` file in the root directory and add the following environment variables:
