@@ -35,6 +35,12 @@ app.use("/api/v1/customer", customerRoute);
 app.use("/api/v1/payment", paymentRoute);
 app.use("/api/v1/orders", orderRoute);
 app.use("/api/v1/google-maps", googlemapRoute);
+app.get("/",(req,res)=>{
+    res.status(200).json({
+        status:200,
+        message:"Hello from server"
+    })
+})
 
 app.all("*", (req, res, next) => {
     console.log(req.originalUrl);
