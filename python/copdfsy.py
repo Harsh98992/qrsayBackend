@@ -1,6 +1,9 @@
 import pymongo
 
-def copy_mongodb_database(source_uri, source_db_name, destination_uri, destination_db_name):
+
+def copy_mongodb_database(
+    source_uri, source_db_name, destination_uri, destination_db_name
+):
     # Connect to the source MongoDB database
     # source_client = MongoClient(source_uri)
     source_client = pymongo.MongoClient(source_uri)
@@ -28,11 +31,31 @@ def copy_mongodb_database(source_uri, source_db_name, destination_uri, destinati
     source_client.close()
     destination_client.close()
 
+
 if __name__ == "__main__":
     # Replace these with your MongoDB connection strings and database names
     source_uri = "mongodb+srv://goqrorder:2fFhzGUn6EdNUPQJ@cluster0.bt9bmvq.mongodb.net/digitalMenuWeb"
     source_db_name = "digitalMenuWeb"
-    destination_uri = "mongodb+srv://goqrorder:2fFhzGUn6EdNUPQJ@cluster0.bt9bmvq.mongodb.net/testdb"
+    destination_uri = (
+        "mongodb+srv://goqrorder:2fFhzGUn6EdNUPQJ@cluster0.bt9bmvq.mongodb.net/testdb"
+    )
     destination_db_name = "testdb"
 
-    copy_mongodb_database(source_uri, source_db_name, destination_uri, destination_db_name)
+    # copy_mongodb_database(source_uri, source_db_name, destination_uri, destination_db_name)
+
+    # delete all teh data from the orders collection in teh destination database
+    # Connect to the destination MongoDB database
+
+    # destination_uri = "mongodb://localhost:27017/"
+    # destination_db_name = "digitalMenuWeb"
+    # destination_client = pymongo.MongoClient(destination_uri)
+    # destination_db = destination_client[destination_db_name]
+    # destination_collection = destination_db["orders"]
+    # destination_collection.delete_many({})
+    # destination_client.close()
+
+    # copy the orders collection from the source to the destination
+
+    # delete all teh data from the orders collection in teh source database
+
+    # copy_mongodb_database(source_uri, source_db_name, destination_uri, destination_db_name)
