@@ -62,15 +62,7 @@ const dishSchema = new mongoose.Schema({
     },
     days: {
         type: [String],
-        default: [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday",
-        ],
+        default: []        ,
     },
 });
 const categorySchema = new mongoose.Schema({
