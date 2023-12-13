@@ -62,8 +62,7 @@ const dishSchema = new mongoose.Schema({
     },
     days: {
         type: [String],
-        default: [
-        ],
+        default: []        ,
     },
 });
 const categorySchema = new mongoose.Schema({
@@ -277,6 +276,11 @@ const restaurantSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    minOrderValueForDelivery: {
+        type: Number,
+        default: 0,
+    },
+
     facebookUrl: {
         type: String,
         default: "",

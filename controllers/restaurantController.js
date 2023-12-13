@@ -364,6 +364,9 @@ exports.getPromoCode = catchAsync(async (req, res, next) => {
         });
     }
 
+    if (!promoCode) {
+        return next(new AppError("Promo Code not found", 404));
+    }
 
 
 
