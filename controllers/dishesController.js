@@ -188,11 +188,11 @@ exports.editDishes = catchAsync(async (req, res, next) => {
 let result =await Restaurant.updateOne(
     {
       _id: req.user.restaurantKey,
-      "cuisine._id": (req.body.dishCategory),
+      "cuisine._id": (req.body.previousDishCategory),
     },
     { $pull: { [key]: { _id: id } } },
   );
-
+  if (result.modifiedCount) {
     result = await Restaurant.updateOne(
       {
         _id: req.user.restaurantKey,
@@ -209,7 +209,10 @@ let result =await Restaurant.updateOne(
         message: "Record Updated Successfully!",
       },
     });
-
+  }
+  else{
+    return next(new AppError("Unable to find Dish!", 400));
+  }
 });
 exports.deleteDish = catchAsync(async (req, res, next) => {
   if (!req.params.id) {
