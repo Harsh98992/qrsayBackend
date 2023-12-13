@@ -62,7 +62,7 @@ const dishSchema = new mongoose.Schema({
     },
     days: {
         type: [String],
-        default: []        ,
+        default: [],
     },
 });
 const categorySchema = new mongoose.Schema({
@@ -71,6 +71,23 @@ const categorySchema = new mongoose.Schema({
         default: "",
     },
     items: [dishSchema],
+    categoryPriority: {
+        type: Number,
+        default: 1000,
+    },
+    categoryDescription: {
+        type: String,
+        default: "",
+    },
+    categoryImage: {
+        type: String,
+        default: "",
+    },
+
+    categoryAvailable: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const addressSchema = new mongoose.Schema({
