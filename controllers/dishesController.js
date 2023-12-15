@@ -162,6 +162,8 @@ exports.addDishes = catchAsync(async (req, res, next) => {
 
     imageData = req.body.imageUrl;
 
+    console.log("image data", imageData);
+
     // remove the data:image/jpeg;base64 etc from the image data
 
     // upload the image to imgur
