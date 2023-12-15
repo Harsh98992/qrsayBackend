@@ -1,6 +1,35 @@
+const { response } = require("express");
 const AppError = require("../helpers/appError");
 const catchAsync = require("../helpers/catchAsync");
 const Restaurant = require("../models/restaurantModel");
+// axios
+
+const axios = require("axios");
+const { el } = require("date-fns/locale");
+
+// upload to imgur
+
+function uploadToImgur(image) {
+    // use axios to upload image to imgur
+
+    const IMGUR_CLIENT_ID = "869f294e59431cd";
+
+    response = axios({
+        method: "post",
+        url: "https://api.imgur.com/3/image",
+        headers: {
+            Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
+        },
+        data: {
+            image: image,
+        },
+    });
+
+    // return link to the image
+
+    return response.data.data.link;
+}
+
 exports.addExtraIngredent = catchAsync(async (req, res, next) => {
     if (!req.body.name || !req.body.price) {
         return next(
@@ -138,13 +167,29 @@ exports.deleteExtraIngredent = catchAsync(async (req, res, next) => {
 });
 
 exports.addDishes = catchAsync(async (req, res, next) => {
+    // upload image to imgur
+
+    imageData = req.body.imageUrl;
+
+    // remove the data:image/jpeg;base64 etc from the image data
+
+    imageData = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
+
+    // upload the image to imgur
+
+    const imgurUrl = await uploadToImgur(imageData);
+
+    // get the image url
+
+    console.log(imgurUrl);
+
     const data = {
         dishName: req.body.dishName,
         dishPrice: req.body.dishPrice,
         dishType: req.body.dishType,
         dishDescription: req.body.dishDescription,
         dishOrderOption: req.body.dishOrderOption,
-        imageUrl: req.body.imageUrl,
+        imageUrl: imgurUrl,
         sizeAvailable: req.body.sizeAvailabe,
         chilliFlag: req.body.spicy,
         addOns: req.body.addOns,
@@ -170,18 +215,53 @@ exports.addDishes = catchAsync(async (req, res, next) => {
     });
 });
 exports.editDishes = catchAsync(async (req, res, next) => {
-    const data = {
-        dishName: req.body.dishName,
-        dishPrice: req.body.dishPrice,
-        dishType: req.body.dishType,
-        dishDescription: req.body.dishDescription,
-        dishOrderOption: req.body.dishOrderOption,
-        imageUrl: req.body.imageUrl,
-        sizeAvailable: req.body.sizeAvailabe,
-        chilliFlag: req.body.spicy,
-        addOns: req.body.addOns,
-        choicesAvailable: req.body.choicesAvailable,
-    };
+    // check if image is already a url
+
+    if (req.body.imageUrl.includes("https://")) {
+        // if it is a url, then use the same url
+
+        const data = {
+            dishName: req.body.dishName,
+            dishPrice: req.body.dishPrice,
+            dishType: req.body.dishType,
+            dishDescription: req.body.dishDescription,
+            dishOrderOption: req.body.dishOrderOption,
+            imageUrl: req.body.imageUrl,
+            sizeAvailable: req.body.sizeAvailabe,
+            chilliFlag: req.body.spicy,
+            addOns: req.body.addOns,
+            choicesAvailable: req.body.choicesAvailable,
+        };
+    } else {
+        // if it is not a url, then upload it to imgur
+
+        imageData = req.body.imageUrl;
+
+        // remove the data:image/jpeg;base64 etc from the image data
+
+        imageData = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
+
+        // upload the image to imgur
+
+        const imgurUrl = await uploadToImgur(imageData);
+
+        // get the image url
+
+        console.log(imgurUrl);
+
+        const data = {
+            dishName: req.body.dishName,
+            dishPrice: req.body.dishPrice,
+            dishType: req.body.dishType,
+            dishDescription: req.body.dishDescription,
+            dishOrderOption: req.body.dishOrderOption,
+            imageUrl: imgurUrl,
+            sizeAvailable: req.body.sizeAvailabe,
+            chilliFlag: req.body.spicy,
+            addOns: req.body.addOns,
+            choicesAvailable: req.body.choicesAvailable,
+        };
+    }
 
     const id = req.body.dishId;
     const key = `cuisine.$.items`;
