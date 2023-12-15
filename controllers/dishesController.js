@@ -130,34 +130,6 @@ exports.deleteExtraIngredent = catchAsync(async (req, res, next) => {
         { multi: true }
     );
 
-    // check_if_a_dish_is_using_this_extra_ingredent = await Restaurant.find({
-    //     _id: req.user.restaurantKey,
-    //     cuisine: {
-    //         $elemMatch: {
-    //             items: {
-    //                 $elemMatch: {
-    //                     addOns: {
-    //                         $elemMatch: {
-    //                             $elemMatch: {
-    //                                 name: data.name,
-    //                             },
-    //                         },
-    //                     },
-    //                 },
-    //             },
-    //         },
-    //     },
-    // }).select("_id");
-
-    // if (check_if_a_dish_is_using_this_extra_ingredent.length) {
-    //     return next(
-    //         new AppError(
-    //             "This extra ingredent is being used by some dish. Please remove it from the dish first.",
-    //             400
-    //         )
-    //     );
-    // }
-
     res.status(200).json({
         status: "success",
         data: {
@@ -215,12 +187,13 @@ exports.addDishes = catchAsync(async (req, res, next) => {
     });
 });
 exports.editDishes = catchAsync(async (req, res, next) => {
+    let data = {};
     // check if image is already a url
 
     if (req.body.imageUrl.includes("https://")) {
         // if it is a url, then use the same url
 
-        const data = {
+        data = {
             dishName: req.body.dishName,
             dishPrice: req.body.dishPrice,
             dishType: req.body.dishType,
@@ -235,19 +208,24 @@ exports.editDishes = catchAsync(async (req, res, next) => {
     } else {
         // if it is not a url, then upload it to imgur
 
-        imageData = req.body.imageUrl;
+        try {
+            imageData = req.body.imageUrl;
 
-        // remove the data:image/jpeg;base64 etc from the image data
+            // remove the data:image/jpeg;base64 etc from the image data
 
-        imageData = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
+            imageData = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
 
-        // upload the image to imgur
+            // upload the image to imgur
 
-        const imgurUrl = await uploadToImgur(imageData);
+            const imgurUrl = await uploadToImgur(imageData);
 
-        // get the image url
+            // get the image url
 
-        console.log(imgurUrl);
+            console.log(imgurUrl);
+        } catch (err) {
+            console.log(err);
+            imgurUrl = req.body.imageUrl;
+        }
 
         const data = {
             dishName: req.body.dishName,
