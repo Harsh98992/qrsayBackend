@@ -2,16 +2,15 @@ const { response } = require("express");
 const AppError = require("../helpers/appError");
 const catchAsync = require("../helpers/catchAsync");
 const Restaurant = require("../models/restaurantModel");
-// axios
 
 const axios = require("axios");
-const { el } = require("date-fns/locale");
+// import { v2 as cloudinary } from "cloudinary";
 
-// upload to imgur
+const cloudinary = require("cloudinary").v2;
 
-function uploadToImgur(image) {
-    // use axios to upload image to imgur
 
+function uploadToImgur(imageData) {
+    imageData = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
     const IMGUR_CLIENT_ID = "869f294e59431cd";
 
     response = axios({
@@ -28,6 +27,26 @@ function uploadToImgur(image) {
     // return link to the image
 
     return response.data.data.link;
+}
+cloudinary.config({
+    cloud_name: "di0mvijee",
+    api_key: "937372845829153",
+    api_secret:
+        "CLOUDINARY_URL=cloudinary://937372845829153:222sbPe3ZrkjVUbO7asNKfYd8ZI@di0mvijee",
+});
+
+// Function to upload image to Cloudinary
+async function uploadToCloudinary(image) {
+    try {
+        const result = await cloudinary.uploader.upload(image, { folder: "food" });
+        // You can customize the folder option based on your needs
+
+        // Return the public URL of the uploaded image
+        return result.secure_url;
+    } catch (error) {
+        console.error("Error uploading to Cloudinary:", error.message);
+        throw error;
+    }
 }
 
 exports.addExtraIngredent = catchAsync(async (req, res, next) => {
@@ -145,8 +164,6 @@ exports.addDishes = catchAsync(async (req, res, next) => {
 
     // remove the data:image/jpeg;base64 etc from the image data
 
-    imageData = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
-
     // upload the image to imgur
 
     const imgurUrl = await uploadToImgur(imageData);
@@ -212,8 +229,6 @@ exports.editDishes = catchAsync(async (req, res, next) => {
             imageData = req.body.imageUrl;
 
             // remove the data:image/jpeg;base64 etc from the image data
-
-            imageData = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
 
             // upload the image to imgur
 
