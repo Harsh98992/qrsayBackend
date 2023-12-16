@@ -59,3 +59,18 @@ if __name__ == "__main__":
     # delete all teh data from the orders collection in teh source database
 
     # copy_mongodb_database(source_uri, source_db_name, destination_uri, destination_db_name)
+
+
+# Great! Now you can get started with the API!
+# For public read-only and anonymous resources, such as getting image info, looking up user comments, etc. all you need to do is send an authorization header with your client_id in your requests. This also works if you'd like to upload images anonymously (without the image being tied to an account), or if you'd like to create an anonymous album. This lets us know which application is accessing the API.
+
+# Authorization: Client-ID YOUR_CLIENT_ID
+
+# For accessing a user's account, please visit the OAuth2 section of the docs.
+
+# Client ID:
+# 869f294e59431cd
+# Client secret:
+# e2aa0949267297997c95e1d430a6dcdfb48c93eb
+# IMGUR_CLIENT_ID = "869f294e59431cd"
+# IMGUR_CLIENT_SECRET = "e2aa0949267297997c95e1d430a6dcdfb48c93eb"
