@@ -2,53 +2,138 @@ const { response } = require("express");
 const AppError = require("../helpers/appError");
 const catchAsync = require("../helpers/catchAsync");
 const Restaurant = require("../models/restaurantModel");
+const {
+    uploadToImgur,
+    // uploadToCloudinary,
+    compressImage,
+} = require("../helpers/image");
 
-const axios = require("axios");
-// import { v2 as cloudinary } from "cloudinary";
+async function returnDataWithImageUrls(req) {
+    let initialImageUrl = "";
+    let imgurUrl = "";
+    let imageData = "";
+    let imageDataWithoutPrefix = "";
+    let compressedImage = "";
+    let compressedImageimgurUrl = "";
+    // let cloudinaryUrl = "";
 
-const cloudinary = require("cloudinary").v2;
+    // console.log(req.body.imageUrl);
+
+    if (req.body.imageUrl.startsWith("data:image/")) {
+        imageDataWithoutPrefix = req.body.imageUrl.replace(
+            /^data:image\/[a-z]+;base64,/,
+            ""
+        );
+
+        // console.log(imageDataWithoutPrefix);
+
+        imageData = req.body.imageUrl;
+
+        try {
+            console.log("Uploading to Imgur");
+            imgurUrl = await uploadToImgur(imageData.split(",")[1]);
+        } catch (err) {
+            console.log(err);
+            imgurUrl = req.body.imageUrl;
+        }
+
+        initialImageUrl = imgurUrl;
 
 
-function uploadToImgur(imageData) {
-    imageData = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
-    const IMGUR_CLIENT_ID = "869f294e59431cd";
+        try {
+            imageData = req.body.imageUrl;
+            compressedImage = await compressImage(imageData);
 
-    response = axios({
-        method: "post",
-        url: "https://api.imgur.com/3/image",
-        headers: {
-            Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
+            console.log("Uploading to Imgur");
+
+            compressedImageimgurUrl = await uploadToImgur(compressedImage);
+
+            console.log(compressedImageimgurUrl);
+        } catch (err) {
+            console.log(err);
+        }
+    } else {
+        initialImageUrl = req.body.imageUrl;
+    }
+
+    console.log("initialImageUrl", initialImageUrl);
+    console.log("compressedImageimgurUrl", compressedImageimgurUrl);
+    console.log("imgurUrl", imgurUrl);
+
+    return {
+        dishName: req.body.dishName,
+        dishPrice: req.body.dishPrice,
+        dishType: req.body.dishType,
+        dishDescription: req.body.dishDescription,
+        dishOrderOption: req.body.dishOrderOption,
+        imageUrl: compressedImageimgurUrl || initialImageUrl,
+        imgurUrl: imgurUrl,
+        // cloudinaryUrl: cloudinaryUrl,
+        sizeAvailable: req.body.sizeAvailabe,
+        chilliFlag: req.body.spicy,
+        addOns: req.body.addOns,
+        choicesAvailable: req.body.choicesAvailable,
+    };
+}
+
+exports.addDishes = catchAsync(async (req, res, next) => {
+    const data = await returnDataWithImageUrls(req);
+
+    // console.log(req.body.imageUrl);
+
+    return next(new AppError("This is a test error", 400));
+
+    const key = `cuisine.$.items`;
+
+    const result = await Restaurant.updateOne(
+        {
+            _id: req.user.restaurantKey,
+            "cuisine._id": req.body.dishCategory,
         },
+        { $push: { [key]: data } },
+
+        { multi: true }
+    );
+    res.status(200).json({
+        status: "success",
         data: {
-            image: image,
+            message: "Record Updated Successfully!",
         },
     });
-
-    // return link to the image
-
-    return response.data.data.link;
-}
-cloudinary.config({
-    cloud_name: "di0mvijee",
-    api_key: "937372845829153",
-    api_secret:
-        "CLOUDINARY_URL=cloudinary://937372845829153:222sbPe3ZrkjVUbO7asNKfYd8ZI@di0mvijee",
 });
+exports.editDishes = catchAsync(async (req, res, next) => {
+    let data = await returnDataWithImageUrls(req);
 
-// Function to upload image to Cloudinary
-async function uploadToCloudinary(image) {
-    try {
-        const result = await cloudinary.uploader.upload(image, { folder: "food" });
-        // You can customize the folder option based on your needs
+    const id = req.body.dishId;
+    const key = `cuisine.$.items`;
+    let result = await Restaurant.updateOne(
+        {
+            _id: req.user.restaurantKey,
+            "cuisine._id": req.body.previousDishCategory,
+        },
+        { $pull: { [key]: { _id: id } } }
+    );
+    if (result.modifiedCount) {
+        result = await Restaurant.updateOne(
+            {
+                _id: req.user.restaurantKey,
+                "cuisine._id": req.body.dishCategory,
+            },
+            { $push: { [key]: data } },
 
-        // Return the public URL of the uploaded image
-        return result.secure_url;
-    } catch (error) {
-        console.error("Error uploading to Cloudinary:", error.message);
-        throw error;
+            { multi: true }
+        );
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                message: "Record Updated Successfully!",
+            },
+        });
+    } else {
+        return next(new AppError("Unable to find Dish!", 400));
     }
-}
-
+});
 exports.addExtraIngredent = catchAsync(async (req, res, next) => {
     if (!req.body.name || !req.body.price) {
         return next(
@@ -157,137 +242,6 @@ exports.deleteExtraIngredent = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.addDishes = catchAsync(async (req, res, next) => {
-    // upload image to imgur
-
-    imageData = req.body.imageUrl;
-
-    console.log("image data", imageData);
-
-    // remove the data:image/jpeg;base64 etc from the image data
-
-    // upload the image to imgur
-
-    const imgurUrl = await uploadToImgur(imageData);
-
-    // get the image url
-
-    console.log(imgurUrl);
-
-    const data = {
-        dishName: req.body.dishName,
-        dishPrice: req.body.dishPrice,
-        dishType: req.body.dishType,
-        dishDescription: req.body.dishDescription,
-        dishOrderOption: req.body.dishOrderOption,
-        imageUrl: imgurUrl,
-        sizeAvailable: req.body.sizeAvailabe,
-        chilliFlag: req.body.spicy,
-        addOns: req.body.addOns,
-        choicesAvailable: req.body.choicesAvailable,
-    };
-
-    const key = `cuisine.$.items`;
-
-    const result = await Restaurant.updateOne(
-        {
-            _id: req.user.restaurantKey,
-            "cuisine._id": req.body.dishCategory,
-        },
-        { $push: { [key]: data } },
-
-        { multi: true }
-    );
-    res.status(200).json({
-        status: "success",
-        data: {
-            message: "Record Updated Successfully!",
-        },
-    });
-});
-exports.editDishes = catchAsync(async (req, res, next) => {
-    let data = {};
-    // check if image is already a url
-
-    if (req.body.imageUrl.includes("https://")) {
-        // if it is a url, then use the same url
-
-        data = {
-            dishName: req.body.dishName,
-            dishPrice: req.body.dishPrice,
-            dishType: req.body.dishType,
-            dishDescription: req.body.dishDescription,
-            dishOrderOption: req.body.dishOrderOption,
-            imageUrl: req.body.imageUrl,
-            sizeAvailable: req.body.sizeAvailabe,
-            chilliFlag: req.body.spicy,
-            addOns: req.body.addOns,
-            choicesAvailable: req.body.choicesAvailable,
-        };
-    } else {
-        // if it is not a url, then upload it to imgur
-
-        try {
-            imageData = req.body.imageUrl;
-
-            // remove the data:image/jpeg;base64 etc from the image data
-
-            // upload the image to imgur
-
-            const imgurUrl = await uploadToImgur(imageData);
-
-            // get the image url
-
-            console.log(imgurUrl);
-        } catch (err) {
-            console.log(err);
-            imgurUrl = req.body.imageUrl;
-        }
-
-        const data = {
-            dishName: req.body.dishName,
-            dishPrice: req.body.dishPrice,
-            dishType: req.body.dishType,
-            dishDescription: req.body.dishDescription,
-            dishOrderOption: req.body.dishOrderOption,
-            imageUrl: imgurUrl,
-            sizeAvailable: req.body.sizeAvailabe,
-            chilliFlag: req.body.spicy,
-            addOns: req.body.addOns,
-            choicesAvailable: req.body.choicesAvailable,
-        };
-    }
-
-    const id = req.body.dishId;
-    const key = `cuisine.$.items`;
-    let result = await Restaurant.updateOne(
-        {
-            _id: req.user.restaurantKey,
-            "cuisine._id": req.body.previousDishCategory,
-        },
-        { $pull: { [key]: { _id: id } } }
-    );
-    if (result.modifiedCount) {
-        result = await Restaurant.updateOne(
-            {
-                _id: req.user.restaurantKey,
-                "cuisine._id": req.body.dishCategory,
-            },
-            { $push: { [key]: data } },
-
-            { multi: true }
-        );
-
-        res.status(200).json({
-            status: "success",
-            data: {
-                message: "Record Updated Successfully!",
-            },
-        });
-    } else {
-        return next(new AppError("Unable to find Dish!", 400));
-    }
-});
 exports.deleteDish = catchAsync(async (req, res, next) => {
     if (!req.params.id) {
         return next(new AppError("Unable to find Dish!", 400));
