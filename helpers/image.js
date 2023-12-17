@@ -3,23 +3,23 @@ const cloudinary = require("cloudinary").v2;
 const sharp = require("sharp");
 const AWS = require("aws-sdk");
 
-AWS.config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-});
+const uploadToAwsS3 = async (base64String, key) => {
+    const fileContent = Buffer.from(base64String.split(",")[1]
+        , "base64");
 
-const s3 = new AWS.S3();
-
-const uploadToAwsS3 = async (base64String, bucketName, key) => {
-    const fileContent = Buffer.from(base64String, "base64");
+    AWS.config.update({
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    });
+    const s3 = new AWS.S3();
 
     const params = {
-        Bucket: bucketName,
+        Bucket: "imagesqrsay",
         Key: key,
         Body: fileContent,
     };
 
-    s3.upload(params, (err, data) => {
+    res = s3.upload(params, (err, data) => {
         if (err) {
             console.error("Error uploading to S3:", err);
         } else {
@@ -29,14 +29,13 @@ const uploadToAwsS3 = async (base64String, bucketName, key) => {
             );
         }
     });
+
+    console.log("File uploaded successfully. S3 Location:", res.Location);
+
+    // return data.Location;
+
+    // return `https://${bucketName}.s3.amazonaws.com/${key}`;
 };
-
-// // Example usage
-// const fileContent = 'Hello, this is the content of my file!';
-// const bucketName = 'your-s3-bucket-name';
-// const key = 'path/to/your/file.txt';
-
-// uploadToAwsS3(fileContent, bucketName, key);
 
 const compressImage = async (imageData) => {
     imageData = imageData.split(",")[1];
@@ -104,4 +103,5 @@ module.exports = {
     // uploadToCloudinary,
     uploadToImgur,
     compressImage,
+    uploadToAwsS3,
 };

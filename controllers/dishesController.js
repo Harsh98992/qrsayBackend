@@ -4,8 +4,8 @@ const catchAsync = require("../helpers/catchAsync");
 const Restaurant = require("../models/restaurantModel");
 const {
     uploadToImgur,
-    // uploadToCloudinary,
     compressImage,
+    uploadToAwsS3,
 } = require("../helpers/image");
 
 async function returnDataWithImageUrls(req) {
@@ -15,6 +15,7 @@ async function returnDataWithImageUrls(req) {
     let imageDataWithoutPrefix = "";
     let compressedImage = "";
     let compressedImageimgurUrl = "";
+    let s3Url = "";
     // let cloudinaryUrl = "";
 
     // console.log(req.body.imageUrl);
@@ -39,6 +40,34 @@ async function returnDataWithImageUrls(req) {
 
         initialImageUrl = imgurUrl;
 
+        try {
+            imageData = req.body.imageUrl;
+
+            // // Example usage
+            // const fileContent = 'This is a test file';
+            // const bucketName = 'your-s3-bucket-name';
+            // const key =
+
+            // uploadToAwsS3(fileContent, bucketName, key);
+
+            // Images /restaurant /id/dishes /category/dish name. Png
+
+            restaurantId = req.user.restaurantKey;
+
+            categoryId = req.body.dishCategory;
+
+            dishName = req.body.dishName;
+
+            fileFormat = req.body.imageUrl.split(";")[0].split("/")[1];
+
+            key = `Images/restaurant/${restaurantId}/dishes/categories/${categoryId}/${dishName}.${fileFormat}`;
+
+            console.log("Uploading to S3");
+
+            s3Url = uploadToAwsS3(imageData, key);
+        } catch (err) {
+            console.log(err);
+        }
 
         try {
             imageData = req.body.imageUrl;
@@ -68,7 +97,6 @@ async function returnDataWithImageUrls(req) {
         dishOrderOption: req.body.dishOrderOption,
         imageUrl: compressedImageimgurUrl || initialImageUrl,
         imgurUrl: imgurUrl,
-        // cloudinaryUrl: cloudinaryUrl,
         sizeAvailable: req.body.sizeAvailabe,
         chilliFlag: req.body.spicy,
         addOns: req.body.addOns,

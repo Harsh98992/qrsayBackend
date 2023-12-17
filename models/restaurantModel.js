@@ -39,6 +39,7 @@ const dishSchema = new mongoose.Schema({
     cloudinaryUrl: {
         type: "String",
     },
+
     s3Url: {
         type: "String",
     },
