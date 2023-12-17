@@ -43,14 +43,6 @@ async function returnDataWithImageUrls(req) {
         try {
             imageData = req.body.imageUrl;
 
-            // // Example usage
-            // const fileContent = 'This is a test file';
-            // const bucketName = 'your-s3-bucket-name';
-            // const key =
-
-            // uploadToAwsS3(fileContent, bucketName, key);
-
-            // Images /restaurant /id/dishes /category/dish name. Png
 
             restaurantId = req.user.restaurantKey;
 
