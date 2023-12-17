@@ -33,7 +33,16 @@ const dishSchema = new mongoose.Schema({
     imageUrl: {
         type: "String",
     },
+    imgurUrl: {
+        type: "String",
+    },
+    cloudinaryUrl: {
+        type: "String",
+    },
 
+    s3Url: {
+        type: "String",
+    },
     dishDescription: {
         type: "String",
     },
