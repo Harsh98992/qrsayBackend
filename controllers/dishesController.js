@@ -107,10 +107,6 @@ async function returnDataWithImageUrls(req) {
 exports.addDishes = catchAsync(async (req, res, next) => {
     const data = await returnDataWithImageUrls(req);
 
-    // console.log(req.body.imageUrl);
-
-    return next(new AppError("This is a test error", 400));
-
     const key = `cuisine.$.items`;
 
     const result = await Restaurant.updateOne(
