@@ -95,7 +95,7 @@ async function returnDataWithImageUrls(req) {
         dishType: req.body.dishType,
         dishDescription: req.body.dishDescription,
         dishOrderOption: req.body.dishOrderOption,
-        imageUrl: compressedImageimgurUrl || initialImageUrl,
+        imageUrl: compressedImageimgurUrl || imgurUrl || initialImageUrl,
         imgurUrl: imgurUrl,
         sizeAvailable: req.body.sizeAvailabe,
         chilliFlag: req.body.spicy,

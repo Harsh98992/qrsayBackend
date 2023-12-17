@@ -1,6 +1,6 @@
 const axios = require("axios");
 const cloudinary = require("cloudinary").v2;
-const sharp = require("sharp");
+// const sharp = require("sharp");
 const AWS = require("aws-sdk");
 
 const uploadToAwsS3 = async (base64String, key) => {
