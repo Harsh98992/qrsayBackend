@@ -1,8 +1,6 @@
 const axios = require("axios");
 const catchAsync = require("../helpers/catchAsync");
 
-
-
 // Function to handle the place details request to Google Maps Places API
 exports.placeDetails = catchAsync(async (req, res) => {
     const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
@@ -54,11 +52,9 @@ exports.getGeocodeDetails = catchAsync(async (req, res) => {
     console.log(response.data);
     console.log(response.status);
 
-
     // Forward the response from Google Maps API to the client
     res.json(response.data);
 });
-
 
 exports.placesJSLibrary = catchAsync(async (req, res) => {
     const API_KEY = process.env.GOOGLE_MAPS_API_KEY;

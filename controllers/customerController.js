@@ -31,8 +31,7 @@ exports.customerStoreRestaurant = catchAsync(async (req, res, next) => {
 exports.addCustomerAddress = catchAsync(async (req, res, next) => {
     let address = req.body;
 
-
-    let newAddress ;
+    let newAddress;
     // we have to update the addresses of the customer
 
     let customer = await Customer.findById(req.user._id);
@@ -45,7 +44,6 @@ exports.addCustomerAddress = catchAsync(async (req, res, next) => {
             { $push: { addresses: address } }
         );
 
-
         // address = customer.addresses[customer.addresses.length - 1];
 
         // for some reason the address being returned in the response is 2nd last address in the array
@@ -55,22 +53,14 @@ exports.addCustomerAddress = catchAsync(async (req, res, next) => {
         customer = await Customer.findById(req.user._id);
 
         // get the last address in the addresses array
-newAddress = customer.addresses[customer.addresses.length - 1];
-
-
-
-
-
-
-
+        newAddress = customer.addresses[customer.addresses.length - 1];
     }
 
     res.status(200).json({
         status: "success",
         data: {
-            customer : customer,
-            address : newAddress
-
+            customer: customer,
+            address: newAddress,
         },
     });
 });
@@ -127,7 +117,7 @@ exports.getCustomer = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: "success",
         data: {
-            customer : customer
+            customer: customer,
         },
     });
 });
@@ -294,7 +284,7 @@ exports.getNearbyRestaurants = catchAsync(async (req, res, next) => {
     // Find all restaurants in the database
     let restaurants = await Restaurant.find();
 
-        // remove disabled restaurants4
+    // remove disabled restaurants4
 
     restaurants = restaurants.filter((restaurant) => !restaurant.disabled);
 
@@ -320,7 +310,6 @@ exports.getAllRestaurants = catchAsync(async (req, res, next) => {
 
     // remove disabled restaurants4
     restaurants = restaurants.filter((restaurant) => !restaurant.disabled);
-
 
     // select the fields to be sent in the response as only restaurantUrl and restaurantName is required and not the whole restaurant object
     restaurants = restaurants.map((restaurant) => {
@@ -751,5 +740,3 @@ exports.getCustomerPastLocations = catchAsync(async (req, res, next) => {
         },
     });
 });
-
-

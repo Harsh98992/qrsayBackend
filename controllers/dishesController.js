@@ -43,7 +43,6 @@ async function returnDataWithImageUrls(req) {
         try {
             imageData = req.body.imageUrl;
 
-
             restaurantId = req.user.restaurantKey;
 
             categoryId = req.body.dishCategory;

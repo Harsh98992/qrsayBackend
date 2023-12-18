@@ -6,7 +6,6 @@ const User = require("../models/userModel");
 const sendEmail = require("../helpers/email");
 const crypto = require("crypto");
 exports.getRestaurantsByStatus = catchAsync(async (req, res, next) => {
-
     const restaurantVerified = req.params.restaurantVerified;
 
     let restaurantData = await Restaurant.find({
@@ -176,7 +175,6 @@ exports.editRestaurant = catchAsync(async (req, res, next) => {
 });
 
 exports.sendEmailToRestaurant = catchAsync(async (req, res, next) => {
-
     data = req.body;
 
     await sendEmail(data.restaurantEmail, data.subject, data.message);
@@ -232,7 +230,6 @@ exports.updatePaymentGateway = catchAsync(async (req, res, next) => {
             "so it is not updated   "
         );
     }
-
 
     res.status(200).json({
         status: "success",
