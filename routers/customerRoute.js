@@ -15,7 +15,7 @@ const {
 } = require("../controllers/customerController");
 const {
     customerLogin,
-    updateCustomerData
+    updateCustomerData,
 } = require("../controllers/customerAuthenticationController");
 const customerAuthenticationController = require("../controllers/customerAuthenticationController");
 const customerController = require("../controllers/customerController");
@@ -28,8 +28,8 @@ const cache = apicache.middleware;
 
 // Configure apicache with options (if needed)
 const cacheOptions = {
-  // Specify caching duration (e.g., 5 minutes)
-  defaultDuration: 5 * 60 * 1000, // 5 minutes in milliseconds
+    // Specify caching duration (e.g., 5 minutes)
+    defaultDuration: 5 * 60 * 1000, // 5 minutes in milliseconds
 };
 router.post("/login", customerLogin);
 router.post("/testlogin", async (req, res) => {
@@ -74,21 +74,18 @@ router.delete(
     deleteAddressOfRequestCustomerById
 );
 
-router.post("/getCustomerPreviousRestaurant",
-cache("5 minutes"),
-getCustomerPreviousRestaurant);
+router.post(
+    "/getCustomerPreviousRestaurant",
+    cache("5 minutes"),
+    getCustomerPreviousRestaurant
+);
 router.post("/contactUs", sendContactUsMail);
 
 // getNearbyRestaurants
 
 router.get("/getNearbyRestaurants", getNearbyRestaurants);
 
-router.get(
-    "/getAllRestaurants",
-    cache('5 minutes'),
-    getAllRestaurants
-);
-
+router.get("/getAllRestaurants", cache("5 minutes"), getAllRestaurants);
 
 router.get(
     "/getRestaurantDetailsFromRestaurantUrl/:restaurantUrl",
@@ -133,10 +130,9 @@ router.post(
 // );
 
 router.get(
-    "/checkIfRestaurantIsOpen/:restaurantUrl",
+    "/getRestaurantStatus/:restaurantId",
     customerAuthenticationController.customerProtectNoError,
-    customerController.checkIfRestaurantIsOpen
-)
-
+    customerController.getRestaurantStatus
+);
 
 module.exports = router;
