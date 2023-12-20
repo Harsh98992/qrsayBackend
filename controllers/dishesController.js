@@ -1,6 +1,163 @@
+const { response } = require("express");
 const AppError = require("../helpers/appError");
 const catchAsync = require("../helpers/catchAsync");
 const Restaurant = require("../models/restaurantModel");
+const {
+    uploadToImgur,
+    compressImage,
+    uploadToAwsS3,
+} = require("../helpers/image");
+
+async function returnDataWithImageUrls(req) {
+    let initialImageUrl = "";
+    let imgurUrl = "";
+    let imageData = "";
+    let imageDataWithoutPrefix = "";
+    let compressedImage = "";
+    let compressedImageimgurUrl = "";
+    let s3Url = "";
+    // let cloudinaryUrl = "";
+
+    // console.log(req.body.imageUrl);
+
+    if (req.body.imageUrl.startsWith("data:image/")) {
+        imageDataWithoutPrefix = req.body.imageUrl.replace(
+            /^data:image\/[a-z]+;base64,/,
+            ""
+        );
+
+        // console.log(imageDataWithoutPrefix);
+
+        imageData = req.body.imageUrl;
+
+        try {
+            console.log("Uploading to Imgur");
+            imgurUrl = await uploadToImgur(imageData.split(",")[1]);
+        } catch (err) {
+            console.log(err);
+            imgurUrl = req.body.imageUrl;
+        }
+
+        initialImageUrl = imgurUrl;
+
+        try {
+            imageData = req.body.imageUrl;
+
+            // // Example usage
+            // const fileContent = 'This is a test file';
+            // const bucketName = 'your-s3-bucket-name';
+            // const key =
+
+            // uploadToAwsS3(fileContent, bucketName, key);
+
+            // Images /restaurant /id/dishes /category/dish name. Png
+
+            restaurantId = req.user.restaurantKey;
+
+            categoryId = req.body.dishCategory;
+
+            dishName = req.body.dishName;
+
+            fileFormat = req.body.imageUrl.split(";")[0].split("/")[1];
+
+            key = `Images/restaurant/${restaurantId}/dishes/categories/${categoryId}/${dishName}.${fileFormat}`;
+
+            console.log("Uploading to S3");
+
+            s3Url = uploadToAwsS3(imageData, key);
+        } catch (err) {
+            console.log(err);
+        }
+
+        try {
+            imageData = req.body.imageUrl;
+            compressedImage = await compressImage(imageData);
+
+            console.log("Uploading to Imgur");
+
+            compressedImageimgurUrl = await uploadToImgur(compressedImage);
+
+            console.log(compressedImageimgurUrl);
+        } catch (err) {
+            console.log(err);
+        }
+    } else {
+        initialImageUrl = req.body.imageUrl;
+    }
+
+    console.log("initialImageUrl", initialImageUrl);
+    console.log("compressedImageimgurUrl", compressedImageimgurUrl);
+    console.log("imgurUrl", imgurUrl);
+
+    return {
+        dishName: req.body.dishName,
+        dishPrice: req.body.dishPrice,
+        dishType: req.body.dishType,
+        dishDescription: req.body.dishDescription,
+        dishOrderOption: req.body.dishOrderOption,
+        imageUrl: compressedImageimgurUrl || imgurUrl || initialImageUrl,
+        imgurUrl: imgurUrl,
+        sizeAvailable: req.body.sizeAvailabe,
+        chilliFlag: req.body.spicy,
+        addOns: req.body.addOns,
+        choicesAvailable: req.body.choicesAvailable,
+    };
+}
+
+exports.addDishes = catchAsync(async (req, res, next) => {
+    const data = await returnDataWithImageUrls(req);
+
+    const key = `cuisine.$.items`;
+
+    const result = await Restaurant.updateOne(
+        {
+            _id: req.user.restaurantKey,
+            "cuisine._id": req.body.dishCategory,
+        },
+        { $push: { [key]: data } },
+
+        { multi: true }
+    );
+    res.status(200).json({
+        status: "success",
+        data: {
+            message: "Record Updated Successfully!",
+        },
+    });
+});
+exports.editDishes = catchAsync(async (req, res, next) => {
+    let data = await returnDataWithImageUrls(req);
+
+    const id = req.body.dishId;
+    const key = `cuisine.$.items`;
+    let result = await Restaurant.updateOne(
+        {
+            _id: req.user.restaurantKey,
+            "cuisine._id": req.body.previousDishCategory,
+        },
+        { $pull: { [key]: { _id: id } } }
+    );
+    if (result.modifiedCount) {
+        result = await Restaurant.updateOne(
+            {
+                _id: req.user.restaurantKey,
+                "cuisine._id": req.body.dishCategory,
+            },
+            { $push: { [key]: data } },
+
+            { multi: true }
+        );
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                message: "Record Updated Successfully!",
+            },
+        });
+    } else {
+        return next(new AppError("Unable to find Dish!", 400));
+    }
+});
 exports.addExtraIngredent = catchAsync(async (req, res, next) => {
     if (!req.body.name || !req.body.price) {
         return next(
@@ -101,34 +258,6 @@ exports.deleteExtraIngredent = catchAsync(async (req, res, next) => {
         { multi: true }
     );
 
-    // check_if_a_dish_is_using_this_extra_ingredent = await Restaurant.find({
-    //     _id: req.user.restaurantKey,
-    //     cuisine: {
-    //         $elemMatch: {
-    //             items: {
-    //                 $elemMatch: {
-    //                     addOns: {
-    //                         $elemMatch: {
-    //                             $elemMatch: {
-    //                                 name: data.name,
-    //                             },
-    //                         },
-    //                     },
-    //                 },
-    //             },
-    //         },
-    //     },
-    // }).select("_id");
-
-    // if (check_if_a_dish_is_using_this_extra_ingredent.length) {
-    //     return next(
-    //         new AppError(
-    //             "This extra ingredent is being used by some dish. Please remove it from the dish first.",
-    //             400
-    //         )
-    //     );
-    // }
-
     res.status(200).json({
         status: "success",
         data: {
@@ -137,80 +266,6 @@ exports.deleteExtraIngredent = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.addDishes = catchAsync(async (req, res, next) => {
-    const data = {
-        dishName: req.body.dishName,
-        dishPrice: req.body.dishPrice,
-        dishType: req.body.dishType,
-        dishDescription: req.body.dishDescription,
-        dishOrderOption: req.body.dishOrderOption,
-        imageUrl: req.body.imageUrl,
-        sizeAvailable: req.body.sizeAvailabe,
-        chilliFlag: req.body.spicy,
-        addOns: req.body.addOns,
-        choicesAvailable: req.body.choicesAvailable,
-    };
-
-    const key = `cuisine.$.items`;
-
-    const result = await Restaurant.updateOne(
-        {
-            _id: req.user.restaurantKey,
-            "cuisine._id": req.body.dishCategory,
-        },
-        { $push: { [key]: data } },
-
-        { multi: true }
-    );
-    res.status(200).json({
-        status: "success",
-        data: {
-            message: "Record Updated Successfully!",
-        },
-    });
-});
-exports.editDishes = catchAsync(async (req, res, next) => {
-    const data = {
-        dishName: req.body.dishName,
-        dishPrice: req.body.dishPrice,
-        dishType: req.body.dishType,
-        dishDescription: req.body.dishDescription,
-        dishOrderOption: req.body.dishOrderOption,
-        imageUrl: req.body.imageUrl,
-        sizeAvailable: req.body.sizeAvailabe,
-        chilliFlag: req.body.spicy,
-        addOns: req.body.addOns,
-        choicesAvailable: req.body.choicesAvailable,
-    };
-
-    const id = req.body.dishId;
-    const key = `cuisine.$.items`;
-    let result = await Restaurant.updateOne(
-        {
-            _id: req.user.restaurantKey,
-            "cuisine._id": req.body.dishCategory,
-        },
-        { $pull: { [key]: { _id: id } } },
-
-        { multi: true }
-    );
-    result = await Restaurant.updateOne(
-        {
-            _id: req.user.restaurantKey,
-            "cuisine._id": req.body.dishCategory,
-        },
-        { $push: { [key]: data } },
-
-        { multi: true }
-    );
-
-    res.status(200).json({
-        status: "success",
-        data: {
-            message: "Record Updated Successfully!",
-        },
-    });
-});
 exports.deleteDish = catchAsync(async (req, res, next) => {
     if (!req.params.id) {
         return next(new AppError("Unable to find Dish!", 400));
