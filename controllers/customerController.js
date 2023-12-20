@@ -721,15 +721,12 @@ exports.getCustomerPastLocations = catchAsync(async (req, res, next) => {
     });
 });
 
-
 exports.checkIfRestaurantIsOpen = catchAsync(async (req, res, next) => {
-
     const restaurantUrl = req.params.restaurantUrl;
 
     const restaurant = await Restaurant.findOne({
         restaurantUrl: restaurantUrl,
     });
-
 
     if (!restaurant) {
         return next(new AppError("No restaurant found", 404));
@@ -774,10 +771,21 @@ exports.checkIfRestaurantIsOpen = catchAsync(async (req, res, next) => {
         }
     }
 
+    // check restaurant status also
+    if (restaurant.restaurantStatus === "offline") {
+        restaurantIsOpen = false;
+    }
+
+    let restaurantStatus = "offline";
+
+    if (restaurantIsOpen) {
+        restaurantStatus = "online";
+    }
+
     res.status(200).json({
         status: "success",
         data: {
-            restaurantIsOpen,
+            restaurantStatus: restaurantStatus,
         },
     });
-}
+});

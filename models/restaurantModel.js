@@ -174,7 +174,7 @@ const restaurantSchema = new mongoose.Schema({
     restaurantStatus: {
         type: "string",
         enum: ["online", "offline"],
-        default: "offline",
+        default: "online",
     },
     restaurantType: [],
     restaurantImages: [],
