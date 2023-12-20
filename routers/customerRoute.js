@@ -133,5 +133,11 @@ router.post(
 //     customerController.getPastLocations
 // );
 
+router.get(
+    "/checkIfRestaurantIsOpen/:restaurantUrl",
+    customerAuthenticationController.customerProtectNoError,
+    customerController.checkIfRestaurantIsOpen
+)
+
 
 module.exports = router;
