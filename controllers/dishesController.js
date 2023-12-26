@@ -83,6 +83,8 @@ async function returnDataWithImageUrls(req) {
     return {
         dishName: req.body.dishName,
         dishPrice: req.body.dishPrice,
+        dishActualPrice: req.body.dishActualPrice,
+        applyDiscount: req.body.applyDiscount,
         dishType: req.body.dishType,
         dishDescription: req.body.dishDescription,
         dishOrderOption: req.body.dishOrderOption,
