@@ -14,15 +14,11 @@ const Customer = require("../models/CustomerModel");
 const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
 
 exports.placeOrder = catchAsync(async (req, res, next) => {
-    //   console.log(req.body);
+ 
     const reqData = {
         ...req.body,
     };
-    // const paymentDetails = await fetchOrderById(
-    //     req.paymentData.paymentKey,
-    //     req.paymentData.paymentSecret,
-    //     req.body.razorpay_order_id
-    // );
+
     const pendingOrder = await Order.findOne({
         customerId: req.user._id,
         orderStatus: "pending",
