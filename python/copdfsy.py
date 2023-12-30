@@ -42,23 +42,35 @@ if __name__ == "__main__":
     destination_db_name = "testdb"
 
     # copy_mongodb_database(source_uri, source_db_name, destination_uri, destination_db_name)
-
-    # delete all teh data from the orders collection in teh destination database
-    # Connect to the destination MongoDB database
-
-    # destination_uri = "mongodb://localhost:27017/"
-    # destination_db_name = "digitalMenuWeb"
-    # destination_client = pymongo.MongoClient(destination_uri)
-    # destination_db = destination_client[destination_db_name]
-    # destination_collection = destination_db["orders"]
-    # destination_collection.delete_many({})
-    # destination_client.close()
-
     # copy the orders collection from the source to the destination
 
-    # delete all teh data from the orders collection in teh source database
+    copy_mongodb_database(source_uri, source_db_name, destination_uri, destination_db_name)
 
-    # copy_mongodb_database(source_uri, source_db_name, destination_uri, destination_db_name)
+    # delete all the data from the testdb database
+    # Connect to the destination MongoDB database
+
+    # destination_client = pymongo.MongoClient(destination_uri)
+
+    # destination_db = destination_client[destination_db_name]
+
+    # # Get the list of collections in the source database
+
+    # collections = destination_db.list_collection_names()
+
+    # # Copy each collection from the source to the destination
+
+    # for collection_name in collections:
+
+    #     destination_collection = destination_db[collection_name]
+
+    #     # Use insert_many to copy documents from the source to the destination
+
+    #     destination_collection.delete_many({})
+
+    # # Close the MongoDB connections
+
+    # destination_client.close()
+
 
 
 # Great! Now you can get started with the API!
