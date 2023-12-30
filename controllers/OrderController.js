@@ -392,7 +392,8 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
                             ? "processing"
                             : "pendingPayment",
                     cashOnDeliveryAvailable: req.body.cashOnDeliveryAvailable,
-                    "orderDetails.0.preprationTime": req.body.preprationTime,
+                    paymentOnlineAvailable: req.body.paymentOnlineAvailable,
+          "orderDetails.0.preprationTime": req.body.preprationTime,
                 },
             },
             { new: true }
