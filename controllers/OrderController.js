@@ -78,7 +78,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   try {
     sendCustomWhatsAppMessage(
       req.user["phoneNumber"],
-      `Your order  has been placed Successfully. Please verify the current status of your order at https://qrsay.com/orders.`
+      `Your order has been successfully transmitted to the restaurant. Please await confirmation, and you will receive a notification as soon as the restaurant confirms your order.Please verify the current status of your order at https://qrsay.com/orders.`
     );
   } catch {}
   sendMail(
@@ -338,6 +338,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
               ? "processing"
               : "pendingPayment",
           cashOnDeliveryAvailable: req.body.cashOnDeliveryAvailable,
+          paymentOnlineAvailable: req.body.paymentOnlineAvailable,
           "orderDetails.0.preprationTime": req.body.preprationTime,
         },
       },
