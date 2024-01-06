@@ -15,8 +15,8 @@ data = soup.find('div', {'class': 'example-class'}).text
 print(data)
 
 
-# razorpay_key_id='rzp_test_riSm0PLxWxsyrG'
-# razorpay_key_secret='mjtYQKFjhmMN7qSBJbjLdi5L'
+razorpay_key_id='rzp_test_riSm0PLxWxsyrG'
+razorpay_key_secret='mjtYQKFjhmMN7qSBJbjLdi5L'
 
 # rzp_live_QEAKYdNlLVbqvB	h91lWciJSRFD2y6tIXiZBnpP
 
