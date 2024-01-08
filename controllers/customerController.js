@@ -740,3 +740,70 @@ exports.getCustomerPastLocations = catchAsync(async (req, res, next) => {
         },
     });
 });
+
+exports.getRestaurantStatus = catchAsync(async (req, res, next) => {
+    const restaurantId = req.params.restaurantId;
+
+    const restaurant = await Restaurant.findById(restaurantId);
+
+    if (!restaurant) {
+        return next(new AppError("No restaurant found", 404));
+    }
+
+    const openDays = restaurant.openDays;
+
+    const openTime = restaurant.openTime;
+    const closeTime = restaurant.closeTime;
+
+    const currentDay = new Date().getDay();
+
+    const currentHour = new Date().getHours();
+
+    const currentMinute = new Date().getMinutes();
+
+    const currentSecond = new Date().getSeconds();
+
+    const currentTime = {
+        hour: currentHour,
+        minute: currentMinute,
+        second: currentSecond,
+    };
+
+    const currentTimeInSeconds =
+        currentHour * 3600 + currentMinute * 60 + currentSecond;
+
+    const openTimeInSeconds =
+        openTime.hour * 3600 + openTime.minute * 60 + openTime.second;
+
+    const closeTimeInSeconds =
+        closeTime.hour * 3600 + closeTime.minute * 60 + closeTime.second;
+
+    let restaurantIsOpen = false;
+
+    if (openDays.includes(currentDay)) {
+        if (
+            (currentTimeInSeconds >= openTimeInSeconds) &
+            (currentTimeInSeconds <= closeTimeInSeconds)
+        ) {
+            restaurantIsOpen = true;
+        }
+    }
+
+    // check restaurant status also
+    if (restaurant.restaurantStatus === "offline") {
+        restaurantIsOpen = false;
+    }
+
+    let restaurantStatus = "offline";
+
+    if (restaurantIsOpen) {
+        restaurantStatus = "online";
+    }
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            restaurantStatus: restaurantStatus,
+        },
+    });
+});
