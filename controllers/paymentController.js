@@ -7,7 +7,7 @@ exports.createRazorPayOrder = catchAsync(async (req, res, next) => {
         key_id: process.env["razorpay_key_id"],
         key_secret: process.env["razorpay_key_secret"],
     });
-    const amount=parseInt(req.body.amount)*100
+    const amount = parseInt(req.body.amount) * 100;
     console.log(amount);
     const options = {
         amount: amount,

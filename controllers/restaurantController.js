@@ -63,7 +63,6 @@ exports.updateRestaurantDetail = catchAsync(async (req, res, next) => {
         restaurantDetail = await Restaurant.create(restaurantDetail);
         console.log(restaurantDetail);
 
-
         // update the restaurant key in user model
         await User.findOneAndUpdate(
             { _id: req.user._id },
@@ -357,7 +356,7 @@ exports.getPromoCode = catchAsync(async (req, res, next) => {
 
     let promoCode = await PromoCode.findOne({ restaurantId: restaurantId });
 
-    if(!promoCode){
+    if (!promoCode) {
         promoCode = await PromoCode.create({
             restaurantId: restaurantId,
             promoCodes: [],
@@ -367,8 +366,6 @@ exports.getPromoCode = catchAsync(async (req, res, next) => {
     if (!promoCode) {
         return next(new AppError("Promo Code not found", 404));
     }
-
-
 
     res.status(200).json({
         status: "success",
