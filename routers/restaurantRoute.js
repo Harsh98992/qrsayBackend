@@ -181,4 +181,28 @@ router.get(
     getCustomerList
 );
 
+
+
+
+
+// routers/restaurantRouter.js
+
+router
+    .route('/loyal/add/:customerId')
+    .patch(restaurantController.addLoyalRestaurant);
+
+router
+    .route('/loyal/remove/:customerId')
+    .patch(restaurantController.removeLoyalRestaurant);
+
+router
+    .route('/block/add/:customerId')
+    .patch(restaurantController.addBlockedRestaurant);
+
+router
+    .route('/block/remove/:customerId')
+    .patch(restaurantController.removeBlockedRestaurant);
+
+
+
 module.exports = router;
