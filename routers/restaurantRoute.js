@@ -18,8 +18,7 @@ const {
     getPromoCode,
 } = require("../controllers/restaurantController");
 
-
-const restaurantController = require('../controllers/restaurantController');
+const restaurantController = require("../controllers/restaurantController");
 const {
     updateRestaurantPlaceId,
     updateRestaurantImage,
@@ -181,28 +180,28 @@ router.get(
     getCustomerList
 );
 
+router.get(
+    "/loyal/add/:customerId",
+    authenticateController.protect,
+    restaurantController.addLoyalRestaurant
+);
 
+router.get(
+    "/loyal/remove/:customerId",
+    authenticateController.protect,
+    restaurantController.removeLoyalRestaurant
+);
 
+router.get(
+    "/block/add/:customerId",
+    authenticateController.protect,
+    restaurantController.addBlockedRestaurant
+);
 
-
-// routers/restaurantRouter.js
-
-router
-    .route('/loyal/add/:customerId')
-    .patch(restaurantController.addLoyalRestaurant);
-
-router
-    .route('/loyal/remove/:customerId')
-    .patch(restaurantController.removeLoyalRestaurant);
-
-router
-    .route('/block/add/:customerId')
-    .patch(restaurantController.addBlockedRestaurant);
-
-router
-    .route('/block/remove/:customerId')
-    .patch(restaurantController.removeBlockedRestaurant);
-
-
+router.get(
+    "/block/remove/:customerId",
+    authenticateController.protect,
+    restaurantController.removeBlockedRestaurant
+);
 
 module.exports = router;

@@ -332,7 +332,7 @@ exports.getCustomerList = catchAsync(async (req, res, next) => {
 
     // Find customer information for each customerId, but only include limited fields
     const customers = await Customer.find({ _id: { $in: customerIds } }).select(
-        "name email phoneNumber"
+        "name email phoneNumber loyalRestaurants blockedRestaurants"
     );
 
     res.status(200).json({

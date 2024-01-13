@@ -363,18 +363,6 @@ const restaurantSchema = new mongoose.Schema({
         ],
     },
 
-    loyalRestaurants: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: "Restaurant",
-        },
-    ],
-    blockedRestaurants: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: "Restaurant",
-        },
-    ],
 });
 
 const Restaurant = new mongoose.model("Restaurant", restaurantSchema);
