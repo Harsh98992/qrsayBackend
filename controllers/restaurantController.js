@@ -447,3 +447,68 @@ exports.addPromoCode = catchAsync(async (req, res, next) => {
         },
     });
 });
+
+
+exports.addLoyalRestaurant = catchAsync(async (req, res, next) => {
+    const { customerId } = req.params;
+    const restaurantId = req.user.id;
+
+    const customer = await Customer.findByIdAndUpdate(customerId, {
+        $addToSet: { loyalRestaurants: restaurantId }
+    }, { new: true, runValidators: true });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            customer
+        }
+    });
+});
+
+exports.removeLoyalRestaurant = catchAsync(async (req, res, next) => {
+    const { customerId } = req.params;
+    const restaurantId = req.user.id;
+
+    const customer = await Customer.findByIdAndUpdate(customerId, {
+        $pull: { loyalRestaurants: restaurantId }
+    }, { new: true, runValidators: true });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            customer
+        }
+    });
+});
+
+exports.addBlockedRestaurant = catchAsync(async (req, res, next) => {
+    const { customerId } = req.params;
+    const restaurantId = req.user.id;
+
+    const customer = await Customer.findByIdAndUpdate(customerId, {
+        $addToSet: { blockedRestaurants: restaurantId }
+    }, { new: true, runValidators: true });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            customer
+        }
+    });
+});
+
+exports.removeBlockedRestaurant = catchAsync(async (req, res, next) => {
+    const { customerId } = req.params;
+    const restaurantId = req.user.id;
+
+    const customer = await Customer.findByIdAndUpdate(customerId, {
+        $pull: { blockedRestaurants: restaurantId }
+    }, { new: true, runValidators: true });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            customer
+        }
+    });
+});
