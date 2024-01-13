@@ -18,6 +18,8 @@ const {
     getPromoCode,
 } = require("../controllers/restaurantController");
 
+
+const restaurantController = require('../controllers/restaurantController');
 const {
     updateRestaurantPlaceId,
     updateRestaurantImage,
@@ -32,9 +34,7 @@ restaurantSettingController = require("../controllers/restaurantSettingControlle
 const apicache = require("apicache");
 const cache = apicache.middleware;
 
-// Configure apicache with options (if needed)
 const cacheOptions = {
-    // Specify caching duration (e.g., 5 minutes)
     defaultDuration: 5 * 60 * 1000, // 5 minutes in milliseconds
 };
 router.get("/getRestaurant", getRestaurant);
