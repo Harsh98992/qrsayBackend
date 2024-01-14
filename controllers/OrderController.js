@@ -62,7 +62,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         }
       }
     }
-    if (!dishAvailableFlag) {
+    if (!dishAvailableFlag && orderData?.dishId) {
       return next(
         new AppError(
           `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
