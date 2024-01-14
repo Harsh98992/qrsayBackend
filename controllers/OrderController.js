@@ -33,6 +33,9 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   const restaurantDetail = await Restaurant.findOne({
     _id: reqData["restaurantId"],
   });
+  if (!restaurantDetail) {
+    return next(new AppError("Unable to find restaurant.", 400));
+  }
   if (
     restaurantDetail &&
     restaurantDetail?.restaurantStatus?.toLowerCase() === "offline"
@@ -41,7 +44,34 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       new AppError("The restaurant is presently unable to take orders.", 400)
     );
   }
-  console.log(restaurantDetail);
+  for (const orderData of reqData?.orderSummary) {
+    let dishAvailableFlag = false;
+    for (const categoryData of restaurantDetail?.cuisine) {
+      for (const dishData of categoryData?.items) {
+        if (dishData._id.toString() === orderData?.dishId) {
+          if (dishData?.availableFlag) {
+            dishAvailableFlag = true;
+          } else {
+            return next(
+              new AppError(
+                `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
+                400
+              )
+            );
+          }
+        }
+      }
+    }
+    if (!dishAvailableFlag) {
+      return next(
+        new AppError(
+          `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
+          400
+        )
+      );
+    }
+  }
+
   if (reqData["customerPreferences"].preference === "Dine In") {
     const checkDineInResult = await checkDineInTableAvailability(
       reqData["customerPreferences"].value,
