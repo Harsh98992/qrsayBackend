@@ -73,6 +73,17 @@ const customerSchema = new mongoose.Schema({
             default: {},
         },
     ],
+
+    loyalRestaurants: [
+        {
+            type: mongoose.Schema.ObjectId,
+        },
+    ],
+    blockedRestaurants: [
+        {
+            type: mongoose.Schema.ObjectId,
+        },
+    ],
 });
 
 customerSchema.pre("save", async function (next) {
