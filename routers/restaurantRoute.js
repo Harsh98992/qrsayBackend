@@ -180,26 +180,26 @@ router.get(
     getCustomerList
 );
 
-router.get(
-    "/loyal/add/:customerId",
+router.patch(
+    "/loyal/add",
     authenticateController.protect,
     restaurantController.addLoyalRestaurant
 );
 
-router.get(
-    "/loyal/remove/:customerId",
+router.patch(
+    "/loyal/remove",
     authenticateController.protect,
     restaurantController.removeLoyalRestaurant
 );
 
-router.get(
-    "/block/add/:customerId",
+router.patch(
+    "/block/add",
     authenticateController.protect,
     restaurantController.addBlockedRestaurant
 );
 
-router.get(
-    "/block/remove/:customerId",
+router.patch(
+    "/block/remove",
     authenticateController.protect,
     restaurantController.removeBlockedRestaurant
 );

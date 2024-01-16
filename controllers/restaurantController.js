@@ -448,88 +448,17 @@ exports.addPromoCode = catchAsync(async (req, res, next) => {
     });
 });
 
-// exports.addLoyalRestaurant = catchAsync(async (req, res, next) => {
-//     const { customerId } = req.params;
-//     const restaurantId = req.user.id;
-
-//     const customer = await Customer.findByIdAndUpdate(customerId, {
-//         $addToSet: { loyalRestaurants: restaurantId }
-//     }, { new: true, runValidators: true });
-
-//     res.status(200).json({
-//         status: 'success',
-//         data: {
-//             customer
-//         }
-//     });
-// });
-
-// exports.removeLoyalRestaurant = catchAsync(async (req, res, next) => {
-//     const { customerId } = req.params;
-//     const restaurantId = req.user.id;
-
-//     const customer = await Customer.findByIdAndUpdate(customerId, {
-//         $pull: { loyalRestaurants: restaurantId }
-//     }, { new: true, runValidators: true });
-
-//     res.status(200).json({
-//         status: 'success',
-//         data: {
-//             customer
-//         }
-//     });
-// });
-
-// exports.addBlockedRestaurant = catchAsync(async (req, res, next) => {
-//     const { customerId } = req.params;
-//     const restaurantId = req.user.id;
-
-//     const customer = await Customer.findByIdAndUpdate(customerId, {
-//         $addToSet: { blockedRestaurants: restaurantId }
-//     }, { new: true, runValidators: true });
-
-//     res.status(200).json({
-//         status: 'success',
-//         data: {
-//             customer
-//         }
-//     });
-// });
-
-// exports.removeBlockedRestaurant = catchAsync(async (req, res, next) => {
-//     const { customerId } = req.params;
-//     const restaurantId = req.user.id;
-
-//     const customer = await Customer.findByIdAndUpdate(customerId, {
-//         $pull: { blockedRestaurants: restaurantId }
-//     }, { new: true, runValidators: true });
-
-//     res.status(200).json({
-//         status: 'success',
-//         data: {
-//             customer
-//         }
-//     });
-// });
-
-// loyalRestaurants: [
-//     {
-//         type: mongoose.Schema.ObjectId,
-//         ref: "Restaurant",
-//     },
-// ],
-// blockedRestaurants: [
-//     {
-//         type: mongoose.Schema.ObjectId,
-//         ref: "Restaurant",
-//     },
-// ],
 
 exports.addLoyalRestaurant = catchAsync(async (req, res, next) => {
-    const { customerId } = req.params.customerId;
+    const customerId = req.body.customerId;
     const restaurantId = req.user.restaurantKey;
 
     // push the restaurantId to the loyalRestaurants array of the customer
+
+    console.log("addLoyalRestaurant", customerId, restaurantId);
+
+
+
 
     const customer = await Customer.findByIdAndUpdate(
         customerId,
@@ -548,8 +477,10 @@ exports.addLoyalRestaurant = catchAsync(async (req, res, next) => {
 });
 
 exports.removeLoyalRestaurant = catchAsync(async (req, res, next) => {
-    const { customerId } = req.params.customerId;
+    const customerId = req.body.customerId;
     const restaurantId = req.user.restaurantKey;
+
+    console.log("removeLoyalRestaurant", customerId, restaurantId);
 
     // push the restaurantId to the loyalRestaurants array of the customer
 
@@ -570,11 +501,13 @@ exports.removeLoyalRestaurant = catchAsync(async (req, res, next) => {
 });
 
 exports.addBlockedRestaurant = catchAsync(async (req, res, next) => {
-    const { customerId } = req.params.customerId;
+    const customerId = req.body.customerId;
     const restaurantId = req.user.restaurantKey;
 
     // push the restaurantId to the loyalRestaurants array of the customer
 
+
+    console.log("addBlockedRestaurant", customerId, restaurantId);
     const customer = await Customer.findByIdAndUpdate(
         customerId,
         {
@@ -592,10 +525,12 @@ exports.addBlockedRestaurant = catchAsync(async (req, res, next) => {
 });
 
 exports.removeBlockedRestaurant = catchAsync(async (req, res, next) => {
-    const { customerId } = req.params.customerId;
+    const customerId = req.body.customerId;
     const restaurantId = req.user.restaurantKey;
 
     // push the restaurantId to the loyalRestaurants array of the customer
+
+    console.log("removeBlockedRestaurant", customerId, restaurantId);
 
     const customer = await Customer.findByIdAndUpdate(
         customerId,
