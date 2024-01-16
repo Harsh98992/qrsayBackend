@@ -22,3 +22,6 @@ razorpay_key_secret='mjtYQKFjhmMN7qSBJbjLdi5L'
 
 razorpay_key_id='rzp_live_QEAKYdNlLVbqvB'
 razorpay_key_secret='h91lWciJSRFD2y6tIXiZBnpP'
+
+
+# // EAANSoaeKzUMBOz1tKdjf5iZAVjtBJaUDR2I6uIZARQjMxUAoGFLDnFoTnaKFIBCXHe8xiaQnAZADfE2lZBnoVhjKj995qk7XOCO89WWGVw87Rd2oqrAEjlQaXIWgLipFZB9t5dCcFwLItEQ2GXfutDv5v5ggjbPgZBf7XcG6GKjxnNldmKpiRq5tWViSAIopxN
