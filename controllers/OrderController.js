@@ -44,6 +44,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       new AppError("The restaurant is presently unable to take orders.", 400)
     );
   }
+
   for (const orderData of reqData?.orderSummary) {
     let dishAvailableFlag = false;
     for (const categoryData of restaurantDetail?.cuisine) {
@@ -51,6 +52,35 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         if (dishData._id.toString() === orderData?.dishId) {
           if (dishData?.availableFlag) {
             dishAvailableFlag = true;
+           
+            if (dishData?.sizeAvailable?.length) {
+              const selectedDish = dishData.sizeAvailable.filter((data) => {
+                return (
+                  data?.size?.toLowerCase() ===
+                  orderData?.["itemSizeSelected"]?.["size"]?.toLowerCase()
+                );
+              });
+
+              if (
+                selectedDish?.length &&
+                selectedDish[0]?.price !==
+                  orderData?.["itemSizeSelected"]?.["price"]
+              ) {
+                return next(
+                  new AppError(
+                    `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
+                    400
+                  )
+                );
+              }
+            } else if (dishData?.dishPrice !== orderData?.dishPrice) {
+              return next(
+                new AppError(
+                  `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
+                  400
+                )
+              );
+            }
           } else {
             return next(
               new AppError(
