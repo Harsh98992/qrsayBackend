@@ -14,6 +14,28 @@ const previousRestaurantSearch = new mongoose.Schema({
     },
 });
 
+
+const loyalRestaurants = new mongoose.Schema({
+    restaurantId: {
+        type: mongoose.Schema.ObjectId,
+    },
+    date: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
+const blockedRestaurants = new mongoose.Schema({
+    restaurantId: {
+        type: mongoose.Schema.ObjectId,
+    },
+    date: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
+
 const addressSchema = new mongoose.Schema({
     address: {
         type: String,
@@ -71,6 +93,17 @@ const customerSchema = new mongoose.Schema({
         {
             type: previousRestaurantSearch,
             default: {},
+        },
+    ],
+
+    loyalRestaurants: [
+        {
+            type: mongoose.Schema.ObjectId,
+        },
+    ],
+    blockedRestaurants: [
+        {
+            type: mongoose.Schema.ObjectId,
         },
     ],
 });
