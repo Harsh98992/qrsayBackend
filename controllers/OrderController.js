@@ -5,7 +5,7 @@ const generateOrderID = require("../helpers/orderIdGenerator");
 const { fetchOrderById } = require("../helpers/razorPayHelper");
 const easyinvoice = require("easyinvoice");
 const sendMail = require("../helpers/email");
-
+const axios = require("axios");
 const Order = require("../models/OrderModel");
 const Table = require("../models/tableModel");
 const io = require("../server"); // Make sure to import the correct 'io' object
@@ -187,9 +187,9 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   }
 
   // send a mail to the restaurant that order has been placed successfully
-
+  
   sendMail(
-    restaurantDetail.email,
+    restaurantDetail?.restaurantEmail,
     "New Order Received",
     `You have received a new order from ${req.user.name}.
 
@@ -424,7 +424,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     });
 
     sendMail(
-      restaurantDetail.email,
+      restaurantDetail?.restaurantEmail,
       "Order rejected successfully by restaurant",
       `You have rejected an order from ${orderData.customerName}.
 
@@ -512,7 +512,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     });
 
     sendMail(
-      restaurantDetail.email,
+      restaurantDetail?.restaurantEmail,
       "Order accepted by your restaurant",
       `You have accepted an order from ${orderData.customerName}.
 
@@ -628,7 +628,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     });
 
     sendMail(
-      restaurantDetail.email,
+      restaurantDetail?.restaurantEmail,
       "Order accepted by restaurant",
       `You have accepted an order from ${orderData.customerName}.
 
@@ -703,7 +703,7 @@ exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
   });
 
   sendMail(
-    restaurantDetail.email,
+    restaurantDetail?.restaurantEmail,
     "Payment done successfully for an order",
     `You have received a new order from ${orderData.customerName}.
 
@@ -772,7 +772,7 @@ exports.changeOrderStatusByUserForCashOnDelivery = catchAsync(
     // send a mail to the restaurant that order has been placed successfully
 
     sendMail(
-      restaurantDetail.email,
+      restaurantDetail?.restaurantEmail,
       "Payment done successfully for an order",
       `You have received a new order from ${customerDetail.name}.
 
