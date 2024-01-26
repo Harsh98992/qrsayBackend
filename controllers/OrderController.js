@@ -52,7 +52,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         if (dishData._id.toString() === orderData?.dishId) {
           if (dishData?.availableFlag) {
             dishAvailableFlag = true;
-           
+
             if (dishData?.sizeAvailable?.length) {
               const selectedDish = dishData.sizeAvailable.filter((data) => {
                 return (
@@ -68,7 +68,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
               ) {
                 return next(
                   new AppError(
-                    `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
+                    `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
                     400
                   )
                 );
@@ -76,7 +76,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
             } else if (dishData?.dishPrice !== orderData?.dishPrice) {
               return next(
                 new AppError(
-                  `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
+                  `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
                   400
                 )
               );
