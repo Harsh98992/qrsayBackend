@@ -17,6 +17,16 @@ JWT_SECRET=<your_jwt_secret>
 
 4. Run `nodemon server.js` to start the server
 
+or paste the following in the `.env` file and run `npm run dev` to start the server in development mode
+
+```
+npm install
+sudo npm install -g nodemon
+nodemon server.js
+
+
+```
+
 ## Usage
 
 The api is at port 9000 by default. You can change it in the `.env` file.
