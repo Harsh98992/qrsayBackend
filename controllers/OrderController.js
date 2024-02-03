@@ -187,7 +187,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   }
 
   // send a mail to the restaurant that order has been placed successfully
-  
+
   sendMail(
     restaurantDetail?.restaurantEmail,
     "New Order Received",
@@ -222,12 +222,31 @@ exports.getRestaurantOrdersByStatus = catchAsync(async (req, res, next) => {
   const data = await Order.find({
     restaurantId: req.user.restaurantKey,
     orderStatus: { $in: statusArray },
-  });
+  }).lean();
+
+  if (!data && !data.length) {
+    return next(new AppError("Something weent wrong", 400));
+  }
+  const response = data;
+
+  for (const [i, orderData] of response.entries()) {
+    const customer = await Customer.findById(orderData.customerId);
+
+    if (!customer) {
+      orderData["loyalFlag"] = false;
+    }
+    const loyalFlag = customer?.loyalRestaurants.includes(
+      orderData.restaurantId
+    );
+
+    response[i]["loyalFlag"] = loyalFlag;
+  }
+
   res.status(200).json({
     status: "success",
 
     data: {
-      orderData: data,
+      orderData: response,
     },
   });
 });
