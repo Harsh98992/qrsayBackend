@@ -76,9 +76,6 @@ async function returnDataWithImageUrls(req) {
         initialImageUrl = req.body.imageUrl;
     }
 
-    console.log("initialImageUrl", initialImageUrl);
-    console.log("compressedImageimgurUrl", compressedImageimgurUrl);
-    console.log("imgurUrl", imgurUrl);
 
     return {
         dishName: req.body.dishName,
@@ -94,6 +91,7 @@ async function returnDataWithImageUrls(req) {
         chilliFlag: req.body.spicy,
         addOns: req.body.addOns,
         choicesAvailable: req.body.choicesAvailable,
+        availableFlag:req.body?.availableFlag ?? true
     };
 }
 
