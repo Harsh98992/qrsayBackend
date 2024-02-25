@@ -80,13 +80,13 @@ cron.schedule("*/10 * * * *", async function () {
   } catch (error) {
     console.error("Error hitting server:", error.message);
   }
-  // const res = await orderSchema.updateMany(
-  //   { orderDate: { $lte: tenMinutesAgo }, orderStatus: "pending" },
-  //   {
-  //     orderStatus: "rejected",
-  //     reason: "The restaurant cannot fulfill the order at this time.",
-  //   }
-  // );
+  const res = await orderSchema.updateMany(
+    { orderDate: { $lte: tenMinutesAgo }, orderStatus: "pending" },
+    {
+      orderStatus: "rejected",
+      reason: "The restaurant cannot fulfill the order at this time.",
+    }
+  );
 });
 
 server.listen(port, () => {
