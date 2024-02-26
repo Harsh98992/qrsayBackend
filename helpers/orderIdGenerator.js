@@ -1,4 +1,4 @@
-const { format, isSameDay } = require('date-fns');
+const { format, isSameDay,isSameMonth  } = require('date-fns');
 
 // Initialize a variable to store the last order date
 let lastOrderDate = null;
@@ -9,7 +9,7 @@ function generateOrderID() {
   const now = new Date();
 
   // Check if the date is the same as the last order date
-  if (!lastOrderDate || !isSameDay(now, lastOrderDate)) {
+  if (!lastOrderDate || !isSameMonth(now, lastOrderDate)) {
     // Reset the order count for the new day
     orderCount = 0;
     lastOrderDate = now;
