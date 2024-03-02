@@ -10,7 +10,8 @@ const {
     getCustomerPaymentPendingOrder,
     changeOrderStatusByUser,
     changeOrderStatusByUserForCashOnDelivery,
-    generateBill
+    generateBill,
+    getCustomerActiveOrder
 } = require("../controllers/OrderController");
 const authenticateController = require("../controllers/authenticaionController");
 const { getPaymentGatewayCredentials } = require("../helpers/razorPayHelper");
@@ -22,6 +23,11 @@ router.get(
     "/getCustomerPaymentPendingOrder",
     customerProtect,
     getCustomerPaymentPendingOrder
+);
+router.get(
+    "/getCustomerActiveOrder",
+    customerProtect,
+    getCustomerActiveOrder
 );
 router.put(
     "/getRestaurantOrdersByStatus",
