@@ -287,6 +287,19 @@ exports.getCustomerPaymentPendingOrder = catchAsync(async (req, res, next) => {
     },
   });
 });
+exports.getCustomerActiveOrder = catchAsync(async (req, res, next) => {
+  const result = await Order.find({
+    customerId: req.user._id,
+    orderStatus: { $in: ["pending", "processing", "pendingPayment"] },
+  });
+  res.status(200).json({
+    status: "success",
+
+    data: {
+      orderData: result,
+    },
+  });
+});
 const dineInOrderHelper = async (orderData, req, res, next) => {
   const checkDineInResult = await checkDineInTableAvailability(
     orderData.customerPreferences.value,
