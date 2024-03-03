@@ -54,7 +54,7 @@ const dbConStr =
   process.env.NODE_ENV === "production"
     ? process.env.DB_CONNECTION_STRING
     : process.env.DB_Test_CONNECTION_STRING;
-console.log(dbConStr)
+console.log(dbConStr);
 mongoose
   .connect(dbConStr, {
     useUnifiedTopology: true,
@@ -71,10 +71,15 @@ cron.schedule("*/10 * * * *", async function () {
   console.log("job executed");
   const tenMinutesAgo = new Date();
   tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
+  const eightHoursAgo = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
+
   try {
     // Replace 'http://your-server-endpoint' with the actual endpoint of your server
     const response = await axios.get(
       "https://qrsay-backend.onrender.com/api/v1/customer/getAllRestaurants"
+    );
+    const abc = await axios.get(
+      "https://qrsay-backend-testing.onrender.com/api/v1/customer/getAllRestaurants"
     );
     console.log("Server hit successful:", response.data);
   } catch (error) {
@@ -82,6 +87,16 @@ cron.schedule("*/10 * * * *", async function () {
   }
   const res = await orderSchema.updateMany(
     { orderDate: { $lte: tenMinutesAgo }, orderStatus: "pending" },
+    {
+      orderStatus: "rejected",
+      reason: "The restaurant cannot fulfill the order at this time.",
+    }
+  );
+  const del = await orderSchema.updateMany(
+    {
+      orderDate: { $lte: eightHoursAgo },
+      orderStatus: { $in: ["pending", "processing", "pendingPayment"] },
+    },
     {
       orderStatus: "rejected",
       reason: "The restaurant cannot fulfill the order at this time.",
