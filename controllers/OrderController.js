@@ -143,47 +143,47 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
   // send a mail to the customer that order has been placed successfully
   try {
-    if (process.env.EMAIL_ORDER_STATUS === "true") {
-      // send a mail to the customer that order has been placed successfully
-      sendMail(
-        req.user.email,
-        "Order Placed Successfully",
-        `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
+  if (process.env.EMAIL_ORDER_STATUS === "true") {
+  // send a mail to the customer that order has been placed successfully
+  sendMail(
+  req.user.email,
+  "Order Placed Successfully",
+  `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
 
-      Order Id: ${orderId}
+  Order Id: ${orderId}
 
-      Order Amount: ${reqData["orderAmount"]}
+  Order Amount: ${reqData["orderAmount"]}
 
-      Order Date: ${new Date().toLocaleString()}
+  Order Date: ${new Date().toLocaleString()}
 
-      Order Status: Pending`
-      );
-    }
+  Order Status: Pending`
+  );
+  }
 
-    if (process.env.SMS_ORDER_STATUS === "true") {
-      // send an SMS to the customer that order has been placed successfully
-      await axios.get(
-        process.env.SMS_API_URL +
-          orderId +
-          "%7C" +
-          "Pending" +
-          "%7C" +
-          "&flash=0&numbers=" +
-          req.user.phoneNumber
-      );
-    }
+  if (process.env.SMS_ORDER_STATUS === "true") {
+  // send an SMS to the customer that order has been placed successfully
+  await axios.get(
+  process.env.SMS_API_URL +
+  orderId +
+  "%7C" +
+  "Pending" +
+  "%7C" +
+  "&flash=0&numbers=" +
+  req.user.phoneNumber
+  );
+  }
 
-    if (process.env.WHATSAPP_ORDER_STATUS === "true") {
-      // send a WhatsApp message to the customer that order has been placed successfully
-      // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
+  if (process.env.WHATSAPP_ORDER_STATUS === "true") {
+  // send a WhatsApp message to the customer that order has been placed successfully
+  // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
 
-      sendCustomWhatsAppMessage(
-        req.user["phoneNumber"],
-        `Your order  has been placed Successfully. Please verify the current status of your order at https://qrsay.com/orders.`
-      );
-    }
+  sendCustomWhatsAppMessage(
+  req.user["phoneNumber"],
+  `Your order  has been placed Successfully. Please verify the current status of your order at https://qrsay.com/orders.`
+  );
+  }
   } catch (error) {
-    console.log(error);
+  // console.log(error);
   }
 
   // send a mail to the restaurant that order has been placed successfully
@@ -338,6 +338,9 @@ const dineInOrderHelper = async (orderData, req, res, next) => {
     const previousOrderId = queryResult.tables[0].orderId;
     const previousOrderData = await Order.findOne({ _id: previousOrderId });
 
+    if (!previousOrderData) {
+      return;
+    }
     const newOrderData = [
       ...previousOrderData.orderDetails,
       ...orderData.orderDetails,
@@ -353,7 +356,7 @@ const dineInOrderHelper = async (orderData, req, res, next) => {
       },
       { multi: true }
     );
-    await Order.deleteOne({ _id: orderData._id });
+     await Order.deleteOne({ _id: orderData._id });
   }
 };
 const unlockTable = async (orderData, completeflag = true, req, res, next) => {
@@ -388,7 +391,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
   if (!req.body?.orderId) {
     return next(new AppError("Missing Order Id!", 400));
   }
-  const orderData = await Order.findOne({ _id: req.body.orderId });
+    const orderData = await Order.findOne({ _id: req.body.orderId });
   if (req.body.orderStatus === "rejected") {
     if (!req.body?.reason) {
       return next(new AppError("Please provide order cancel reason!", 400));
@@ -425,7 +428,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
 
         await axios.get(
           process.env.SMS_API_URL +
-            orderId +
+            orderData.orderId +
             "%7C" +
             "Rejected" +
             "%7C" +
@@ -492,49 +495,49 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     );
 
     try {
-      if (process.env.EMAIL_ORDER_STATUS === "true") {
-        // send a mail to the customer that order has been placed successfully
+    if (process.env.EMAIL_ORDER_STATUS === "true") {
+    // send a mail to the customer that order has been placed successfully
 
-        sendMail(
-          orderData.customerEmail,
+    sendMail(
+    orderData.customerEmail,
 
-          "Order accepted by restaurant",
+    "Order accepted by restaurant",
 
-          `Your order has been accepted by the restaurant.
+    `Your order has been accepted by the restaurant.
 
-            Order Id: ${orderData.orderId}
+    Order Id: ${orderData.orderId}
 
-            Order Amount: ${orderData.orderDetails[0].orderAmount}
+    Order Amount: ${orderData.orderDetails[0].orderAmount}
 
-            Order Date: ${new Date().toLocaleString()}
+    Order Date: ${new Date().toLocaleString()}
 
-            Order Status: Accepted`
-        );
-      }
+    Order Status: Accepted`
+    );
+    }
 
-      if (process.env.SMS_ORDER_STATUS === "true") {
-        // send an SMS to the customer that order has been placed successfully
+    if (process.env.SMS_ORDER_STATUS === "true") {
+    // send an SMS to the customer that order has been placed successfully
 
-        await axios.get(
-          process.env.SMS_API_URL +
-            orderId +
-            "%7C" +
-            "Accepted" +
-            "%7C" +
-            "&flash=0&numbers=" +
-            orderData.customerPhoneNumber
-        );
-      }
+    await axios.get(
+    process.env.SMS_API_URL +
+    orderId +
+    "%7C" +
+    "Accepted" +
+    "%7C" +
+    "&flash=0&numbers=" +
+    orderData.customerPhoneNumber
+    );
+    }
 
-      if (process.env.WHATSAPP_ORDER_STATUS === "true") {
-        sendCustomWhatsAppMessage(
-          orderData.customerPhoneNumber,
+    if (process.env.WHATSAPP_ORDER_STATUS === "true") {
+    sendCustomWhatsAppMessage(
+    orderData.customerPhoneNumber,
 
-          `Your order  has been accepted by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
-        );
-      }
+    `Your order  has been accepted by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
+    );
+    }
     } catch (error) {
-      console.log(error);
+    //console.log(error);
     }
 
     // send a mail to the restaurant that order has been accepted successfully
@@ -544,17 +547,17 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     });
 
     sendMail(
-      restaurantDetail?.restaurantEmail,
-      "Order accepted by your restaurant",
-      `You have accepted an order from ${orderData.customerName}.
+    restaurantDetail?.restaurantEmail,
+    "Order accepted by your restaurant",
+    `You have accepted an order from ${orderData.customerName}.
 
-            Order Id: ${orderData.orderId}
+    Order Id: ${orderData.orderId}
 
-            Order Amount: ${orderData.orderDetails[0].orderAmount}
+    Order Amount: ${orderData.orderDetails[0].orderAmount}
 
-            Order Date: ${new Date().toLocaleString()}
+    Order Date: ${new Date().toLocaleString()}
 
-            Order Status: Accepted`
+    Order Status: Accepted`
     );
 
     if (orderData.customerPreferences.preference === "Dine In") {
