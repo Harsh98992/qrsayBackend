@@ -92,16 +92,16 @@ cron.schedule("*/10 * * * *", async function () {
       reason: "The restaurant cannot fulfill the order at this time.",
     }
   );
-  // const del = await orderSchema.updateMany(
-  //   {
-  //     orderDate: { $lte: eightHoursAgo },
-  //     orderStatus: { $in: ["pending", "processing", "pendingPayment"] },
-  //   },
-  //   {
-  //     orderStatus: "rejected",
-  //     reason: "The restaurant cannot fulfill the order at this time.",
-  //   }
-  // );
+  const del = await orderSchema.updateMany(
+    {
+      orderDate: { $lte: eightHoursAgo },
+      orderStatus: { $in: ["pending", "processing", "pendingPayment"] },
+    },
+    {
+      orderStatus: "rejected",
+      reason: "The restaurant cannot fulfill the order at this time.",
+    }
+  );
 });
 
 server.listen(port, () => {
