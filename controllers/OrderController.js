@@ -17,7 +17,15 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   const reqData = {
     ...req.body,
   };
-  console.log(reqData);
+
+  if (req.user.blockedRestaurants.includes(reqData["restaurantId"])) {
+    return next(
+      new AppError(
+        "You have been restricted from accessing this restaurant's services. Kindly reach out to the restaurant for additional details",
+        400
+      )
+    );
+  }
   const pendingOrder = await Order.findOne({
     customerId: req.user._id,
     orderStatus: "pending",
@@ -123,7 +131,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       console.log(differenceInMinutes);
       if (parseInt(differenceInMinutes) < 15) {
         return next(
-          new AppError("Please select a time that is at least 15 minutes later than the current time for take away order!", 400)
+          new AppError(
+            "Please select a time that is at least 15 minutes later than the current time for take away order!",
+            400
+          )
         );
       }
     }
