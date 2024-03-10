@@ -216,7 +216,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
       sendCustomWhatsAppMessage(
         req.user["phoneNumber"],
-        `Your order  has been placed Successfully. Please verify the current status of your order at https://qrsay.com/orders.`
+        `Order placed Successfully.`
       );
     }
   } catch (error) {
@@ -480,7 +480,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
 
-          `Your order  has been rejected by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
+          `Rejected by the restaurant.`
         );
       }
     } catch (error) {
@@ -570,7 +570,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
 
-          `Your order  has been accepted by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
+          `Accepted by the restaurant.`
         );
       }
     } catch (error) {
@@ -642,7 +642,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
 
-          `Your order  has been completed successfully. Please verify the current status of your order at https://qrsay.com/orders.`
+          `Completed.`
         );
       }
     } catch (error) {
@@ -676,7 +676,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     try {
       sendCustomWhatsAppMessage(
         orderData.customerPhoneNumber,
-        `Your order  has been accepted by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
+        `Aaccepted by restaurant.`
       );
     } catch {}
     sendMail(
