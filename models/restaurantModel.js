@@ -247,7 +247,7 @@ const restaurantSchema = new mongoose.Schema({
   },
   customGSTPercentage: {
     type: "Number",
-    default: 5,
+    default: 0,
   },
 
   placeId: {
