@@ -110,7 +110,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     }
   }
   if (
-    reqData["customerPreferences"].preference?.toLowerCase() === "take away"
+    reqData["customerPreferences"].preference?.toLowerCase() === "take away" ||
+    reqData["customerPreferences"].preference?.toLowerCase() === "scheduled dining"
   ) {
     if (
       reqData["customerPreferences"].value &&
