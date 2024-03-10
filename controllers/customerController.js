@@ -605,7 +605,7 @@ exports.isDineInAvailable = catchAsync(async (req, res, next) => {
   // find the restaurant with the given restaurantId
 
   const table = await Table.findOne({ restaurantId: restaurantId });
-  console.log(table);
+
   // just ensure the tables is not empty
   if (!table) {
     return res.status(200).json({

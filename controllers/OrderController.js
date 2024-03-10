@@ -128,7 +128,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         selectedHours * 60 +
         selectedMinutes -
         (currentHours * 60 + currentMinutes);
-      console.log(differenceInMinutes);
+   
       if (parseInt(differenceInMinutes) < 15) {
         return next(
           new AppError(
@@ -220,7 +220,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       );
     }
   } catch (error) {
-    // console.log(error);
+
   }
 
   // send a mail to the restaurant that order has been placed successfully
@@ -484,7 +484,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         );
       }
     } catch (error) {
-      console.log(error);
+   
     }
 
     // send a mail to the restaurant that order has been placed successfully
@@ -574,7 +574,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         );
       }
     } catch (error) {
-      //console.log(error);
+ 
     }
 
     // send a mail to the restaurant that order has been accepted successfully
@@ -646,7 +646,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         );
       }
     } catch (error) {
-      console.log(error);
+ 
     }
 
     if (orderData.customerPreferences.preference === "Dine In") {
@@ -966,7 +966,7 @@ exports.generateBill = catchAsync(async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.log(error);
+
     return next(
       new AppError("An error occurred while generating the invoice.", 500)
     );
