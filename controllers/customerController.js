@@ -382,6 +382,7 @@ exports.getPromoCodesForRestaurantUrl = catchAsync(async (req, res, next) => {
         promoCodes: [],
       },
     });
+    return;
   }
 
   var promoCodes = promoCode.promoCodes;
