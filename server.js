@@ -81,10 +81,7 @@ cron.schedule("*/10 * * * *", async function () {
     const abc = await axios.get(
       "https://qrsay-backend-testing.onrender.com/api/v1/customer/getAllRestaurants"
     );
-    console.log("Server hit successful:", response.data);
-  } catch (error) {
-    console.error("Error hitting server:", error.message);
-  }
+  } catch (error) {}
   const res = await orderSchema.updateMany(
     { orderDate: { $lte: tenMinutesAgo }, orderStatus: "pending" },
     {
@@ -96,7 +93,7 @@ cron.schedule("*/10 * * * *", async function () {
     {
       orderDate: { $lte: eightHoursAgo },
       orderStatus: { $in: ["pending", "processing", "pendingPayment"] },
-     
+      "customerPreferences.preference": { $ne: "Dine In" },
     },
     {
       orderStatus: "rejected",
