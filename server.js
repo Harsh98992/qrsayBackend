@@ -71,7 +71,7 @@ cron.schedule("*/10 * * * *", async function () {
   console.log("job executed");
   const tenMinutesAgo = new Date();
   tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
-  const eightHoursAgo = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
+  const eightHoursAgo = new Date(Date.now() - 8 * 60 * 60 * 1000);
 
   try {
     // Replace 'http://your-server-endpoint' with the actual endpoint of your server
@@ -96,6 +96,7 @@ cron.schedule("*/10 * * * *", async function () {
     {
       orderDate: { $lte: eightHoursAgo },
       orderStatus: { $in: ["pending", "processing", "pendingPayment"] },
+     
     },
     {
       orderStatus: "rejected",
