@@ -376,7 +376,12 @@ exports.getPromoCodesForRestaurantUrl = catchAsync(async (req, res, next) => {
   });
 
   if (!promoCode) {
-    return next(new AppError("No promo code found", 404));
+    res.status(200).json({
+      status: "success",
+      data: {
+        promoCodes: [],
+      },
+    });
   }
 
   var promoCodes = promoCode.promoCodes;
