@@ -71,11 +71,7 @@ const sendWhatsAppMessage = async (phoneNumber, otp) => {
       ],
     },
   };
-  const res = await axios.post(
-    "https://graph.facebook.com/v17.0/207695905761327/messages",
-    data,
-    config
-  );
+  const res = await axios.post("https://graph.facebook.com/v17.0/207695905761327/messages", data, config);
 
   return res;
 };
@@ -111,11 +107,7 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
         ],
       },
     };
-    const res = await axios.post(
-      "https://graph.facebook.com/v17.0/112127151975295/messages",
-      data,
-      config
-    );
+    const res = await axios.post("https://graph.facebook.com/v17.0/207695905761327/messages", data, config);
 
     return res;
   } catch {}
