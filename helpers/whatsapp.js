@@ -41,6 +41,7 @@ const axios = require("axios");
 // };
 
 const sendWhatsAppMessage = async (phoneNumber, otp) => {
+ 
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -112,5 +113,5 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
     return res;
   } catch {}
 };
-module.exports = sendWhatsAppMessage;
-module.exports = sendCustomWhatsAppMessage;
+module.exports ={ sendWhatsAppMessage,sendCustomWhatsAppMessage};
+

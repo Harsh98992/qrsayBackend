@@ -8,7 +8,7 @@ const jwtSign = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET);
 };
 const IdentifierOTP = require("../models/OTPModel");
-const sendWhatsAppMessage = require("../helpers/whatsapp");
+const {sendWhatsAppMessage,sendCustomWhatsAppMessage} = require("../helpers/whatsapp");
 const generateOtp = require("../helpers/generateOtp");
 
 const sendSMSMessage = require("../helpers/sms");
@@ -191,6 +191,7 @@ exports.sendPhoneVerificationCode = catchAsync(async (req, res, next) => {
         //
 
         try {
+            console.log("IT came till herr")
             await sendWhatsAppMessage(phoneNumber, OTP);
         } catch (err) {
             console.log(err);
