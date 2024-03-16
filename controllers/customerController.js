@@ -161,7 +161,7 @@ exports.getCustomerPreviousRestaurant = catchAsync(async (req, res, next) => {
   const restaurantData = await Restaurant.find({
     _id: { $in: req.body.pastRestaurantData },
   }).select(
-    "restaurantUrl address restaurantName restaurantBackgroundImage restaurantType contact restaurantPhoneNumber"
+    "restaurantUrl address restaurantName restaurantVerified restaurantBackgroundImage restaurantType contact restaurantPhoneNumber"
   );
   res.status(200).json({
     status: "success",
@@ -310,7 +310,7 @@ exports.getAllRestaurants = catchAsync(async (req, res, next) => {
   restaurants = restaurants.map((restaurant) => {
     return {
       restaurantUrl: restaurant.restaurantUrl,
-
+      restaurantVerified: restaurant.restaurantVerified,
       restaurantName: restaurant.restaurantName,
       _id: restaurant._id,
     };
