@@ -32,11 +32,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   });
 
   if (pendingOrder && pendingOrder._id) {
-    return next(
-      new AppError(
-        "Please wait while your previous order is getting accepted by restaurant!"
-      )
-    );
+    return next(new AppError("Please wait while your previous order is getting accepted by restaurant!"));
   }
   const restaurantDetail = await Restaurant.findOne({
     _id: reqData["restaurantId"],
@@ -44,13 +40,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   if (!restaurantDetail) {
     return next(new AppError("Unable to find restaurant.", 400));
   }
-  if (
-    restaurantDetail &&
-    restaurantDetail?.restaurantStatus?.toLowerCase() === "offline"
-  ) {
-    return next(
-      new AppError("The restaurant is presently unable to take orders.", 400)
-    );
+  if (restaurantDetail && restaurantDetail?.restaurantStatus?.toLowerCase() === "offline") {
+    return next(new AppError("The restaurant is presently unable to take orders.", 400));
   }
 
   for (const orderData of reqData?.orderSummary) {
@@ -63,17 +54,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
             if (dishData?.sizeAvailable?.length) {
               const selectedDish = dishData.sizeAvailable.filter((data) => {
-                return (
-                  data?.size?.toLowerCase() ===
-                  orderData?.["itemSizeSelected"]?.["size"]?.toLowerCase()
-                );
+                return data?.size?.toLowerCase() === orderData?.["itemSizeSelected"]?.["size"]?.toLowerCase();
               });
 
-              if (
-                selectedDish?.length &&
-                selectedDish[0]?.price !==
-                  orderData?.["itemSizeSelected"]?.["price"]
-              ) {
+              if (selectedDish?.length && selectedDish[0]?.price !== orderData?.["itemSizeSelected"]?.["price"]) {
                 return next(
                   new AppError(
                     `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
@@ -91,10 +75,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
             }
           } else {
             return next(
-              new AppError(
-                `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
-                400
-              )
+              new AppError(`We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`, 400)
             );
           }
         }
@@ -102,10 +83,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     }
     if (!dishAvailableFlag && orderData?.dishId) {
       return next(
-        new AppError(
-          `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
-          400
-        )
+        new AppError(`We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`, 400)
       );
     }
   }
@@ -121,9 +99,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       const currentTime = new Date();
       const currentHours = currentTime.getHours();
       const currentMinutes = currentTime.getMinutes();
-      const [selectedHours, selectedMinutes] = selectedTime
-        .split(":")
-        .map(Number);
+      const [selectedHours, selectedMinutes] = selectedTime.split(":").map(Number);
 
       const differenceInMinutes =
         selectedHours * 60 +
@@ -131,21 +107,12 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         (currentHours * 60 + currentMinutes);
    
       if (parseInt(differenceInMinutes) < 15) {
-        return next(
-          new AppError(
-            "Please select a time that is at least 15 minutes later than the current time for take away order!",
-            400
-          )
-        );
+        return next(new AppError("Please select a time that is at least 15 minutes later than the current time for take away order!", 400));
       }
     }
   }
   if (reqData["customerPreferences"].preference === "Dine In") {
-    const checkDineInResult = await checkDineInTableAvailability(
-      reqData["customerPreferences"].value,
-      reqData["restaurantId"],
-      req.user["_id"]
-    );
+    const checkDineInResult = await checkDineInTableAvailability(reqData["customerPreferences"].value, reqData["restaurantId"], req.user["_id"]);
     if (!checkDineInResult.result) {
       return next(new AppError(checkDineInResult.message, 400));
     }
@@ -200,25 +167,14 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
     if (process.env.SMS_ORDER_STATUS === "true") {
       // send an SMS to the customer that order has been placed successfully
-      await axios.get(
-        process.env.SMS_API_URL +
-          orderId +
-          "%7C" +
-          "Pending" +
-          "%7C" +
-          "&flash=0&numbers=" +
-          req.user.phoneNumber
-      );
+      await axios.get(process.env.SMS_API_URL + orderId + "%7C" + "Pending" + "%7C" + "&flash=0&numbers=" + req.user.phoneNumber);
     }
 
     if (process.env.WHATSAPP_ORDER_STATUS === "true") {
       // send a WhatsApp message to the customer that order has been placed successfully
       // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
 
-      sendCustomWhatsAppMessage(
-        req.user["phoneNumber"],
-        `Your order  has been placed Successfully. Please verify the current status of your order at https://qrsay.com/orders.`
-      );
+      sendCustomWhatsAppMessage(req.user["phoneNumber"], `Order placed Successfully.`);
     }
   } catch (error) {
 
@@ -273,9 +229,7 @@ exports.getRestaurantOrdersByStatus = catchAsync(async (req, res, next) => {
     if (!customer) {
       orderData["loyalFlag"] = false;
     }
-    const loyalFlag = customer?.loyalRestaurants.includes(
-      orderData.restaurantId
-    );
+    const loyalFlag = customer?.loyalRestaurants.includes(orderData.restaurantId);
 
     response[i]["loyalFlag"] = loyalFlag;
   }
@@ -339,11 +293,7 @@ exports.getCustomerActiveOrder = catchAsync(async (req, res, next) => {
   });
 });
 const dineInOrderHelper = async (orderData, req, res, next) => {
-  const checkDineInResult = await checkDineInTableAvailability(
-    orderData.customerPreferences.value,
-    orderData.restaurantId,
-    orderData.customerId
-  );
+  const checkDineInResult = await checkDineInTableAvailability(orderData.customerPreferences.value, orderData.restaurantId, orderData.customerId);
   if (!checkDineInResult.result) {
     return next(new AppError(checkDineInResult.message, 400));
   }
@@ -379,10 +329,7 @@ const dineInOrderHelper = async (orderData, req, res, next) => {
     if (!previousOrderData) {
       return;
     }
-    const newOrderData = [
-      ...previousOrderData.orderDetails,
-      ...orderData.orderDetails,
-    ];
+    const newOrderData = [...previousOrderData.orderDetails, ...orderData.orderDetails];
 
     const result = await Order.updateOne(
       { _id: previousOrderId },
@@ -438,10 +385,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
       await unlockTable(orderData, false, req, res, next);
     }
 
-    await Order.findOneAndUpdate(
-      { _id: req.body.orderId },
-      { orderStatus: "rejected", reason: req.body.reason }
-    );
+    await Order.findOneAndUpdate({ _id: req.body.orderId }, { orderStatus: "rejected", reason: req.body.reason });
 
     try {
       if (process.env.EMAIL_ORDER_STATUS === "true") {
@@ -465,13 +409,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         // send an SMS to the customer that order has been placed successfully
 
         await axios.get(
-          process.env.SMS_API_URL +
-            orderData.orderId +
-            "%7C" +
-            "Rejected" +
-            "%7C" +
-            "&flash=0&numbers=" +
-            orderData.customerPhoneNumber
+          process.env.SMS_API_URL + orderData.orderId + "%7C" + "Rejected" + "%7C" + "&flash=0&numbers=" + orderData.customerPhoneNumber
         );
       }
 
@@ -481,7 +419,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
 
-          `Your order  has been rejected by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
+          `Rejected by the restaurant.`
         );
       }
     } catch (error) {
@@ -520,10 +458,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
       { _id: req.body.orderId },
       {
         $set: {
-          orderStatus:
-            orderData.customerPreferences.preference === "Dine In"
-              ? "processing"
-              : "pendingPayment",
+          orderStatus: orderData.customerPreferences.preference === "Dine In" ? "processing" : "pendingPayment",
           cashOnDeliveryAvailable: req.body.cashOnDeliveryAvailable,
           paymentOnlineAvailable: req.body.paymentOnlineAvailable,
           "orderDetails.0.preprationTime": req.body.preprationTime,
@@ -556,22 +491,14 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
       if (process.env.SMS_ORDER_STATUS === "true") {
         // send an SMS to the customer that order has been placed successfully
 
-        await axios.get(
-          process.env.SMS_API_URL +
-            orderId +
-            "%7C" +
-            "Accepted" +
-            "%7C" +
-            "&flash=0&numbers=" +
-            orderData.customerPhoneNumber
-        );
+        await axios.get(process.env.SMS_API_URL + orderId + "%7C" + "Accepted" + "%7C" + "&flash=0&numbers=" + orderData.customerPhoneNumber);
       }
 
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
 
-          `Your order  has been accepted by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
+          `Accepted by restaurant.`
         );
       }
     } catch (error) {
@@ -602,10 +529,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
       await dineInOrderHelper(orderData, req, res, next);
     }
   } else if (req.body.orderStatus === "completed") {
-    await Order.findOneAndUpdate(
-      { _id: req.body.orderId },
-      { orderStatus: "completed" }
-    );
+    await Order.findOneAndUpdate({ _id: req.body.orderId }, { orderStatus: "completed" });
 
     try {
       if (process.env.EMAIL_ORDER_STATUS === "true") {
@@ -628,22 +552,14 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
       if (process.env.SMS_ORDER_STATUS === "true") {
         // send an SMS to the customer that order has been placed successfully
 
-        await axios.get(
-          process.env.SMS_API_URL +
-            orderId +
-            "%7C" +
-            "Completed" +
-            "%7C" +
-            "&flash=0&numbers=" +
-            orderData.customerPhoneNumber
-        );
+        await axios.get(process.env.SMS_API_URL + orderId + "%7C" + "Completed" + "%7C" + "&flash=0&numbers=" + orderData.customerPhoneNumber);
       }
 
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
 
-          `Your order  has been completed successfully. Please verify the current status of your order at https://qrsay.com/orders.`
+          `Completed.`
         );
       }
     } catch (error) {
@@ -675,10 +591,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     );
     // send a mail to the customer that order has been placed successfully
     try {
-      sendCustomWhatsAppMessage(
-        orderData.customerPhoneNumber,
-        `Your order  has been accepted by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
-      );
+      sendCustomWhatsAppMessage(orderData.customerPhoneNumber, `Aaccepted by restaurant.`);
     } catch {}
     sendMail(
       orderData.customerEmail,
@@ -734,11 +647,7 @@ exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
   const reqData = {
     ...req.body,
   };
-  const paymentDetails = await fetchOrderById(
-    process.env["razorpay_key_id"],
-    process.env["razorpay_key_secret"],
-    req.body.razorpay_order_id
-  );
+  const paymentDetails = await fetchOrderById(process.env["razorpay_key_id"], process.env["razorpay_key_secret"], req.body.razorpay_order_id);
   await Order.findOneAndUpdate(
     { _id: req.body.orderId },
     {
@@ -797,76 +706,74 @@ exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
     },
   });
 });
-exports.changeOrderStatusByUserForCashOnDelivery = catchAsync(
-  async (req, res, next) => {
-    if (!req.body?.orderId) {
-      return next(new AppError("Missing Order Id!", 400));
-    }
-    const orderData = await Order.findOne({ _id: req.body.orderId });
-    if (!orderData) {
-      return next(new AppError("Order Id is missing!"));
-    }
-    const reqData = {
-      ...req.body,
-    };
-
-    const customerDetail = await Customer.findOne({
-      _id: orderData.customerId,
-    });
-
-    const restaurantDetail = await Restaurant.findOne({
-      _id: orderData.restaurantId,
-    });
-
-    await Order.findOneAndUpdate(
-      { _id: req.body.orderId },
-      {
-        $set: {
-          orderStatus: "processing",
-
-          payment_method: "Cash On Delivery",
-        },
-      }
-    );
-    // send a mail to the customer that order has been placed successfully after cash on delivery payment
-    sendMail(
-      customerDetail.email,
-      "Order Placed Successfully",
-      `The order has been successfully placed by choosing cash on delivery payment method.
-
-            Order Id: ${orderData.orderId}
-
-            Order Amount: ${orderData.orderDetails[0].orderAmount}
-
-            Order Date: ${new Date().toLocaleString()}
-
-            Order Status: Processing`
-    );
-    // send a mail to the restaurant that order has been placed successfully
-
-    sendMail(
-      restaurantDetail?.restaurantEmail,
-      "Payment done successfully for an order",
-      `You have received a new order from ${customerDetail.name}.
-
-            Order Id: ${orderData.orderId}
-
-            Order Amount: ${orderData.orderDetails[0].orderAmount}
-
-            Order Date: ${new Date().toLocaleString()}
-
-            Order Status: Processing`
-    );
-
-    res.status(200).json({
-      status: "success",
-
-      data: {
-        message: `The order has been successfully processing.`,
-      },
-    });
+exports.changeOrderStatusByUserForCashOnDelivery = catchAsync(async (req, res, next) => {
+  if (!req.body?.orderId) {
+    return next(new AppError("Missing Order Id!", 400));
   }
-);
+  const orderData = await Order.findOne({ _id: req.body.orderId });
+  if (!orderData) {
+    return next(new AppError("Order Id is missing!"));
+  }
+  const reqData = {
+    ...req.body,
+  };
+
+  const customerDetail = await Customer.findOne({
+    _id: orderData.customerId,
+  });
+
+  const restaurantDetail = await Restaurant.findOne({
+    _id: orderData.restaurantId,
+  });
+
+  await Order.findOneAndUpdate(
+    { _id: req.body.orderId },
+    {
+      $set: {
+        orderStatus: "processing",
+
+        payment_method: "Cash On Delivery",
+      },
+    }
+  );
+  // send a mail to the customer that order has been placed successfully after cash on delivery payment
+  sendMail(
+    customerDetail.email,
+    "Order Placed Successfully",
+    `The order has been successfully placed by choosing cash on delivery payment method.
+
+            Order Id: ${orderData.orderId}
+
+            Order Amount: ${orderData.orderDetails[0].orderAmount}
+
+            Order Date: ${new Date().toLocaleString()}
+
+            Order Status: Processing`
+  );
+  // send a mail to the restaurant that order has been placed successfully
+
+  sendMail(
+    restaurantDetail?.restaurantEmail,
+    "Payment done successfully for an order",
+    `You have received a new order from ${customerDetail.name}.
+
+            Order Id: ${orderData.orderId}
+
+            Order Amount: ${orderData.orderDetails[0].orderAmount}
+
+            Order Date: ${new Date().toLocaleString()}
+
+            Order Status: Processing`
+  );
+
+  res.status(200).json({
+    status: "success",
+
+    data: {
+      message: `The order has been successfully processing.`,
+    },
+  });
+});
 
 exports.generateBill = catchAsync(async (req, res, next) => {
   if (!req.params.orderId) {
@@ -888,10 +795,7 @@ exports.generateBill = catchAsync(async (req, res, next) => {
       _id: orderData.customerId,
     });
 
-    const orderAmount = orderData.orderDetails.reduce(
-      (total, detail) => total + detail.orderAmount,
-      0
-    );
+    const orderAmount = orderData.orderDetails.reduce((total, detail) => total + detail.orderAmount, 0);
 
     products = [];
 
