@@ -11,7 +11,11 @@ const Table = require("../models/tableModel");
 const io = require("../server"); // Make sure to import the correct 'io' object
 const Restaurant = require("../models/restaurantModel");
 const Customer = require("../models/CustomerModel");
-const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
+// const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
+const {
+  sendWhatsAppMessage,
+  sendCustomWhatsAppMessage,
+} = require("../helpers/whatsapp");
 
 exports.placeOrder = catchAsync(async (req, res, next) => {
   const reqData = {
@@ -111,7 +115,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   }
   if (
     reqData["customerPreferences"].preference?.toLowerCase() === "take away" ||
-    reqData["customerPreferences"].preference?.toLowerCase() === "scheduled dining"
+    reqData["customerPreferences"].preference?.toLowerCase() ===
+      "scheduled dining"
   ) {
     if (
       reqData["customerPreferences"].value &&
@@ -129,7 +134,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         selectedHours * 60 +
         selectedMinutes -
         (currentHours * 60 + currentMinutes);
-   
+
       if (parseInt(differenceInMinutes) < 15) {
         return next(
           new AppError(
@@ -161,7 +166,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       discountAmount: reqData["discountAmount"],
     },
   ];
-  const savedData = {
+  let savedData = {
     orderId: orderId,
     customerId: req.user["_id"],
     customerName: req.user["name"],
@@ -170,13 +175,29 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     customerPreferences: reqData["customerPreferences"],
     orderDetails: orderData,
     restaurantId: reqData["restaurantId"],
-    // payment_order_id: reqData["razorpay_order_id"],
-    // payment_id: reqData["razorpay_payment_id"],
-    // payment_signature: reqData["razorpay_signature"],
-    // payment_time: paymentDetails.items[0]["created_at"],
-    // payment_method: paymentDetails.items[0]["method"],
-    // payment_amount: paymentDetails.items[0]["amount"],
   };
+  if (reqData["paymentMethod"] === "payOnline") {
+    const paymentDetails = await fetchOrderById(
+      process.env["razorpay_key_id"],
+      process.env["razorpay_key_secret"],
+      req.body.razorpay_order_id
+    );
+    savedData = {
+      ...savedData,
+      payment_order_id: reqData["razorpay_order_id"],
+      payment_id: reqData["razorpay_payment_id"],
+      payment_signature: reqData["razorpay_signature"],
+      payment_time: paymentDetails.items[0]["created_at"],
+      payment_method: paymentDetails.items[0]["method"],
+      payment_amount: paymentDetails.items[0]["amount"] / 100,
+    };
+  } else {
+    savedData = {
+      ...savedData,
+      payment_method: "Cash On Delivery",
+    };
+  }
+
   await Order.create(savedData);
 
   // send a mail to the customer that order has been placed successfully
@@ -217,12 +238,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
       sendCustomWhatsAppMessage(
         req.user["phoneNumber"],
-        `Your order  has been placed Successfully. Please verify the current status of your order at https://qrsay.com/orders.`
+        `Order placed Successfully.`
       );
     }
-  } catch (error) {
-
-  }
+  } catch (error) {}
 
   // send a mail to the restaurant that order has been placed successfully
 
@@ -481,12 +500,10 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
 
-          `Your order  has been rejected by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
+          `Rejected by the restaurant.`
         );
       }
-    } catch (error) {
-   
-    }
+    } catch (error) {}
 
     // send a mail to the restaurant that order has been placed successfully
 
@@ -523,7 +540,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
           orderStatus:
             orderData.customerPreferences.preference === "Dine In"
               ? "processing"
-              : "pendingPayment",
+              : "processing",
           cashOnDeliveryAvailable: req.body.cashOnDeliveryAvailable,
           paymentOnlineAvailable: req.body.paymentOnlineAvailable,
           "orderDetails.0.preprationTime": req.body.preprationTime,
@@ -571,12 +588,10 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
 
-          `Your order  has been accepted by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
+          `Accepted by restaurant.`
         );
       }
-    } catch (error) {
- 
-    }
+    } catch (error) {}
 
     // send a mail to the restaurant that order has been accepted successfully
 
@@ -643,12 +658,10 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
 
-          `Your order  has been completed successfully. Please verify the current status of your order at https://qrsay.com/orders.`
+          `Completed.`
         );
       }
-    } catch (error) {
- 
-    }
+    } catch (error) {}
 
     if (orderData.customerPreferences.preference === "Dine In") {
       await unlockTable(orderData, true, req, res, next);
@@ -669,7 +682,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
           payment_signature: reqData["razorpay_signature"],
           payment_time: paymentDetails.items[0]["created_at"],
           payment_method: paymentDetails.items[0]["method"],
-          payment_amount: paymentDetails.items[0]["amount"],
+          payment_amount: paymentDetails.items[0]["amount"] / 100,
         },
       }
     );
@@ -677,7 +690,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     try {
       sendCustomWhatsAppMessage(
         orderData.customerPhoneNumber,
-        `Your order  has been accepted by the restaurant. Please verify the current status of your order at https://qrsay.com/orders.`
+        `Aaccepted by restaurant.`
       );
     } catch {}
     sendMail(
@@ -967,7 +980,6 @@ exports.generateBill = catchAsync(async (req, res, next) => {
       },
     });
   } catch (error) {
-
     return next(
       new AppError("An error occurred while generating the invoice.", 500)
     );

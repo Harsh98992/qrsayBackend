@@ -1,6 +1,5 @@
 const axios = require("axios");
 
-
 // const sendWhatsAppMessage = async (phoneNumber, otp) => {
 //     const config = {
 //         headers: {
@@ -41,89 +40,78 @@ const axios = require("axios");
 //     return res;
 // };
 
-
 const sendWhatsAppMessage = async (phoneNumber, otp) => {
-    const config = {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization:
-                "Bearer EAANSoaeKzUMBO6tjbfi5bvEIvphOzn9zg5PnfafIZBVvnJ698dScZCtiRNaMXiVCcVvmK16XwR617ZBekIcgxGFwjjLnK4HuXeQ1u7EZBPQpBDQ0wNwYCu6uTBAKtf8CfcyvSwxBAqnN24Glbare869fHh3XE3AEw5wBJhuoyjxsKWQSX9dsQvr7qKjYZCFCu",
-        },
-    };
-    const data = {
-        messaging_product: "whatsapp",
-        to: "91" + phoneNumber,
-        type: "template",
+ 
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization:
+        "Bearer EAAgP3l9SczIBO6cdu9cAuuUVcaD1bYeAQlgIArbK5AimmiL6id0ZBvg6MZBRn9Moetojkda23lzegHp1nhituSmdZBKMw9vZBWKWZAoZCto18yKN8wZAyZBr38scT8ZAsDaFHVUTelArRx9xNcTFQcMM8Vdkq4uyM5b7ABnG9lxXwyUNXhx7pPiiZA7XdMPRD4ExFQ",
+    },
+  };
+  const data = {
+    messaging_product: "whatsapp",
+    to: "91" + phoneNumber,
+    type: "template",
 
-        template: {
-            name: "saying_thanks",
-            language: {
-                code: "en",
+    template: {
+      name: "otp_",
+      language: {
+        code: "en",
+      },
+      components: [
+        {
+          type: "body",
+          parameters: [
+            {
+              type: "text",
+              text: `*${otp}*`,
             },
-            components: [
-                {
-                    type: "body",
-                    parameters: [
-                        {
-                            type: "text",
-                            text: `there is the *OTP : '${otp}'* for Digital menu`,
-                        },
-                    ],
-                },
-            ],
+          ],
         },
-    };
-    const res = await axios.post(
-        "https://graph.facebook.com/v17.0/112127151975295/messages",
-        data,
-        config
-    );
+      ],
+    },
+  };
+  const res = await axios.post("https://graph.facebook.com/v17.0/207695905761327/messages", data, config);
 
-    return res;
+  return res;
 };
 const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
-    try{
+  try {
     const config = {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization:
-                "Bearer EAANSoaeKzUMBO6tjbfi5bvEIvphOzn9zg5PnfafIZBVvnJ698dScZCtiRNaMXiVCcVvmK16XwR617ZBekIcgxGFwjjLnK4HuXeQ1u7EZBPQpBDQ0wNwYCu6uTBAKtf8CfcyvSwxBAqnN24Glbare869fHh3XE3AEw5wBJhuoyjxsKWQSX9dsQvr7qKjYZCFCu",
-        },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer EAAgP3l9SczIBO6cdu9cAuuUVcaD1bYeAQlgIArbK5AimmiL6id0ZBvg6MZBRn9Moetojkda23lzegHp1nhituSmdZBKMw9vZBWKWZAoZCto18yKN8wZAyZBr38scT8ZAsDaFHVUTelArRx9xNcTFQcMM8Vdkq4uyM5b7ABnG9lxXwyUNXhx7pPiiZA7XdMPRD4ExFQ",
+      },
     };
     const data = {
-        messaging_product: "whatsapp",
-        to: "91" + phoneNumber,
-        type: "template",
+      messaging_product: "whatsapp",
+      to: "91" + phoneNumber,
+      type: "template",
 
-        template: {
-            name: "saying_thanks",
-            language: {
-                code: "en",
-            },
-            components: [
-                {
-                    type: "body",
-                    parameters: [
-                        {
-                            type: "text",
-                            text: `${message}`,
-                        },
-                    ],
-                },
-            ],
+      template: {
+        name: "order_status_update",
+        language: {
+          code: "en",
         },
+        components: [
+          {
+            type: "body",
+            parameters: [
+              {
+                type: "text",
+                text: `${message}`,
+              },
+            ],
+          },
+        ],
+      },
     };
-    const res = await axios.post(
-        "https://graph.facebook.com/v17.0/112127151975295/messages",
-        data,
-        config
-    );
+    const res = await axios.post("https://graph.facebook.com/v17.0/207695905761327/messages", data, config);
 
     return res;
-    }
-    catch{
-
-    }
+  } catch {}
 };
-module.exports = sendWhatsAppMessage;
-module.exports=sendCustomWhatsAppMessage;
+module.exports ={ sendWhatsAppMessage,sendCustomWhatsAppMessage};
+
