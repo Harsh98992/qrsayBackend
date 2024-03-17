@@ -11,7 +11,11 @@ const Table = require("../models/tableModel");
 const io = require("../server"); // Make sure to import the correct 'io' object
 const Restaurant = require("../models/restaurantModel");
 const Customer = require("../models/CustomerModel");
-const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
+// const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
+const {
+  sendWhatsAppMessage,
+  sendCustomWhatsAppMessage,
+} = require("../helpers/whatsapp");
 
 exports.placeOrder = catchAsync(async (req, res, next) => {
   const reqData = {
