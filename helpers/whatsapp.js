@@ -1,47 +1,8 @@
 const axios = require("axios");
 
-// const sendWhatsAppMessage = async (phoneNumber, otp) => {
-//     const config = {
-//         headers: {
-//             "Content-Type": "application/json",
-//             Authorization:
-//                 "Bearer EAANSoaeKzUMBOz1tKdjf5iZAVjtBJaUDR2I6uIZARQjMxUAoGFLDnFoTnaKFIBCXHe8xiaQnAZADfE2lZBnoVhjKj995qk7XOCO89WWGVw87Rd2oqrAEjlQaXIWgLipFZB9t5dCcFwLItEQ2GXfutDv5v5ggjbPgZBf7XcG6GKjxnNldmKpiRq5tWViSAIopxN",
-//         },
-//     };
-//     const data = {
-//         messaging_product: "whatsapp",
-//         to: "91" + phoneNumber,
-//         type: "template",
-
-//         template: {
-//             name: "otp_ ",
-//             language: {
-//                 code: "en",
-//             },
-//             components: [
-//                 {
-//                     type: "body",
-//                     parameters: [
-//                         {
-//                             type: "text",
-//                             text: `${otp}`,
-//                         },
-//                     ],
-//                 },
-//             ],
-//         },
-//     };
-//     const res = await axios.post(
-//         "https://graph.facebook.com/v18.0/207695905761327/messages",
-//         data,
-//         config
-//     );
-
-//     return res;
-// };
 
 const sendWhatsAppMessage = async (phoneNumber, otp) => {
- 
+
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -78,6 +39,8 @@ const sendWhatsAppMessage = async (phoneNumber, otp) => {
 };
 const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
   try {
+
+    console.log("running sendCustomWhatsAppMessage");
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -114,4 +77,3 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
   } catch {}
 };
 module.exports ={ sendWhatsAppMessage,sendCustomWhatsAppMessage};
-
