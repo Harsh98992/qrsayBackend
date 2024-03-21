@@ -13,7 +13,6 @@ const Restaurant = require("../models/restaurantModel");
 const Customer = require("../models/CustomerModel");
 // const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
 const {
-  sendWhatsAppMessage,
   sendCustomWhatsAppMessage,
 } = require("../helpers/whatsapp");
 
@@ -236,6 +235,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       // send a WhatsApp message to the customer that order has been placed successfully
       // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
 
+
+
       sendCustomWhatsAppMessage(
         req.user["phoneNumber"],
         `Order placed Successfully.`
@@ -445,7 +446,7 @@ const unlockTable = async (orderData, completeflag = true, req, res, next) => {
 };
 
 exports.changeOrderStatus = catchAsync(async (req, res, next) => {
-  if (!req.body?.orderId) {
+  if (!req.body.orderId) {
     return next(new AppError("Missing Order Id!", 400));
   }
   const orderData = await Order.findOne({ _id: req.body.orderId });
@@ -495,6 +496,10 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
       }
 
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
+
+        console.log("orderData.customerPhoneNumber", orderData.customerPhoneNumber);
+
+        console.log("whatsapp message", `Rejected by the restaurant.`);
         // send a WhatsApp message to the customer that order has been placed successfully
 
         sendCustomWhatsAppMessage(
@@ -503,7 +508,12 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
           `Rejected by the restaurant.`
         );
       }
-    } catch (error) {}
+    }
+     catch (error) {
+
+      // print eroro
+      console.log(error);
+    }
 
     // send a mail to the restaurant that order has been placed successfully
 
@@ -570,12 +580,14 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         );
       }
 
+      try{
+
       if (process.env.SMS_ORDER_STATUS === "true") {
         // send an SMS to the customer that order has been placed successfully
 
         await axios.get(
           process.env.SMS_API_URL +
-            orderId +
+          req.body.orderId +
             "%7C" +
             "Accepted" +
             "%7C" +
@@ -583,7 +595,12 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
             orderData.customerPhoneNumber
         );
       }
+    }
+    catch (error) {
 
+      console.log("error", error);
+
+    }
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
@@ -591,7 +608,15 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
           `Accepted by restaurant.`
         );
       }
-    } catch (error) {}
+    } catch (error) {
+
+    console.log("error", error);
+    }
+
+
+
+
+
 
     // send a mail to the restaurant that order has been accepted successfully
 
@@ -645,7 +670,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
 
         await axios.get(
           process.env.SMS_API_URL +
-            orderId +
+          req.body.orderId +
             "%7C" +
             "Completed" +
             "%7C" +
@@ -737,7 +762,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
   });
 });
 exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
-  if (!req.body?.orderId) {
+  if (!req.body.orderId) {
     return next(new AppError("Missing Order Id!", 400));
   }
   const orderData = await Order.findOne({ _id: req.body.orderId });
