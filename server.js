@@ -79,7 +79,7 @@ cron.schedule("*/10 * * * *", async function () {
       "https://qrsay-backend.onrender.com/api/v1/customer/getAllRestaurants"
     );
     const abc = await axios.get(
-      "https://qrsay-backend-testing.onrender.com/api/v1/customer/getAllRestaurants"
+      "https://qrsaybackend-ksaw.onrender.com/api/v1/customer/getAllRestaurants"
     );
   } catch (error) {}
   const res = await orderSchema.updateMany(
