@@ -308,12 +308,12 @@ exports.addCategory = catchAsync(async (req, res, next) => {
 
   // endTime    // timeAvailable                 startTime: this.timeAvailable ? this.startTime : null, // Include start time if time availability is enabled
 
-  // if timeavaliable is true then start time should be less than end time
-  if (req.body.timeAvailable) {
-    if (req.body.startTime >= req.body.endTime) {
-      return next(new AppError("Start time should be less than end time", 400));
-    }
-  }
+  // // if timeavaliable is true then start time should be less than end time
+  // if (req.body.timeAvailable) {
+  //   if (req.body.startTime >= req.body.endTime) {
+  //     return next(new AppError("Start time should be less than end time", 400));
+  //   }
+  // }
 
   const categoryValue = {
     categoryName: req.body.category.toLowerCase(),
@@ -403,12 +403,12 @@ exports.editCategory = catchAsync(async (req, res, next) => {
   // await restaurant.save();
 
 
-  // if timeavaliable is true then start time should be less than end time
-  if (req.body.timeAvailable) {
-    if (req.body.startTime >= req.body.endTime) {
-      return next(new AppError("Start time should be less than end time", 400));
-    }
-  }
+  // // if timeavaliable is true then start time should be less than end time
+  // if (req.body.timeAvailable) {
+  //   if (req.body.startTime >= req.body.endTime) {
+  //     return next(new AppError("Start time should be less than end time", 400));
+  //   }
+  // }
 
   const result = await Restaurant.updateOne(
     { _id: req.user.restaurantKey, "cuisine._id": categoryId },
