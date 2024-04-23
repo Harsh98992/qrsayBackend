@@ -306,12 +306,20 @@ exports.addCategory = catchAsync(async (req, res, next) => {
     if (!req.body.category) {
         return next(new AppError("Please provide category!", 400));
     }
+
+    // endTime    // timeAvailable                 startTime: this.timeAvailable ? this.startTime : null, // Include start time if time availability is enabled
+
     const categoryValue = { categoryName: req.body.category.toLowerCase() };
     const checkExists = await Restaurant.find({
         _id: req.user.restaurantKey,
         cuisine: {
             $elemMatch: {
                 categoryName: categoryValue.categoryName,
+                categoryPriority: req.body.categoryPriority,
+                timeAvailable: req.body.timeAvailable,
+                startTime: req.body.timeAvailable ? req.body.startTime : null,
+                endTime: req.body.timeAvailable ? req.body.endTime : null,
+                
             },
         },
     }).select("_id");
