@@ -1,7 +1,19 @@
 # DigitalMenuBackend
 
 This is the backend for the Digital Menu project. It is a REST API built with Node.js and Express.js. It uses MongoDB as a database and Mongoose as an ODM.
+## Deployment
 
+For Deployment in testing :-
+commit code to develop branch
+
+For Deployment in prod:-
+1. click on pull request
+2. click on new pull request
+3. select base branch as main
+4. create in pull request
+5. add a title
+6. click on create pull request
+7. click on merge pull request
 ## Installation
 
 1. Clone the repository
