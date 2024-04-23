@@ -76,7 +76,6 @@ async function returnDataWithImageUrls(req) {
         initialImageUrl = req.body.imageUrl;
     }
 
-
     return {
         dishName: req.body.dishName,
         dishPrice: req.body.dishPrice,
@@ -91,7 +90,7 @@ async function returnDataWithImageUrls(req) {
         chilliFlag: req.body.spicy,
         addOns: req.body.addOns,
         choicesAvailable: req.body.choicesAvailable,
-        availableFlag:req.body?.availableFlag ?? true
+        availableFlag: req.body?.availableFlag ?? true,
     };
 }
 
@@ -319,7 +318,6 @@ exports.addCategory = catchAsync(async (req, res, next) => {
                 timeAvailable: req.body.timeAvailable,
                 startTime: req.body.timeAvailable ? req.body.startTime : null,
                 endTime: req.body.timeAvailable ? req.body.endTime : null,
-                
             },
         },
     }).select("_id");
@@ -400,6 +398,14 @@ exports.editCategory = catchAsync(async (req, res, next) => {
         {
             $set: {
                 "cuisine.$.categoryName": newCategoryName,
+                "cuisine.$.categoryPriority": req.body.categoryPriority,
+                "cuisine.$.timeAvailable": req.body.timeAvailable,
+                "cuisine.$.startTime": req.body.timeAvailable
+                    ? req.body.startTime
+                    : null,
+                "cuisine.$.endTime": req.body.timeAvailable
+                    ? req.body.endTime
+                    : null,
             },
         },
         { multi: true }
