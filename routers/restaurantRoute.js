@@ -150,6 +150,13 @@ router.patch(
     authenticateController.ristrictTo("restaurantOwner"),
     restaurantSettingController.editTableById
 );
+router.patch(
+    "/editRoomById",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.editRoomById
+);
+
 
 router.patch(
     "/checkDineInTableAvailability",
@@ -163,10 +170,10 @@ router.get(
 );
 
 router.delete(
-    "/deleteTableById/:tableId",
+    "/deleteRoomById/:roomId",
     authenticateController.protect,
     authenticateController.ristrictTo("restaurantOwner"),
-    restaurantSettingController.deleteTableById
+    restaurantSettingController.deleteRoomById
 );
 
 router.patch(
