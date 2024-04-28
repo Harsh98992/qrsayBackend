@@ -125,6 +125,12 @@ router.get(
     authenticateController.ristrictTo("restaurantOwner"),
     restaurantSettingController.getAllTables
 );
+router.get(
+    "/getAllRooms",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.getAllRooms
+);
 
 router.post(
     "/createTableEntry",
@@ -132,7 +138,12 @@ router.post(
     authenticateController.ristrictTo("restaurantOwner"),
     restaurantSettingController.createTableEntry
 );
-
+router.post(
+    "/createRoomEntry",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.createRoomEntry
+);
 router.patch(
     "/editTableById",
     authenticateController.protect,
