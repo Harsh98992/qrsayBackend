@@ -12,35 +12,15 @@ const io = require("../server"); // Make sure to import the correct 'io' object
 const Restaurant = require("../models/restaurantModel");
 const Customer = require("../models/CustomerModel");
 // const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
-const {
-  sendCustomWhatsAppMessage,
-} = require("../helpers/whatsapp");
+const { sendCustomWhatsAppMessage } = require("../helpers/whatsapp");
 
 exports.placeOrder = catchAsync(async (req, res, next) => {
   const reqData = {
     ...req.body,
   };
 
-  if (req.user.blockedRestaurants.includes(reqData["restaurantId"])) {
-    return next(
-      new AppError(
-        "You have been restricted from accessing this restaurant's services. Kindly reach out to the restaurant for additional details",
-        400
-      )
-    );
-  }
-  const pendingOrder = await Order.findOne({
-    customerId: req.user._id,
-    orderStatus: "pending",
-  });
+  
 
-  if (pendingOrder && pendingOrder._id) {
-    return next(
-      new AppError(
-        "Please wait while your previous order is getting accepted by restaurant!"
-      )
-    );
-  }
   const restaurantDetail = await Restaurant.findOne({
     _id: reqData["restaurantId"],
   });
@@ -112,101 +92,188 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       );
     }
   }
+
   if (
-    reqData["customerPreferences"].preference?.toLowerCase() === "take away" ||
-    reqData["customerPreferences"].preference?.toLowerCase() ===
-      "scheduled dining"
+    reqData["customerPreferences"].preference?.toLowerCase() === "room service"
   ) {
+    const orderId = generateOrderID();
+    const orderData = [
+      {
+        cookingInstruction: reqData["cookingInstruction"],
+        orderSummary: reqData["orderSummary"],
+        orderAmount: reqData["orderAmount"],
+        gstAmount: reqData["gstAmount"],
+        deliveryAmount: reqData["deliveryAmount"],
+        discountAmount: reqData["discountAmount"],
+      },
+    ];
+    let savedData = {
+      orderId: orderId,
+     
+      customerName:'',
+      customerEmail: '',
+      customerPhoneNumber: '',
+      customerPreferences: reqData["customerPreferences"],
+      orderDetails: orderData,
+      restaurantId: reqData["restaurantId"],
+    };
+    if (reqData["paymentMethod"] === "payOnline") {
+      const paymentDetails = await fetchOrderById(
+        process.env["razorpay_key_id"],
+        process.env["razorpay_key_secret"],
+        req.body.razorpay_order_id
+      );
+      savedData = {
+        ...savedData,
+        payment_order_id: reqData["razorpay_order_id"],
+        payment_id: reqData["razorpay_payment_id"],
+        payment_signature: reqData["razorpay_signature"],
+        payment_time: paymentDetails.items[0]["created_at"],
+        payment_method: paymentDetails.items[0]["method"],
+        payment_amount: paymentDetails.items[0]["amount"] / 100,
+      };
+    } else {
+      savedData = {
+        ...savedData,
+        payment_method: "Cash On Delivery",
+      };
+    }
+
+    await Order.create(savedData);
+    res.status(200).json({
+      status: "success",
+      data: {
+        message:
+          "Order placed successfully! Thank you for your purchase. You will soon receive a confirmation once your order is verified by the restaurant.",
+
+        savedData: savedData,
+      },
+    });
+  } else {
+    if (req.user.blockedRestaurants.includes(reqData["restaurantId"])) {
+      return next(
+        new AppError(
+          "You have been restricted from accessing this restaurant's services. Kindly reach out to the restaurant for additional details",
+          400
+        )
+      );
+    }
+    const pendingOrder = await Order.findOne({
+      customerId: req.user._id,
+      orderStatus: "pending",
+    });
+
+    if (pendingOrder && pendingOrder._id) {
+      return next(
+        new AppError(
+          "Please wait while your previous order is getting accepted by restaurant!"
+        )
+      );
+    }
     if (
-      reqData["customerPreferences"].value &&
-      reqData["customerPreferences"].value.toLowerCase() !== "asap"
+      reqData["customerPreferences"].preference?.toLowerCase() ===
+        "take away" ||
+      reqData["customerPreferences"].preference?.toLowerCase() ===
+        "scheduled dining"
     ) {
-      const selectedTime = reqData["customerPreferences"].value;
-      const currentTime = new Date();
-      const currentHours = currentTime.getHours();
-      const currentMinutes = currentTime.getMinutes();
-      const [selectedHours, selectedMinutes] = selectedTime
-        .split(":")
-        .map(Number);
+      if (
+        reqData["customerPreferences"].value &&
+        reqData["customerPreferences"].value.toLowerCase() !== "asap"
+      ) {
+        const selectedTime = reqData["customerPreferences"].value;
+        const currentTime = new Date();
+        const currentHours = currentTime.getHours();
+        const currentMinutes = currentTime.getMinutes();
+        const [selectedHours, selectedMinutes] = selectedTime
+          .split(":")
+          .map(Number);
 
-      const differenceInMinutes =
-        selectedHours * 60 +
-        selectedMinutes -
-        (currentHours * 60 + currentMinutes);
+        const differenceInMinutes =
+          selectedHours * 60 +
+          selectedMinutes -
+          (currentHours * 60 + currentMinutes);
 
-      if (parseInt(differenceInMinutes) < 15) {
-        return next(
-          new AppError(
-            "Please select a time that is at least 15 minutes later than the current time for take away order!",
-            400
-          )
-        );
+        if (parseInt(differenceInMinutes) < 15) {
+          return next(
+            new AppError(
+              "Please select a time that is at least 15 minutes later than the current time for take away order!",
+              400
+            )
+          );
+        }
       }
     }
-  }
-  if (reqData["customerPreferences"].preference === "Dine In") {
-    const checkDineInResult = await checkDineInTableAvailability(
-      reqData["customerPreferences"].value,
-      reqData["restaurantId"],
-      req.user["_id"]
-    );
-    if (!checkDineInResult.result) {
-      return next(new AppError(checkDineInResult.message, 400));
+    if (reqData["customerPreferences"].preference === "Dine In") {
+      const checkDineInResult = await checkDineInTableAvailability(
+        reqData["customerPreferences"].value,
+        reqData["restaurantId"],
+        req.user["_id"]
+      );
+      if (!checkDineInResult.result) {
+        return next(new AppError(checkDineInResult.message, 400));
+      }
     }
-  }
-  const orderId = generateOrderID();
-  const orderData = [
-    {
-      cookingInstruction: reqData["cookingInstruction"],
-      orderSummary: reqData["orderSummary"],
-      orderAmount: reqData["orderAmount"],
-      gstAmount: reqData["gstAmount"],
-      deliveryAmount: reqData["deliveryAmount"],
-      discountAmount: reqData["discountAmount"],
-    },
-  ];
-  let savedData = {
-    orderId: orderId,
-    customerId: req.user["_id"],
-    customerName: req.user["name"],
-    customerEmail: req.user["email"],
-    customerPhoneNumber: req.user["phoneNumber"],
-    customerPreferences: reqData["customerPreferences"],
-    orderDetails: orderData,
-    restaurantId: reqData["restaurantId"],
-  };
-  if (reqData["paymentMethod"] === "payOnline") {
-    const paymentDetails = await fetchOrderById(
-      process.env["razorpay_key_id"],
-      process.env["razorpay_key_secret"],
-      req.body.razorpay_order_id
-    );
-    savedData = {
-      ...savedData,
-      payment_order_id: reqData["razorpay_order_id"],
-      payment_id: reqData["razorpay_payment_id"],
-      payment_signature: reqData["razorpay_signature"],
-      payment_time: paymentDetails.items[0]["created_at"],
-      payment_method: paymentDetails.items[0]["method"],
-      payment_amount: paymentDetails.items[0]["amount"] / 100,
+    const orderId = generateOrderID();
+    const orderData = [
+      {
+        cookingInstruction: reqData["cookingInstruction"],
+        orderSummary: reqData["orderSummary"],
+        orderAmount: reqData["orderAmount"],
+        gstAmount: reqData["gstAmount"],
+        deliveryAmount: reqData["deliveryAmount"],
+        discountAmount: reqData["discountAmount"],
+      },
+    ];
+    let savedData = {
+      orderId: orderId,
+      customerId: req.user["_id"],
+      customerName: req.user["name"],
+      customerEmail: req.user["email"],
+      customerPhoneNumber: req.user["phoneNumber"],
+      customerPreferences: reqData["customerPreferences"],
+      orderDetails: orderData,
+      restaurantId: reqData["restaurantId"],
     };
-  } else {
-    savedData = {
-      ...savedData,
-      payment_method: "Cash On Delivery",
-    };
-  }
+    if (reqData["paymentMethod"] === "payOnline") {
+      const paymentDetails = await fetchOrderById(
+        process.env["razorpay_key_id"],
+        process.env["razorpay_key_secret"],
+        req.body.razorpay_order_id
+      );
+      savedData = {
+        ...savedData,
+        payment_order_id: reqData["razorpay_order_id"],
+        payment_id: reqData["razorpay_payment_id"],
+        payment_signature: reqData["razorpay_signature"],
+        payment_time: paymentDetails.items[0]["created_at"],
+        payment_method: paymentDetails.items[0]["method"],
+        payment_amount: paymentDetails.items[0]["amount"] / 100,
+      };
+    } else {
+      savedData = {
+        ...savedData,
+        payment_method: "Cash On Delivery",
+      };
+    }
 
-  await Order.create(savedData);
+    await Order.create(savedData);
+    res.status(200).json({
+      status: "success",
+      data: {
+        message:
+          "Order placed successfully! Thank you for your purchase. You will soon receive a confirmation once your order is verified by the restaurant.",
 
-  // send a mail to the customer that order has been placed successfully
-  try {
-    if (process.env.EMAIL_ORDER_STATUS === "true") {
-      // send a mail to the customer that order has been placed successfully
-      sendMail(
-        req.user.email,
-        "Order Placed Successfully",
-        `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
+        savedData: savedData,
+      },
+    });
+    // send a mail to the customer that order has been placed successfully
+    try {
+      if (process.env.EMAIL_ORDER_STATUS === "true") {
+        // send a mail to the customer that order has been placed successfully
+        sendMail(
+          req.user.email,
+          "Order Placed Successfully",
+          `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
 
   Order Id: ${orderId}
 
@@ -215,41 +282,39 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   Order Date: ${new Date().toLocaleString()}
 
   Order Status: Pending`
-      );
-    }
+        );
+      }
 
-    if (process.env.SMS_ORDER_STATUS === "true") {
-      // send an SMS to the customer that order has been placed successfully
-      await axios.get(
-        process.env.SMS_API_URL +
-          orderId +
-          "%7C" +
-          "Pending" +
-          "%7C" +
-          "&flash=0&numbers=" +
-          req.user.phoneNumber
-      );
-    }
+      if (process.env.SMS_ORDER_STATUS === "true") {
+        // send an SMS to the customer that order has been placed successfully
+        await axios.get(
+          process.env.SMS_API_URL +
+            orderId +
+            "%7C" +
+            "Pending" +
+            "%7C" +
+            "&flash=0&numbers=" +
+            req.user.phoneNumber
+        );
+      }
 
-    if (process.env.WHATSAPP_ORDER_STATUS === "true") {
-      // send a WhatsApp message to the customer that order has been placed successfully
-      // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
+      if (process.env.WHATSAPP_ORDER_STATUS === "true") {
+        // send a WhatsApp message to the customer that order has been placed successfully
+        // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
 
+        sendCustomWhatsAppMessage(
+          req.user["phoneNumber"],
+          `Order placed Successfully.`
+        );
+      }
+    } catch (error) {}
 
+    // send a mail to the restaurant that order has been placed successfully
 
-      sendCustomWhatsAppMessage(
-        req.user["phoneNumber"],
-        `Order placed Successfully.`
-      );
-    }
-  } catch (error) {}
-
-  // send a mail to the restaurant that order has been placed successfully
-
-  sendMail(
-    restaurantDetail?.restaurantEmail,
-    "New Order Received",
-    `You have received a new order from ${req.user.name}.
+    sendMail(
+      restaurantDetail?.restaurantEmail,
+      "New Order Received",
+      `You have received a new order from ${req.user.name}.
 
         Order Id: ${orderId}
 
@@ -258,17 +323,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         Order Date: ${new Date().toLocaleString()}
 
         Order Status: Pending`
-  );
+    );
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      message:
-        "Order placed successfully! Thank you for your purchase. You will soon receive a confirmation once your order is verified by the restaurant.",
-
-      savedData: savedData,
-    },
-  });
+    
+  }
 });
 
 exports.getRestaurantOrdersByStatus = catchAsync(async (req, res, next) => {
@@ -496,8 +554,10 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
       }
 
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
-
-        console.log("orderData.customerPhoneNumber", orderData.customerPhoneNumber);
+        console.log(
+          "orderData.customerPhoneNumber",
+          orderData.customerPhoneNumber
+        );
 
         console.log("whatsapp message", `Rejected by the restaurant.`);
         // send a WhatsApp message to the customer that order has been placed successfully
@@ -508,9 +568,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
           `Rejected by the restaurant.`
         );
       }
-    }
-     catch (error) {
-
+    } catch (error) {
       // print eroro
       console.log(error);
     }
@@ -580,27 +638,23 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         );
       }
 
-      try{
+      try {
+        if (process.env.SMS_ORDER_STATUS === "true") {
+          // send an SMS to the customer that order has been placed successfully
 
-      if (process.env.SMS_ORDER_STATUS === "true") {
-        // send an SMS to the customer that order has been placed successfully
-
-        await axios.get(
-          process.env.SMS_API_URL +
-          req.body.orderId +
-            "%7C" +
-            "Accepted" +
-            "%7C" +
-            "&flash=0&numbers=" +
-            orderData.customerPhoneNumber
-        );
+          await axios.get(
+            process.env.SMS_API_URL +
+              req.body.orderId +
+              "%7C" +
+              "Accepted" +
+              "%7C" +
+              "&flash=0&numbers=" +
+              orderData.customerPhoneNumber
+          );
+        }
+      } catch (error) {
+        console.log("error", error);
       }
-    }
-    catch (error) {
-
-      console.log("error", error);
-
-    }
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
         sendCustomWhatsAppMessage(
           orderData.customerPhoneNumber,
@@ -609,14 +663,8 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         );
       }
     } catch (error) {
-
-    console.log("error", error);
+      console.log("error", error);
     }
-
-
-
-
-
 
     // send a mail to the restaurant that order has been accepted successfully
 
@@ -670,7 +718,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
 
         await axios.get(
           process.env.SMS_API_URL +
-          req.body.orderId +
+            req.body.orderId +
             "%7C" +
             "Completed" +
             "%7C" +
