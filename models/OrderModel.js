@@ -36,7 +36,8 @@ const orderDetailSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
-    required: [true, "Customer Id is missing"],
+    default:new mongoose.Types.ObjectId()
+    // required: [true, "Customer Id is missing"],
   },
   restaurantId: {
     type: mongoose.Schema.Types.ObjectId,

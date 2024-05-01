@@ -8,7 +8,7 @@ const User = require("../models/userModel");
 const PromoCode = require("../models/promoCodeModel");
 const sendEmail = require("../helpers/email");
 const Table = require("../models/tableModel");
-
+const Room = require("../models/RoomModel");
 exports.customerStoreRestaurant = catchAsync(async (req, res, next) => {
   if (!req.body.email || !req.body.restaurantId) {
     res.status(200).json({});
@@ -320,6 +320,29 @@ exports.getAllRestaurants = catchAsync(async (req, res, next) => {
     status: "success",
     data: {
       restaurants,
+    },
+  });
+});
+exports.getRestaurantAllRooms = catchAsync(async (req, res, next) => {
+  const restaurantId = req.body.restaurantKey;
+
+  if (!restaurantId) {
+    res.status(200).json({
+      status: "success",
+      data: {},
+    });
+  }
+
+  const rooms = await Room.findOne({ restaurantId: restaurantId });
+
+  // if (!tables) {
+  //     return next(new AppError("No tables found!", 404));
+  // }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      rooms,
     },
   });
 });

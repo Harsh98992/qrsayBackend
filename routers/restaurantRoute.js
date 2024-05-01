@@ -125,6 +125,12 @@ router.get(
     authenticateController.ristrictTo("restaurantOwner"),
     restaurantSettingController.getAllTables
 );
+router.get(
+    "/getAllRooms",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.getAllRooms
+);
 
 router.post(
     "/createTableEntry",
@@ -132,13 +138,25 @@ router.post(
     authenticateController.ristrictTo("restaurantOwner"),
     restaurantSettingController.createTableEntry
 );
-
+router.post(
+    "/createRoomEntry",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.createRoomEntry
+);
 router.patch(
     "/editTableById",
     authenticateController.protect,
     authenticateController.ristrictTo("restaurantOwner"),
     restaurantSettingController.editTableById
 );
+router.patch(
+    "/editRoomById",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.editRoomById
+);
+
 
 router.patch(
     "/checkDineInTableAvailability",
@@ -152,10 +170,10 @@ router.get(
 );
 
 router.delete(
-    "/deleteTableById/:tableId",
+    "/deleteRoomById/:roomId",
     authenticateController.protect,
     authenticateController.ristrictTo("restaurantOwner"),
-    restaurantSettingController.deleteTableById
+    restaurantSettingController.deleteRoomById
 );
 
 router.patch(

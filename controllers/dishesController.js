@@ -399,17 +399,6 @@ exports.editCategory = catchAsync(async (req, res, next) => {
 
   restaurant.cuisine = cuisine;
 
-  // save the restaurant
-  // await restaurant.save();
-
-
-  // // if timeavaliable is true then start time should be less than end time
-  // if (req.body.timeAvailable) {
-  //   if (req.body.startTime >= req.body.endTime) {
-  //     return next(new AppError("Start time should be less than end time", 400));
-  //   }
-  // }
-
   const result = await Restaurant.updateOne(
     { _id: req.user.restaurantKey, "cuisine._id": categoryId },
 
