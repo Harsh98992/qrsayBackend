@@ -4,6 +4,7 @@ const Restaurant = require("../models/restaurantModel");
 const catchAsync = require("../helpers/catchAsync");
 const {
     getRestaurantDetail,
+    
     updateRestaurantDetail,
     updateRestaurantBannerImage,
     getRestaurantReview,
@@ -28,6 +29,9 @@ const authenticateController = require("../controllers/authenticaionController")
 const {
     customerProtect,
 } = require("../controllers/customerAuthenticationController");
+const {
+    getRestaurantDetailsFromRestaurantId,
+} = require("../controllers/customerController");
 
 restaurantSettingController = require("../controllers/restaurantSettingController");
 const apicache = require("apicache");
@@ -37,6 +41,7 @@ const cacheOptions = {
     defaultDuration: 5 * 60 * 1000, // 5 minutes in milliseconds
 };
 router.get("/getRestaurant", getRestaurant);
+router.get("/getRestaurantById/:restaurantId", getRestaurantDetailsFromRestaurantId);
 
 router.get(
     "/restaurantDetail",
