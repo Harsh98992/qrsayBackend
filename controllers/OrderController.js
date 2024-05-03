@@ -19,8 +19,6 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     ...req.body,
   };
 
-  
-
   const restaurantDetail = await Restaurant.findOne({
     _id: reqData["restaurantId"],
   });
@@ -109,10 +107,11 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     ];
     let savedData = {
       orderId: orderId,
-     
-      customerName:'',
-      customerEmail: '',
-      customerPhoneNumber: '',
+
+      customerName: reqData["customerPreferences"]?.userDetail?.name ?? "",
+      customerEmail: "",
+      customerPhoneNumber:
+        reqData["customerPreferences"]?.userDetail?.phoneNumber ?? "",
       customerPreferences: reqData["customerPreferences"],
       orderDetails: orderData,
       restaurantId: reqData["restaurantId"],
@@ -324,8 +323,6 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
         Order Status: Pending`
     );
-
-    
   }
 });
 
