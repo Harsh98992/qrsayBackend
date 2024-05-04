@@ -19,6 +19,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     ...req.body,
   };
 
+
+
   const restaurantDetail = await Restaurant.findOne({
     _id: reqData["restaurantId"],
   });
@@ -108,10 +110,9 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     let savedData = {
       orderId: orderId,
 
-      customerName: reqData["customerPreferences"]?.userDetail?.name ?? "",
-      customerEmail: "",
-      customerPhoneNumber:
-        reqData["customerPreferences"]?.userDetail?.phoneNumber ?? "",
+      customerName:'',
+      customerEmail: '',
+      customerPhoneNumber: '',
       customerPreferences: reqData["customerPreferences"],
       orderDetails: orderData,
       restaurantId: reqData["restaurantId"],
@@ -323,6 +324,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
         Order Status: Pending`
     );
+
+
   }
 });
 
@@ -1055,3 +1058,63 @@ exports.generateBill = catchAsync(async (req, res, next) => {
     );
   }
 });
+
+
+exports.getRestaurantWithRoomService = catchAsync(async (req, res, next) => {
+  const result = await Restaurant.find({
+    "restaurantStatus": "online",
+    "cuisine.roomService": true,
+  }).lean();
+  res.status(200).json({
+    status: "success",
+    data: {
+      restaurantData: result,
+    },
+  });
+});
+
+exports.getOrderwithOrderId = catchAsync(async (req, res, next) => {
+  if (!req.body?.orderId) {
+    return next(new AppError("Please provide order Id!", 400));
+  }
+  const result = await Order.findOne({ orderId: req.body.orderId }).lean();
+  if (!result) {
+    return next(new AppError("Unable to find order!", 400));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      orderData: result,
+    },
+  });
+}
+);
+
+// Customer name, restaurant name! Room /name
+
+exports.getOrderwithRestaurantNameCustomerNameRoomName = catchAsync( async (req, res, next) => {
+  if (!req.body?.customerName) {
+    return next(new AppError("Please provide customer name!", 400));
+  }
+  if (!req.body?.restaurantName) {
+    return next(new AppError("Please provide restaurant name!", 400));
+  }
+  if (!req.body?.roomName) {
+    return next(new AppError("Please provide room name!", 400));
+  }
+  const restaurantData = await Restaurant.findOne({ restaurantName: req.body.restaurantName });
+  if (!restaurantData) {
+    return next(new AppError("Unable to find restaurant!", 400));
+  }
+  const result = await Order.findOne({  restaurantId: restaurantData._id, "customerPreferences.value": req.body.roomName ,customerName : req.body.customerName }).lean();
+  if (!result) {
+    return next(new AppError("Unable to find order!", 400));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      orderData: result,
+    },
+  });
+}
+);
