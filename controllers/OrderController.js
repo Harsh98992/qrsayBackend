@@ -13,13 +13,12 @@ const Restaurant = require("../models/restaurantModel");
 const Customer = require("../models/CustomerModel");
 // const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
 const { sendCustomWhatsAppMessage } = require("../helpers/whatsapp");
-
+const generateOtp = require("../helpers/generateOtp");
+const Room = require("../models/RoomModel");
 exports.placeOrder = catchAsync(async (req, res, next) => {
   const reqData = {
     ...req.body,
   };
-
-  
 
   const restaurantDetail = await Restaurant.findOne({
     _id: reqData["restaurantId"],
@@ -96,7 +95,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   if (
     reqData["customerPreferences"].preference?.toLowerCase() === "room service"
   ) {
-    const orderId = generateOrderID();
+    const orderId = generateOtp();
     const orderData = [
       {
         cookingInstruction: reqData["cookingInstruction"],
@@ -109,10 +108,11 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     ];
     let savedData = {
       orderId: orderId,
-     
-      customerName:'',
-      customerEmail: '',
-      customerPhoneNumber: '',
+
+      customerName: reqData["customerPreferences"]?.userDetail?.name ?? "",
+      customerEmail: "",
+      customerPhoneNumber:
+        reqData["customerPreferences"]?.userDetail?.phoneNumber ?? "",
       customerPreferences: reqData["customerPreferences"],
       orderDetails: orderData,
       restaurantId: reqData["restaurantId"],
@@ -138,6 +138,65 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_method: "Cash On Delivery",
       };
     }
+
+    // send a mail to the customer that order has been placed successfully
+    try {
+      if (process.env.EMAIL_ORDER_STATUS === "true") {
+        // send a mail to the customer that order has been placed successfully
+        sendMail(
+          req.user.email,
+          "Order Placed Successfully",
+          `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
+
+  Order Id: ${orderId}
+
+  Order Amount: ${reqData["orderAmount"]}
+
+  Order Date: ${new Date().toLocaleString()}
+
+  Order Status: Pending`
+
+
+        );
+      }
+
+
+      if (process.env.SMS_ORDER_STATUS === "true") {
+        // send an SMS to the customer that order has been placed successfully
+        await axios.get(
+          process.env.SMS_API_URL +
+            orderId +
+            "%7C" +
+            "Pending" +
+            "%7C" +
+            "&flash=0&numbers=" +
+            req.user.phoneNumber
+        );
+      }
+
+      if (process.env.WHATSAPP_ORDER_STATUS === "true") {
+        // send a WhatsApp message to the customer that order has been placed successfully
+        // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
+
+        sendCustomWhatsAppMessage(
+          req.user["phoneNumber"],
+          `Order placed Successfully.
+
+          Order Id: ${orderId}
+
+          You can track your order status by clicking on the link below:
+          https://qrsay.com/trackOrder `
+
+        );
+      }
+
+    } catch (error) {
+      // print error
+      console.log(error);
+    }
+
+
+
 
     await Order.create(savedData);
     res.status(200).json({
@@ -213,7 +272,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         return next(new AppError(checkDineInResult.message, 400));
       }
     }
-    const orderId = generateOrderID();
+    const orderId = generateOtp();
     const orderData = [
       {
         cookingInstruction: reqData["cookingInstruction"],
@@ -324,8 +383,6 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
         Order Status: Pending`
     );
-
-    
   }
 });
 
@@ -1058,3 +1115,66 @@ exports.generateBill = catchAsync(async (req, res, next) => {
     );
   }
 });
+
+exports.getRestaurantWithRoomService = catchAsync(async (req, res, next) => {
+  const result = await Room.find({
+    restaurantId: { $exists: true },
+  }).populate({ path: "restaurantId", select: "restaurantName _id" });
+  console.log(result);
+  res.status(200).json({
+    status: "success",
+    data: {
+      restaurantData: result,
+    },
+  });
+});
+
+exports.getOrderwithOrderId = catchAsync(async (req, res, next) => {
+  if (!req.params?.orderId) {
+    return next(new AppError("Please provide order Id!", 400));
+  }
+  const result = await Order.findOne({ orderId: req.params.orderId }).lean();
+  if (!result) {
+    return next(new AppError("Unable to find order!", 400));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      orderData: result,
+    },
+  });
+});
+
+// Customer name, restaurant name! Room /name
+
+exports.getOrderwithRestaurantNameCustomerNameRoomName = catchAsync(
+  async (req, res, next) => {
+    if (!req.body?.customerName) {
+      return next(new AppError("Please provide customer name!", 400));
+    }
+    if (!req.body?.restaurnatId) {
+      return next(new AppError("Please provide restaurant name!", 400));
+    }
+    if (!req.body?.roomName) {
+      return next(new AppError("Please provide room name!", 400));
+    }
+
+    const result = await Order.findOne({
+      restaurantId: req.body.restaurnatId,
+      "customerPreferences.value": {
+        $regex: new RegExp(req.body.roomName, "i"),
+      },
+      customerName: { $regex: new RegExp(req.body.customerName, "i") },
+    });
+
+    if (!result) {
+      return next(new AppError("Unable to find order!", 400));
+    }
+    res.status(200).json({
+      status: "success",
+      data: {
+        orderData: result,
+      },
+    });
+  }
+);
