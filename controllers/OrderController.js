@@ -13,7 +13,7 @@ const Restaurant = require("../models/restaurantModel");
 const Customer = require("../models/CustomerModel");
 // const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
 const { sendCustomWhatsAppMessage } = require("../helpers/whatsapp");
-
+const generateOtp = require("../helpers/generateOtp");
 exports.placeOrder = catchAsync(async (req, res, next) => {
   const reqData = {
     ...req.body,
@@ -94,7 +94,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   if (
     reqData["customerPreferences"].preference?.toLowerCase() === "room service"
   ) {
-    const orderId = generateOrderID();
+    const orderId = generateOtp();
     const orderData = [
       {
         cookingInstruction: reqData["cookingInstruction"],
@@ -212,7 +212,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         return next(new AppError(checkDineInResult.message, 400));
       }
     }
-    const orderId = generateOrderID();
+    const orderId = generateOtp();
     const orderData = [
       {
         cookingInstruction: reqData["cookingInstruction"],
