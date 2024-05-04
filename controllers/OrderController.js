@@ -139,6 +139,65 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       };
     }
 
+    // send a mail to the customer that order has been placed successfully
+    try {
+      if (process.env.EMAIL_ORDER_STATUS === "true") {
+        // send a mail to the customer that order has been placed successfully
+        sendMail(
+          req.user.email,
+          "Order Placed Successfully",
+          `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
+
+  Order Id: ${orderId}
+
+  Order Amount: ${reqData["orderAmount"]}
+
+  Order Date: ${new Date().toLocaleString()}
+
+  Order Status: Pending`
+
+
+        );
+      }
+
+
+      if (process.env.SMS_ORDER_STATUS === "true") {
+        // send an SMS to the customer that order has been placed successfully
+        await axios.get(
+          process.env.SMS_API_URL +
+            orderId +
+            "%7C" +
+            "Pending" +
+            "%7C" +
+            "&flash=0&numbers=" +
+            req.user.phoneNumber
+        );
+      }
+
+      if (process.env.WHATSAPP_ORDER_STATUS === "true") {
+        // send a WhatsApp message to the customer that order has been placed successfully
+        // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
+
+        sendCustomWhatsAppMessage(
+          req.user["phoneNumber"],
+          `Order placed Successfully.
+
+          Order Id: ${orderId}
+
+          You can track your order status by clicking on the link below:
+          https://qrsay.com/trackOrder `
+
+        );
+      }
+
+    } catch (error) {
+      // print error
+      console.log(error);
+    }
+
+
+
+
     await Order.create(savedData);
     res.status(200).json({
       status: "success",
