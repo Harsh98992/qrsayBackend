@@ -257,6 +257,30 @@ exports.updateRestaurantBannerImage = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.updateRestaurantBannerImageForMobile = catchAsync(async (req, res, next) => {
+  if (!req.body.image) {
+    return next(new AppError("Please upload a image!", 400));
+
+  }
+  await Restaurant.findOneAndUpdate(
+    { _id: req.user.restaurantKey },
+
+    {
+      restaurantBackgroundImageForMobile: req.body.image,
+    }
+  );
+
+  res.status(200).json({
+    status: "success",
+
+    data: {
+      message: "Record Updated Successfully!",
+    },
+  });
+});
+
+
 exports.changeRestaurantStatus = catchAsync(async (req, res, next) => {
   if (!req.body.restaurantStatus) {
     return next(new AppError("Please provide a status!", 400));
