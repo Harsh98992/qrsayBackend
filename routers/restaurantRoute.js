@@ -4,9 +4,10 @@ const Restaurant = require("../models/restaurantModel");
 const catchAsync = require("../helpers/catchAsync");
 const {
     getRestaurantDetail,
-    
+
     updateRestaurantDetail,
     updateRestaurantBannerImage,
+    updateRestaurantBannerImageForMobile,
     getRestaurantReview,
     getRestaurant,
     updateStoreSettings,
@@ -24,6 +25,7 @@ const {
     updateRestaurantPlaceId,
     updateRestaurantImage,
     deleteRestaurantImage,
+
 } = require("../controllers/restaurantSettingController");
 const authenticateController = require("../controllers/authenticaionController");
 const {
@@ -90,6 +92,12 @@ router.put(
     authenticateController.protect,
     authenticateController.ristrictTo("restaurantOwner"),
     updateRestaurantBannerImage
+);
+
+router.put("/updateRestaurantBannerImageForMobile",
+authenticateController.protect,
+authenticateController.ristrictTo("restaurantOwner"),
+updateRestaurantBannerImageForMobile
 );
 router.patch(
     "/changeRestaurantStatus",

@@ -237,6 +237,12 @@ const restaurantSchema = new mongoose.Schema({
         type: "string",
         default: "",
     },
+    restaurantBackgroundImageForMobile: {
+        type: "string",
+        default: "",
+    },
+    
+
     restaurantPhoneNumber: {
         type: "string",
     },
