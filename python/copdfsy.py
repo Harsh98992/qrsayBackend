@@ -39,7 +39,7 @@ if __name__ == "__main__":
     destination_uri = (
         "mongodb+srv://goqrorder:2fFhzGUn6EdNUPQJ@cluster0.bt9bmvq.mongodb.net/testdb"
     )
-    destination_db_name = "testdb"
+    destination_db_name = "testdb1"
 
     # copy_mongodb_database(source_uri, source_db_name, destination_uri, destination_db_name)
     # copy the orders collection from the source to the destination
