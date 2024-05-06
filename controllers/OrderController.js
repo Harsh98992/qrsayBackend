@@ -41,8 +41,37 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       for (const dishData of categoryData?.items) {
         if (dishData._id.toString() === orderData?.dishId) {
           if (dishData?.availableFlag) {
+            if (categoryData?.startTime && categoryData?.endTime) {
+              const currDate = new Date();
+              const startHours = categoryData?.startTime.split(":");
+              const endHours = categoryData?.endTime.split(":");
+              const tempDate = new Date();
+              tempDate.setHours(startHours[0]); // Set hours
+              tempDate.setMinutes(startHours[1]); // Set minutes
+              const tempDate2 = new Date();
+              tempDate2.setHours(endHours[0]); // Set hours
+              tempDate2.setMinutes(endHours[1]); // Set minutes
+              if (tempDate > tempDate2) {
+                tempDate2.setDate(tempDate2.getDate() + 1);
+              }
+              if (currDate < tempDate) {
+                return next(
+                  new AppError(
+                    `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
+                    400
+                  )
+                );
+              } else if (currDate > tempDate2) {
+                return next(
+                  new AppError(
+                    `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
+                    400
+                  )
+                );
+              }
+            }
             dishAvailableFlag = true;
-
+            console.log("dishData", categoryData);
             if (dishData?.sizeAvailable?.length) {
               const selectedDish = dishData.sizeAvailable.filter((data) => {
                 return (
@@ -141,7 +170,6 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
     // send a mail to the customer that order has been placed successfully
     try {
-      
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
         // send a WhatsApp message to the customer that order has been placed successfully
         // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
@@ -154,10 +182,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
           You can track your order status by clicking on the link below:
           https://qrsay.com/trackOrder `
-
         );
       }
-
     } catch (error) {
       // print error
       console.log(error);
