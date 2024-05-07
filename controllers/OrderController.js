@@ -42,13 +42,20 @@ exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
         if (dishData._id.toString() === orderData?.dishId) {
           if (dishData?.availableFlag) {
             if (categoryData?.startTime && categoryData?.endTime) {
-              const currDate = new Date();
+              const currDate = new Date(
+                new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+              );
+              console.log(currDate, "currDate")
               const startHours = categoryData?.startTime.split(":");
               const endHours = categoryData?.endTime.split(":");
-              const tempDate = new Date();
+              const tempDate = new Date(
+                new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+              );
               tempDate.setHours(startHours[0]); // Set hours
               tempDate.setMinutes(startHours[1]); // Set minutes
-              const tempDate2 = new Date();
+              const tempDate2 = new Date(
+                new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+              );
               tempDate2.setHours(endHours[0]); // Set hours
               tempDate2.setMinutes(endHours[1]); // Set minutes
               if (tempDate > tempDate2) {
@@ -71,7 +78,7 @@ exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
               }
             }
             dishAvailableFlag = true;
-            console.log("dishData", categoryData);
+           
             if (dishData?.sizeAvailable?.length) {
               const selectedDish = dishData.sizeAvailable.filter((data) => {
                 return (
@@ -153,7 +160,6 @@ exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
         return next(new AppError(checkDineInResult.message, 400));
       }
     }
-   
   }
   res.status(200).json({
     status: "success",
@@ -219,7 +225,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
               }
             }
             dishAvailableFlag = true;
-            console.log("dishData", categoryData);
+          
             if (dishData?.sizeAvailable?.length) {
               const selectedDish = dishData.sizeAvailable.filter((data) => {
                 return (
@@ -334,7 +340,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       }
     } catch (error) {
       // print error
-      console.log(error);
+    
     }
 
     await Order.create(savedData);
