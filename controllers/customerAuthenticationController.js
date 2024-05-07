@@ -42,7 +42,7 @@ exports.customerLogin = catchAsync(async (req, res, next) => {
 
 exports.customerProtect = catchAsync(async (req, res, next) => {
   let token = null;
-  if ((req.url === "/razorpay" || req.url==="/placeOrder") && !req.headers.authorization) {
+  if ((req.url === "/razorpay" || req.url==="/placeOrder" || req.url==="/validationBeforeOrder") && !req.headers.authorization) {
     next();
     return;
   }

@@ -15,6 +15,154 @@ const Customer = require("../models/CustomerModel");
 const { sendCustomWhatsAppMessage } = require("../helpers/whatsapp");
 const generateOtp = require("../helpers/generateOtp");
 const Room = require("../models/RoomModel");
+
+exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
+  const reqData = {
+    ...req.body,
+  };
+
+  const restaurantDetail = await Restaurant.findOne({
+    _id: reqData["restaurantId"],
+  });
+  if (!restaurantDetail) {
+    return next(new AppError("Unable to find restaurant.", 400));
+  }
+  if (
+    restaurantDetail &&
+    restaurantDetail?.restaurantStatus?.toLowerCase() === "offline"
+  ) {
+    return next(
+      new AppError("The restaurant is presently unable to take orders.", 400)
+    );
+  }
+  for (const orderData of reqData?.orderSummary) {
+    let dishAvailableFlag = false;
+    for (const categoryData of restaurantDetail?.cuisine) {
+      for (const dishData of categoryData?.items) {
+        if (dishData._id.toString() === orderData?.dishId) {
+          if (dishData?.availableFlag) {
+            if (categoryData?.startTime && categoryData?.endTime) {
+              const currDate = new Date();
+              const startHours = categoryData?.startTime.split(":");
+              const endHours = categoryData?.endTime.split(":");
+              const tempDate = new Date();
+              tempDate.setHours(startHours[0]); // Set hours
+              tempDate.setMinutes(startHours[1]); // Set minutes
+              const tempDate2 = new Date();
+              tempDate2.setHours(endHours[0]); // Set hours
+              tempDate2.setMinutes(endHours[1]); // Set minutes
+              if (tempDate > tempDate2) {
+                tempDate2.setDate(tempDate2.getDate() + 1);
+              }
+              if (currDate < tempDate) {
+                return next(
+                  new AppError(
+                    `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
+                    400
+                  )
+                );
+              } else if (currDate > tempDate2) {
+                return next(
+                  new AppError(
+                    `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
+                    400
+                  )
+                );
+              }
+            }
+            dishAvailableFlag = true;
+            console.log("dishData", categoryData);
+            if (dishData?.sizeAvailable?.length) {
+              const selectedDish = dishData.sizeAvailable.filter((data) => {
+                return (
+                  data?.size?.toLowerCase() ===
+                  orderData?.["itemSizeSelected"]?.["size"]?.toLowerCase()
+                );
+              });
+
+              if (
+                selectedDish?.length &&
+                selectedDish[0]?.price !==
+                  orderData?.["itemSizeSelected"]?.["price"]
+              ) {
+                return next(
+                  new AppError(
+                    `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
+                    400
+                  )
+                );
+              }
+            } else if (dishData?.dishPrice !== orderData?.dishPrice) {
+              return next(
+                new AppError(
+                  `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
+                  400
+                )
+              );
+            }
+          } else {
+            return next(
+              new AppError(
+                `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
+                400
+              )
+            );
+          }
+        }
+      }
+    }
+    if (!dishAvailableFlag && orderData?.dishId) {
+      return next(
+        new AppError(
+          `We apologize, but the chosen dish ${orderData.dishName} is currently unavailable. Kindly remove it from your cart.`,
+          400
+        )
+      );
+    }
+  }
+  if (
+    reqData["customerPreferences"].preference?.toLowerCase() != "room service"
+  ) {
+    if (req.user.blockedRestaurants.includes(reqData["restaurantId"])) {
+      return next(
+        new AppError(
+          "You have been restricted from accessing this restaurant's services. Kindly reach out to the restaurant for additional details",
+          400
+        )
+      );
+    }
+    const pendingOrder = await Order.findOne({
+      customerId: req.user._id,
+      orderStatus: "pending",
+    });
+
+    if (pendingOrder && pendingOrder._id) {
+      return next(
+        new AppError(
+          "Please wait while your previous order is getting accepted by restaurant!"
+        )
+      );
+    }
+    if (reqData["customerPreferences"].preference === "Dine In") {
+      const checkDineInResult = await checkDineInTableAvailability(
+        reqData["customerPreferences"].value,
+        reqData["restaurantId"],
+        req.user["_id"]
+      );
+      if (!checkDineInResult.result) {
+        return next(new AppError(checkDineInResult.message, 400));
+      }
+    }
+   
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      message:
+        "Order validation successful! You can now proceed to place the order.",
+    },
+  });
+});
 exports.placeOrder = catchAsync(async (req, res, next) => {
   const reqData = {
     ...req.body,

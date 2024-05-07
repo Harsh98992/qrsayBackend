@@ -14,17 +14,22 @@ const {
   getCustomerActiveOrder,
   getOrderwithOrderId,
   getRestaurantWithRoomService,
-  getOrderwithRestaurantNameCustomerNameRoomName
+  getOrderwithRestaurantNameCustomerNameRoomName,
+  validationBeforeOrder
 } = require("../controllers/OrderController");
 const authenticateController = require("../controllers/authenticaionController");
 const { getPaymentGatewayCredentials } = require("../helpers/razorPayHelper");
 const router = express.Router();
 
+router.post("/validationBeforeOrder", customerProtect, validationBeforeOrder);
 router.post("/placeOrder", customerProtect, placeOrder);
 router.get("/customerOrder", customerProtect, getCustomerOrder);
 router.get("/getOrderwithOrderId/:orderId", getOrderwithOrderId);
 router.get("/getRestaurantWithRoomService", getRestaurantWithRoomService);
-router.post("/getOrderwithRestaurantNameCustomerNameRoomName", getOrderwithRestaurantNameCustomerNameRoomName);
+router.post(
+  "/getOrderwithRestaurantNameCustomerNameRoomName",
+  getOrderwithRestaurantNameCustomerNameRoomName
+);
 router.get(
   "/getCustomerPaymentPendingOrder",
   customerProtect,
