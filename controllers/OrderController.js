@@ -196,13 +196,19 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         if (dishData._id.toString() === orderData?.dishId) {
           if (dishData?.availableFlag) {
             if (categoryData?.startTime && categoryData?.endTime) {
-              const currDate = new Date();
+              const currDate = new Date(
+                new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+              );
               const startHours = categoryData?.startTime.split(":");
               const endHours = categoryData?.endTime.split(":");
-              const tempDate = new Date();
+              const tempDate = new Date(
+                new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+              );
               tempDate.setHours(startHours[0]); // Set hours
               tempDate.setMinutes(startHours[1]); // Set minutes
-              const tempDate2 = new Date();
+              const tempDate2 =new Date(
+                new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+              );
               tempDate2.setHours(endHours[0]); // Set hours
               tempDate2.setMinutes(endHours[1]); // Set minutes
               if (tempDate > tempDate2) {
