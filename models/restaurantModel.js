@@ -335,6 +335,11 @@ const restaurantSchema = new mongoose.Schema({
 
         default: false,
     },
+    byPassAuth: {
+        type: Boolean,
+
+        default: false,
+    },
     provideCashOnDelivery: {
         type: Boolean,
 
