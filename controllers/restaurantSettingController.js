@@ -92,6 +92,19 @@ exports.updateRestaurantCashOnDelivery = catchAsync(async (req, res, next) => {
     },
   });
 });
+exports.updateRestaurantByPassAuth = catchAsync(async (req, res, next) => {
+  await Restaurant.findOneAndUpdate(
+    { _id: req.user.restaurantKey },
+    { byPassAuth: req.body.byPassAuth ?? false }
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Record Updated Successfully!",
+    },
+  });
+});
 
 exports.deleteRestaurantImage = catchAsync(async (req, res, next) => {
   if (!req.body.image) {
