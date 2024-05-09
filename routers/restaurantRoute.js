@@ -25,7 +25,7 @@ const {
     updateRestaurantPlaceId,
     updateRestaurantImage,
     deleteRestaurantImage,
-
+    updateRestaurantCashOnDelivery
 } = require("../controllers/restaurantSettingController");
 const authenticateController = require("../controllers/authenticaionController");
 const {
@@ -110,6 +110,12 @@ router.patch(
     authenticateController.protect,
     authenticateController.ristrictTo("restaurantOwner"),
     updateRestaurantImage
+);
+router.patch(
+    "/updateRestaurantCashOnDelivery",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantCashOnDelivery
 );
 router.patch(
     "/deleteRestaurantImage",
