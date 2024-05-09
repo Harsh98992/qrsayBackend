@@ -79,6 +79,19 @@ exports.updateRestaurantImage = catchAsync(async (req, res, next) => {
     },
   });
 });
+exports.updateRestaurantCashOnDelivery = catchAsync(async (req, res, next) => {
+  await Restaurant.findOneAndUpdate(
+    { _id: req.user.restaurantKey },
+    { provideCashOnDelivery: req.body.cashOnDelivery ?? false }
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Record Updated Successfully!",
+    },
+  });
+});
 
 exports.deleteRestaurantImage = catchAsync(async (req, res, next) => {
   if (!req.body.image) {
@@ -295,24 +308,24 @@ exports.deleteTableById = catchAsync(async (req, res, next) => {
   });
 });
 exports.deleteRoomById = catchAsync(async (req, res, next) => {
-    const roomId = req.params.roomId;
-    if (!roomId) {
-      return next(new AppError("Room name is missing.", 400));
-    }
-    const result = await Room.findOneAndUpdate(
-      { restaurantId: req.user.restaurantKey },
-      { $pull: { room: { _id: roomId } } }
-    );
-    if (!result) {
-      return next(new AppError("Something went wrong!", 400));
-    }
-    res.status(200).json({
-      status: "success",
-      data: {
-        message: "Record deleted successfully.",
-      },
-    });
+  const roomId = req.params.roomId;
+  if (!roomId) {
+    return next(new AppError("Room name is missing.", 400));
+  }
+  const result = await Room.findOneAndUpdate(
+    { restaurantId: req.user.restaurantKey },
+    { $pull: { room: { _id: roomId } } }
+  );
+  if (!result) {
+    return next(new AppError("Something went wrong!", 400));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Record deleted successfully.",
+    },
   });
+});
 exports.checkDineInAvailable = catchAsync(async (req, res, next) => {
   const checkDineInResult = await checkDineInTableAvailability(
     req.body.tableName,
