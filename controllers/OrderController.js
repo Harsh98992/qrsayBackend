@@ -61,7 +61,7 @@ exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
               if (tempDate > tempDate2) {
                 tempDate2.setDate(tempDate2.getDate() + 1);
               }
-              if (currDate < tempDate) {
+              else if (currDate < tempDate) {
                 return next(
                   new AppError(
                     `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
@@ -214,7 +214,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
               if (tempDate > tempDate2) {
                 tempDate2.setDate(tempDate2.getDate() + 1);
               }
-              if (currDate < tempDate) {
+             else if (currDate < tempDate) {
                 return next(
                   new AppError(
                     `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
