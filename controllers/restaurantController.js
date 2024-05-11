@@ -325,6 +325,53 @@ exports.updateRestaurantBannerImageForMobile = catchAsync(
     }
 );
 
+exports.updateRestaurantBannerImageForSmall = catchAsync( async (req, res, next) => {
+    if (!req.body.image) {
+        return next(new AppError("Please upload a image!", 400));
+    }
+
+    req.body.imageUrl = req.body.image;
+
+    if (req.body.imageUrl.startsWith("data:image/")) {
+        imageDataWithoutPrefix = req.body.imageUrl.replace(
+            /^data:image\/[a-z]+;base64,/,
+            ""
+        );
+    }
+
+    // console.log(imageDataWithoutPrefix);
+
+    imageData = req.body.imageUrl;
+
+    try {
+        console.log("Uploading to Imgur");
+        imgurUrl = await uploadToImgur(imageData.split(",")[1]);
+    } catch (err) {
+        console.log(err);
+        imgurUrl = req.body.imageUrl;
+    }
+
+
+    await Restaurant.findOneAndUpdate(
+        { _id: req.user.restaurantKey },
+        {
+            restaurantBackgroundImageForSmall: imgurUrl,
+        }
+    );
+    console.log("Record Updated Successfully!");
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            message: "Record Updated Successfully!",
+        },
+    });
+}
+
+);
+
+
+
 exports.changeRestaurantStatus = catchAsync(async (req, res, next) => {
     if (!req.body.restaurantStatus) {
         return next(new AppError("Please provide a status!", 400));
