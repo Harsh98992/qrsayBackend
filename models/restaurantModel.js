@@ -241,7 +241,11 @@ const restaurantSchema = new mongoose.Schema({
         type: "string",
         default: "",
     },
-    
+    restaurantBackgroundImageForSmall: {
+        type: "string",
+        default: "",
+    },
+
 
     restaurantPhoneNumber: {
         type: "string",

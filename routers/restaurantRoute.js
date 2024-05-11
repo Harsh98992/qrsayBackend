@@ -8,6 +8,7 @@ const {
     updateRestaurantDetail,
     updateRestaurantBannerImage,
     updateRestaurantBannerImageForMobile,
+    updateRestaurantBannerImageForSmall,
     getRestaurantReview,
     getRestaurant,
     updateStoreSettings,
@@ -99,6 +100,12 @@ router.put("/updateRestaurantBannerImageForMobile",
 authenticateController.protect,
 authenticateController.ristrictTo("restaurantOwner"),
 updateRestaurantBannerImageForMobile
+);
+
+router.put("/updateRestaurantBannerImageForSmall",
+authenticateController.protect,
+authenticateController.ristrictTo("restaurantOwner"),
+updateRestaurantBannerImageForSmall
 );
 router.patch(
     "/changeRestaurantStatus",
