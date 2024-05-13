@@ -285,9 +285,15 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   }
 
   if (
-    reqData["customerPreferences"].preference?.toLowerCase() === "room service" || 
+    reqData["customerPreferences"].preference?.toLowerCase() ===
+      "room service" ||
     reqData["customerPreferences"].preference?.toLowerCase() === "grab and go"
   ) {
+    if (
+      reqData["customerPreferences"].preference?.toLowerCase() === "grab and go"
+    ) {
+      reqData["customerPreferences"].preference = "Take Away";
+    }
     const orderId = generateOtp();
     const orderData = [
       {
