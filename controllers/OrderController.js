@@ -45,7 +45,7 @@ exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
               const currDate = new Date(
                 new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
               );
-              console.log(currDate, "currDate")
+              console.log(currDate, "currDate");
               const startHours = categoryData?.startTime.split(":");
               const endHours = categoryData?.endTime.split(":");
               const tempDate = new Date(
@@ -60,8 +60,7 @@ exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
               tempDate2.setMinutes(endHours[1]); // Set minutes
               if (tempDate > tempDate2) {
                 tempDate2.setDate(tempDate2.getDate() + 1);
-              }
-              else if (currDate < tempDate) {
+              } else if (currDate < tempDate) {
                 return next(
                   new AppError(
                     `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
@@ -78,7 +77,7 @@ exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
               }
             }
             dishAvailableFlag = true;
-           
+
             if (dishData?.sizeAvailable?.length) {
               const selectedDish = dishData.sizeAvailable.filter((data) => {
                 return (
@@ -130,7 +129,10 @@ exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
   if (
     reqData["customerPreferences"].preference?.toLowerCase() != "room service"
   ) {
-    if (req.user.blockedRestaurants.includes(reqData["restaurantId"])) {
+    if (
+      req.user &&
+      req.user.blockedRestaurants.includes(reqData["restaurantId"])
+    ) {
       return next(
         new AppError(
           "You have been restricted from accessing this restaurant's services. Kindly reach out to the restaurant for additional details",
@@ -138,17 +140,19 @@ exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
         )
       );
     }
-    const pendingOrder = await Order.findOne({
-      customerId: req.user._id,
-      orderStatus: "pending",
-    });
+    if (req.user) {
+      const pendingOrder = await Order.findOne({
+        customerId: req.user._id,
+        orderStatus: "pending",
+      });
 
-    if (pendingOrder && pendingOrder._id) {
-      return next(
-        new AppError(
-          "Please wait while your previous order is getting accepted by restaurant!"
-        )
-      );
+      if (pendingOrder && pendingOrder._id) {
+        return next(
+          new AppError(
+            "Please wait while your previous order is getting accepted by restaurant!"
+          )
+        );
+      }
     }
     if (reqData["customerPreferences"].preference === "Dine In") {
       const checkDineInResult = await checkDineInTableAvailability(
@@ -206,15 +210,14 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
               );
               tempDate.setHours(startHours[0]); // Set hours
               tempDate.setMinutes(startHours[1]); // Set minutes
-              const tempDate2 =new Date(
+              const tempDate2 = new Date(
                 new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
               );
               tempDate2.setHours(endHours[0]); // Set hours
               tempDate2.setMinutes(endHours[1]); // Set minutes
               if (tempDate > tempDate2) {
                 tempDate2.setDate(tempDate2.getDate() + 1);
-              }
-             else if (currDate < tempDate) {
+              } else if (currDate < tempDate) {
                 return next(
                   new AppError(
                     `We apologize, cost of the dish ${orderData.dishName} has been modified. Please remove the dish and place it back in the cart.`,
@@ -231,7 +234,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
               }
             }
             dishAvailableFlag = true;
-          
+
             if (dishData?.sizeAvailable?.length) {
               const selectedDish = dishData.sizeAvailable.filter((data) => {
                 return (
@@ -282,8 +285,15 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   }
 
   if (
-    reqData["customerPreferences"].preference?.toLowerCase() === "room service"
+    reqData["customerPreferences"].preference?.toLowerCase() ===
+      "room service" ||
+    reqData["customerPreferences"].preference?.toLowerCase() === "grab and go"
   ) {
+    if (
+      reqData["customerPreferences"].preference?.toLowerCase() === "grab and go"
+    ) {
+      reqData["customerPreferences"].preference = "Take Away";
+    }
     const orderId = generateOtp();
     const orderData = [
       {
@@ -346,7 +356,6 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       }
     } catch (error) {
       // print error
-    
     }
 
     await Order.create(savedData);
@@ -360,7 +369,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       },
     });
   } else {
-    if (req.user.blockedRestaurants.includes(reqData["restaurantId"])) {
+    if (
+      req.user &&
+      req.user.blockedRestaurants.includes(reqData["restaurantId"])
+    ) {
       return next(
         new AppError(
           "You have been restricted from accessing this restaurant's services. Kindly reach out to the restaurant for additional details",
@@ -368,17 +380,19 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         )
       );
     }
-    const pendingOrder = await Order.findOne({
-      customerId: req.user._id,
-      orderStatus: "pending",
-    });
+    if (req.user) {
+      const pendingOrder = await Order.findOne({
+        customerId: req.user._id,
+        orderStatus: "pending",
+      });
 
-    if (pendingOrder && pendingOrder._id) {
-      return next(
-        new AppError(
-          "Please wait while your previous order is getting accepted by restaurant!"
-        )
-      );
+      if (pendingOrder && pendingOrder._id) {
+        return next(
+          new AppError(
+            "Please wait while your previous order is getting accepted by restaurant!"
+          )
+        );
+      }
     }
     if (
       reqData["customerPreferences"].preference?.toLowerCase() ===
