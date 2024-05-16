@@ -8,20 +8,20 @@ exports.createRazorPayOrder = catchAsync(async (req, res, next) => {
         key_secret: process.env["razorpay_key_secret"],
     });
     const amount = parseInt(req.body.amount) * 100;
-    console.log(amount);
+    
     const options = {
         amount: amount,
         currency: "INR",
         transfers: [
             {
                 account: req.paymentData.restaurantAccountId,
-                amount: amount,
+                amount: Math.round(amount * 0.9764),
                 currency: "INR",
-                notes: {
-                    branch: "Acme Corp Bangalore North",
-                    name: "Gaurav Kumar",
-                },
-                linked_account_notes: ["branch"],
+                // notes: {
+                //     // branch: "Acme Corp Bangalore North",
+                //     // name: "Gaurav Kumar",
+                // },
+                // linked_account_notes: ["branch"],
                 // on_hold: 1,
                 // on_hold_until: 1671222870,
             },
