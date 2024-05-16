@@ -18,8 +18,8 @@ exports.createRazorPayOrder = catchAsync(async (req, res, next) => {
                 amount: amount,
                 currency: "INR",
                 notes: {
-                    branch: "Acme Corp Bangalore North",
-                    name: "Gaurav Kumar",
+                    // branch: "Acme Corp Bangalore North",
+                    // name: "Gaurav Kumar",
                 },
                 linked_account_notes: ["branch"],
                 // on_hold: 1,
