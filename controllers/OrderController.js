@@ -325,6 +325,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       savedData = {
         ...savedData,
         payment_order_id: reqData["razorpay_order_id"],
+        payment_transfer_id: reqData?.["razorpay_tranferData"]?.['id'] ?? '',
         payment_id: reqData["razorpay_payment_id"],
         payment_signature: reqData["razorpay_signature"],
         payment_time: paymentDetails.items[0]["created_at"],
@@ -467,6 +468,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       savedData = {
         ...savedData,
         payment_order_id: reqData["razorpay_order_id"],
+        payment_transfer_id: reqData?.["razorpay_tranferData"]?.['id'] ?? '',
         payment_id: reqData["razorpay_payment_id"],
         payment_signature: reqData["razorpay_signature"],
         payment_time: paymentDetails.items[0]["created_at"],
@@ -973,6 +975,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         $set: {
           orderStatus: "processing",
           payment_order_id: reqData["razorpay_order_id"],
+          payment_transfer_id: reqData?.["razorpay_tranferData"]?.['id'] ?? '',
           payment_id: reqData["razorpay_payment_id"],
           payment_signature: reqData["razorpay_signature"],
           payment_time: paymentDetails.items[0]["created_at"],
@@ -1053,6 +1056,7 @@ exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
       $set: {
         orderStatus: "processing",
         payment_order_id: reqData["razorpay_order_id"],
+        payment_transfer_id: reqData?.["razorpay_tranferData"]?.['id'] ?? '',
         payment_id: reqData["razorpay_payment_id"],
         payment_signature: reqData["razorpay_signature"],
         payment_time: paymentDetails.items[0]["created_at"],

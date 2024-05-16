@@ -102,6 +102,10 @@ const orderSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    payment_transfer_id: {
+        type: String,
+        default: "",
+    },
     payment_id: {
         type: String,
         default: "",
