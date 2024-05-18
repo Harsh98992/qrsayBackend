@@ -51,6 +51,7 @@ exports.getAccountPaymentDetails = catchAsync(async (req, res, next) => {
 
   const result = await instance.payments.all({
     "X-Razorpay-Account": req.paymentData.restaurantAccountId,
+    count:100,
   });
   if (!result["items"] || !result["items"].length) {
     return next(new AppError("No payment details found for the account!"));
