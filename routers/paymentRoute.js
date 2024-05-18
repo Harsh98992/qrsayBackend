@@ -12,17 +12,32 @@ const parseJson = express.json({ extended: false });
 // const PaytmChecksum = require('./PaytmChecksum');
 var Razorpay = require("razorpay");
 const AppError = require("../helpers/appError");
-const { createRazorPayOrder } = require("../controllers/paymentController");
+const { createRazorPayOrder,getAccountPaymentDetails,getAccountTransferDetails } = require("../controllers/paymentController");
 const { getPaymentGatewayCredentials } = require("../helpers/razorPayHelper");
 const {
     customerProtect,
 } = require("../controllers/customerAuthenticationController");
+const authenticateController = require("../controllers/authenticaionController");
 
 router.post(
     "/razorpay",
     customerProtect,
     getPaymentGatewayCredentials,
     createRazorPayOrder
+);
+router.get(
+    "/getAccountPaymentDetails",
+    authenticateController.protect,
+    authenticateController.ristrictTo("admin", "restaurantOwner"),
+    getPaymentGatewayCredentials,
+    getAccountPaymentDetails
+);
+router.get(
+    "/getAccountTransferDetails/:orderId",
+    authenticateController.protect,
+    authenticateController.ristrictTo("admin", "restaurantOwner"),
+    getPaymentGatewayCredentials,
+    getAccountTransferDetails
 );
 router.post("/getCheckSum", [parseUrl, parseJson], (req, res) => {
     // Route for making payment
