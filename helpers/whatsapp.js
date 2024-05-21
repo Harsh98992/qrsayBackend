@@ -76,4 +76,50 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
     return res;
   } catch {}
 };
-module.exports ={ sendWhatsAppMessage,sendCustomWhatsAppMessage};
+const sendTrackOrderWhatsAppMessage = async (phoneNumber, message,orderId) => {
+  try {
+
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer EAAgP3l9SczIBO6cdu9cAuuUVcaD1bYeAQlgIArbK5AimmiL6id0ZBvg6MZBRn9Moetojkda23lzegHp1nhituSmdZBKMw9vZBWKWZAoZCto18yKN8wZAyZBr38scT8ZAsDaFHVUTelArRx9xNcTFQcMM8Vdkq4uyM5b7ABnG9lxXwyUNXhx7pPiiZA7XdMPRD4ExFQ",
+      },
+    };
+    const data = {
+      messaging_product: "whatsapp",
+      to: "91" + phoneNumber,
+      type: "template",
+
+      template: {
+        name: "shipment_confirmation_2",
+        language: {
+          code: "en",
+        },
+        components: [
+          {
+            type: "body",
+            parameters: [
+              {
+                type: "text",
+                text: `${message}`,
+              },
+              {
+                type: "text",
+                text: `${orderId}`,
+              },
+              
+            ],
+          },
+        ],
+      },
+    };
+    const res = await axios.post("https://graph.facebook.com/v17.0/207695905761327/messages", data, config);
+    console.log(res)
+    return res;
+  } catch (e){
+    console.log(e,"fail")
+  }
+};
+module.exports ={ sendWhatsAppMessage,sendCustomWhatsAppMessage,sendTrackOrderWhatsAppMessage};
