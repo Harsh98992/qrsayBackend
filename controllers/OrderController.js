@@ -12,7 +12,10 @@ const io = require("../server"); // Make sure to import the correct 'io' object
 const Restaurant = require("../models/restaurantModel");
 const Customer = require("../models/CustomerModel");
 // const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
-const { sendCustomWhatsAppMessage } = require("../helpers/whatsapp");
+const {
+  sendCustomWhatsAppMessage,
+  sendTrackOrderWhatsAppMessage,
+} = require("../helpers/whatsapp");
 const generateOtp = require("../helpers/generateOtp");
 const Room = require("../models/RoomModel");
 
@@ -325,7 +328,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       savedData = {
         ...savedData,
         payment_order_id: reqData["razorpay_order_id"],
-        payment_transfer_id: reqData?.["razorpay_tranferData"]?.['id'] ?? '',
+        payment_transfer_id: reqData?.["razorpay_tranferData"]?.["id"] ?? "",
         payment_id: reqData["razorpay_payment_id"],
         payment_signature: reqData["razorpay_signature"],
         payment_time: paymentDetails.items[0]["created_at"],
@@ -345,14 +348,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         // send a WhatsApp message to the customer that order has been placed successfully
         // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
 
-        sendCustomWhatsAppMessage(
+        sendTrackOrderWhatsAppMessage(
           reqData["customerPreferences"]?.userDetail?.phoneNumber,
-          `Order placed Successfully.
-
-          Order Id: ${orderId}
-
-          You can track your order status by clicking on the link below:
-          https://qrsay.com/trackOrder `
+          `Accepted`,
+          `${orderId}`
         );
       }
     } catch (error) {
@@ -468,7 +467,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       savedData = {
         ...savedData,
         payment_order_id: reqData["razorpay_order_id"],
-        payment_transfer_id: reqData?.["razorpay_tranferData"]?.['id'] ?? '',
+        payment_transfer_id: reqData?.["razorpay_tranferData"]?.["id"] ?? "",
         payment_id: reqData["razorpay_payment_id"],
         payment_signature: reqData["razorpay_signature"],
         payment_time: paymentDetails.items[0]["created_at"],
@@ -975,7 +974,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         $set: {
           orderStatus: "processing",
           payment_order_id: reqData["razorpay_order_id"],
-          payment_transfer_id: reqData?.["razorpay_tranferData"]?.['id'] ?? '',
+          payment_transfer_id: reqData?.["razorpay_tranferData"]?.["id"] ?? "",
           payment_id: reqData["razorpay_payment_id"],
           payment_signature: reqData["razorpay_signature"],
           payment_time: paymentDetails.items[0]["created_at"],
@@ -1056,7 +1055,7 @@ exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
       $set: {
         orderStatus: "processing",
         payment_order_id: reqData["razorpay_order_id"],
-        payment_transfer_id: reqData?.["razorpay_tranferData"]?.['id'] ?? '',
+        payment_transfer_id: reqData?.["razorpay_tranferData"]?.["id"] ?? "",
         payment_id: reqData["razorpay_payment_id"],
         payment_signature: reqData["razorpay_signature"],
         payment_time: paymentDetails.items[0]["created_at"],
