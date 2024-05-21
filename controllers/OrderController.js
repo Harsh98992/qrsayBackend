@@ -350,7 +350,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
 
         sendTrackOrderWhatsAppMessage(
           reqData["customerPreferences"]?.userDetail?.phoneNumber,
-          `Accepted`,
+          `Order placed successfully!`,
           `${orderId}`
         );
       }
