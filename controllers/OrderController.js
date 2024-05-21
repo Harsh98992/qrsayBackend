@@ -731,6 +731,10 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     return next(new AppError("Missing Order Id!", 400));
   }
   const orderData = await Order.findOne({ _id: req.body.orderId });
+  const restaurantDetail = await Restaurant.findOne({
+    _id: orderData.restaurantId,
+  });
+
   if (req.body.orderStatus === "rejected") {
     if (!req.body?.reason) {
       return next(new AppError("Please provide order cancel reason!", 400));
@@ -784,11 +788,10 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
 
         console.log("whatsapp message", `Rejected by the restaurant.`);
         // send a WhatsApp message to the customer that order has been placed successfully
-
-        sendCustomWhatsAppMessage(
-          orderData.customerPhoneNumber,
-
-          `Rejected by the restaurant.`
+        whatsappHelper(
+          restaurantDetail,
+          orderData,
+          "Rejected by the restaurant."
         );
       }
     } catch (error) {
@@ -799,10 +802,6 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     // send a mail to the restaurant that order has been placed successfully
 
     // send a mail to the restaurant that order has been rejected successfully by the restaurant
-
-    const restaurantDetail = await Restaurant.findOne({
-      _id: orderData.restaurantId,
-    });
 
     sendMail(
       restaurantDetail?.restaurantEmail,
@@ -879,21 +878,13 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
         console.log("error", error);
       }
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
-        sendCustomWhatsAppMessage(
-          orderData.customerPhoneNumber,
-
-          `Accepted by restaurant.`
-        );
+        whatsappHelper(restaurantDetail, orderData, `Accepted by restaurant.`);
       }
     } catch (error) {
       console.log("error", error);
     }
 
     // send a mail to the restaurant that order has been accepted successfully
-
-    const restaurantDetail = await Restaurant.findOne({
-      _id: orderData.restaurantId,
-    });
 
     sendMail(
       restaurantDetail?.restaurantEmail,
@@ -951,11 +942,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
       }
 
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
-        sendCustomWhatsAppMessage(
-          orderData.customerPhoneNumber,
-
-          `Completed.`
-        );
+        whatsappHelper(restaurantDetail, orderData, `Completed.`);
       }
     } catch (error) {}
 
@@ -985,10 +972,7 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     );
     // send a mail to the customer that order has been placed successfully
     try {
-      sendCustomWhatsAppMessage(
-        orderData.customerPhoneNumber,
-        `Aaccepted by restaurant.`
-      );
+      whatsappHelper(restaurantDetail, orderData, `Aaccepted by restaurant.`);
     } catch {}
     sendMail(
       orderData.customerEmail,
@@ -1033,6 +1017,23 @@ exports.changeOrderStatus = catchAsync(async (req, res, next) => {
     },
   });
 });
+const whatsappHelper = (restaurantData, orderData, message = "") => {
+  if (restaurantData?.byPassAuth) {
+    if (orderData["customerPreferences"]?.userDetail?.phoneNumber) {
+      sendTrackOrderWhatsAppMessage(
+        orderData["customerPreferences"]?.userDetail?.phoneNumber,
+        `${message}`,
+        `${orderData.orderId}`
+      );
+    }
+  } else {
+    sendCustomWhatsAppMessage(
+      orderData.customerPhoneNumber,
+
+      `${message}`
+    );
+  }
+};
 exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
   if (!req.body.orderId) {
     return next(new AppError("Missing Order Id!", 400));
