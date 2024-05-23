@@ -319,9 +319,10 @@ exports.addCategory = catchAsync(async (req, res, next) => {
     categoryName: req.body.category.toLowerCase(),
     categoryPriority: req.body.categoryPriority,
     timeAvailable: req.body.timeAvailable,
-    categoryAvailable:req.body.categoryAvailable,
+    categoryAvailable: req.body.categoryAvailable,
     startTime: req.body.timeAvailable ? req.body.startTime : null,
     endTime: req.body.timeAvailable ? req.body.endTime : null,
+    specialCategory: req.body?.specialCategory,
   };
   const checkExists = await Restaurant.find({
     _id: req.user.restaurantKey,
@@ -334,7 +335,6 @@ exports.addCategory = catchAsync(async (req, res, next) => {
   if (checkExists.length) {
     return next(new AppError("Category already exists!", 400));
   }
-  console.log(categoryValue)
   const result = await Restaurant.updateOne(
     { _id: req.user.restaurantKey },
     { $push: { cuisine: categoryValue } },
@@ -412,6 +412,7 @@ exports.editCategory = catchAsync(async (req, res, next) => {
           ? req.body.startTime
           : null,
         "cuisine.$.endTime": req.body.timeAvailable ? req.body.endTime : null,
+        "cuisine.$.specialCategory": req.body?.specialCategory || false,
       },
     },
     { multi: true }
@@ -493,16 +494,16 @@ exports.getCategory = catchAsync(async (req, res, next) => {
   let categoryResult = [];
 
   if (result && result.cuisine && result.cuisine.length) {
-      for (const data of result.cuisine) {
-        console.log(data)
+    for (const data of result.cuisine) {
       categoryResult.push({
         categoryName: data.categoryName,
         _id: data._id,
-        categoryPriority:data.categoryPriority,
-        startTime:data.startTime,
-        endTime:data.endTime,
-        categoryAvailable:data.categoryAvailable,
-        timeAvailable:data.timeAvailable,
+        categoryPriority: data.categoryPriority,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        categoryAvailable: data.categoryAvailable,
+        timeAvailable: data.timeAvailable,
+        specialCategory: data.specialCategory,
       });
     }
   }
