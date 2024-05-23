@@ -112,6 +112,17 @@ const sendTrackOrderWhatsAppMessage = async (phoneNumber, message,orderId) => {
               
             ],
           },
+          {
+            "type": "button",
+            "sub_type": "url",
+            "index": 0,
+            "parameters": [
+                {
+                    "type": "text",
+                    "text": `${orderId}`
+                }
+            ]
+        }
         ],
       },
     };
