@@ -170,7 +170,7 @@ exports.createTableEntry = catchAsync(async (req, res, next) => {
     return next(new AppError("Please provide restaurant id!", 400));
   }
 
-  checkifTableExists = await Room.findOne({
+  checkifTableExists = await Table.findOne({
     restaurantId: restaurantId,
     tables: { $elemMatch: { tableName: req.body.tableName } },
   });
@@ -179,17 +179,17 @@ exports.createTableEntry = catchAsync(async (req, res, next) => {
     return next(new AppError("Table already exists!", 400));
   }
 
-  const result = await Room.findOne({
+  const result = await Table.findOne({
     restaurantId: restaurantId,
   });
-
+  console.log(result)
   if (!result) {
-    await Room.create({
+    await Table.create({
       restaurantId: restaurantId,
       tables: req.body,
     });
   } else {
-    await Room.updateOne(
+    await Table.updateOne(
       {
         restaurantId: restaurantId,
       },

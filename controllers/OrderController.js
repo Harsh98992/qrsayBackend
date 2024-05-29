@@ -291,6 +291,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     reqData["customerPreferences"].preference?.toLowerCase() ===
       "room service" ||
     reqData["customerPreferences"].preference?.toLowerCase() === "grab and go"
+    ||
+    reqData["customerPreferences"].preference?.toLowerCase() === "dining"
   ) {
     if (
       reqData["customerPreferences"].preference?.toLowerCase() === "grab and go"
