@@ -62,6 +62,10 @@ const dishSchema = new mongoose.Schema({
   dishOrderOption: {
     type: "String",
   },
+  dishOrderAvailability: {
+    type: "String",
+    default:"all"
+  },
   dishType: {
     type: "String",
   },
