@@ -92,6 +92,31 @@ exports.updateRestaurantCashOnDelivery = catchAsync(async (req, res, next) => {
     },
   });
 });
+exports.updateRestaurantDineInGstSetting = catchAsync(
+  async (req, res, next) => {
+    // if (req?.isDineInGstApplicable===null || req?.isDineInGstApplicable===undefined) {
+    //   return next(new AppError("Please provide valid data!", 400));
+    // }
+    await Restaurant.findOneAndUpdate(
+      { _id: req.user.restaurantKey },
+      {
+        isDineInPricingInclusiveOfGST:
+          req.body.isDineInPricingInclusiveOfGST ?? false,
+        isDineInGstApplicable:
+          req.body.isDineInGstApplicable ?? false,
+        customDineInGSTPercentage:
+          req.body.customDineInGSTPercentage ?? 0,
+      }
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        message: "Record Updated Successfully!",
+      },
+    });
+  }
+);
 exports.updateRestaurantByPassAuth = catchAsync(async (req, res, next) => {
   await Restaurant.findOneAndUpdate(
     { _id: req.user.restaurantKey },
@@ -182,7 +207,7 @@ exports.createTableEntry = catchAsync(async (req, res, next) => {
   const result = await Table.findOne({
     restaurantId: restaurantId,
   });
-  console.log(result)
+  console.log(result);
   if (!result) {
     await Table.create({
       restaurantId: restaurantId,
