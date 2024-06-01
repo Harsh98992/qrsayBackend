@@ -62,6 +62,10 @@ const dishSchema = new mongoose.Schema({
   dishOrderOption: {
     type: "String",
   },
+  dishOrderAvailability: {
+    type: "String",
+    default:"all"
+  },
   dishType: {
     type: "String",
   },
@@ -288,7 +292,18 @@ const restaurantSchema = new mongoose.Schema({
     type: "Number",
     default: 0,
   },
-
+  isDineInPricingInclusiveOfGST: {
+    type: "Boolean",
+    default: false,
+  },
+  isDineInGstApplicable: {
+    type: "Boolean",
+    default: false,
+  },
+  customDineInGSTPercentage: {
+    type: "Number",
+    default: 0,
+  },
   placeId: {
     type: "string",
   },

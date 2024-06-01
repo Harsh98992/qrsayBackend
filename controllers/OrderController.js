@@ -291,6 +291,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     reqData["customerPreferences"].preference?.toLowerCase() ===
       "room service" ||
     reqData["customerPreferences"].preference?.toLowerCase() === "grab and go"
+    ||
+    reqData["customerPreferences"].preference?.toLowerCase() === "dining"
   ) {
     if (
       reqData["customerPreferences"].preference?.toLowerCase() === "grab and go"
@@ -334,6 +336,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_time: paymentDetails.items[0]["created_at"],
         payment_method: paymentDetails.items[0]["method"],
         payment_amount: paymentDetails.items[0]["amount"] / 100,
+        transfer_amount:  reqData?.["razorpay_tranferData"]?.["amount"] / 100,
       };
     } else {
       savedData = {
@@ -473,6 +476,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_time: paymentDetails.items[0]["created_at"],
         payment_method: paymentDetails.items[0]["method"],
         payment_amount: paymentDetails.items[0]["amount"] / 100,
+        transfer_amount:  reqData?.["razorpay_tranferData"]?.["amount"] / 100,
       };
     } else {
       savedData = {

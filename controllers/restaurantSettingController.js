@@ -92,6 +92,31 @@ exports.updateRestaurantCashOnDelivery = catchAsync(async (req, res, next) => {
     },
   });
 });
+exports.updateRestaurantDineInGstSetting = catchAsync(
+  async (req, res, next) => {
+    // if (req?.isDineInGstApplicable===null || req?.isDineInGstApplicable===undefined) {
+    //   return next(new AppError("Please provide valid data!", 400));
+    // }
+    await Restaurant.findOneAndUpdate(
+      { _id: req.user.restaurantKey },
+      {
+        isDineInPricingInclusiveOfGST:
+          req.body.isDineInPricingInclusiveOfGST ?? false,
+        isDineInGstApplicable:
+          req.body.isDineInGstApplicable ?? false,
+        customDineInGSTPercentage:
+          req.body.customDineInGSTPercentage ?? 0,
+      }
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        message: "Record Updated Successfully!",
+      },
+    });
+  }
+);
 exports.updateRestaurantByPassAuth = catchAsync(async (req, res, next) => {
   await Restaurant.findOneAndUpdate(
     { _id: req.user.restaurantKey },
@@ -170,7 +195,7 @@ exports.createTableEntry = catchAsync(async (req, res, next) => {
     return next(new AppError("Please provide restaurant id!", 400));
   }
 
-  checkifTableExists = await Room.findOne({
+  checkifTableExists = await Table.findOne({
     restaurantId: restaurantId,
     tables: { $elemMatch: { tableName: req.body.tableName } },
   });
@@ -179,17 +204,17 @@ exports.createTableEntry = catchAsync(async (req, res, next) => {
     return next(new AppError("Table already exists!", 400));
   }
 
-  const result = await Room.findOne({
+  const result = await Table.findOne({
     restaurantId: restaurantId,
   });
-
+  console.log(result);
   if (!result) {
-    await Room.create({
+    await Table.create({
       restaurantId: restaurantId,
       tables: req.body,
     });
   } else {
-    await Room.updateOne(
+    await Table.updateOne(
       {
         restaurantId: restaurantId,
       },
