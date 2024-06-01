@@ -336,6 +336,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_time: paymentDetails.items[0]["created_at"],
         payment_method: paymentDetails.items[0]["method"],
         payment_amount: paymentDetails.items[0]["amount"] / 100,
+        transfer_amount:  reqData?.["razorpay_tranferData"]?.["amount"] / 100,
       };
     } else {
       savedData = {
@@ -475,6 +476,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_time: paymentDetails.items[0]["created_at"],
         payment_method: paymentDetails.items[0]["method"],
         payment_amount: paymentDetails.items[0]["amount"] / 100,
+        transfer_amount:  reqData?.["razorpay_tranferData"]?.["amount"] / 100,
       };
     } else {
       savedData = {

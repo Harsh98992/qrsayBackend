@@ -108,6 +108,7 @@ const orderSchema = new mongoose.Schema({
     },
     transfer_amount:{
         type: Number,
+        
     },
     
     payment_id: {
