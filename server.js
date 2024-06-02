@@ -6,7 +6,8 @@ const dotenv = require("dotenv");
 const http = require("http");
 const initializeSocket = require("./socket"); // Import the Socket.IO initialization function
 const cron = require("node-cron");
-
+const { exec } = require("child_process");
+const path = require("path");
 const AppError = require("./helpers/appError");
 const Order = require("./models/OrderModel");
 const adminRoute = require("./routers/adminRoute");
@@ -104,6 +105,22 @@ cron.schedule("*/10 * * * *", async function () {
     }
   );
 });
+cron.schedule("0 0 * * *", () => {
+  const mongodumpCmd = `mongodump "${dbConStr}" --username goqrorder`;
+  exec(mongodumpCmd, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing mongodump: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`mongodump stderr: ${stderr}`);
+      return;
+    }
+    console.log(`Backup successful: ${backupFilePath}`);
+  });
+});
+
+// Mongodump command with connection string
 
 server.listen(port, () => {
   console.log(`App running on port ${port}...`);
