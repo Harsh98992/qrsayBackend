@@ -106,18 +106,18 @@ cron.schedule("*/10 * * * *", async function () {
   );
 });
 cron.schedule("0 0 * * *", () => {
-  const mongodumpCmd = `mongodump "${dbConStr}" --username goqrorder`;
-  exec(mongodumpCmd, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing mongodump: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`mongodump stderr: ${stderr}`);
-      return;
-    }
-    console.log(`Backup successful: ${backupFilePath}`);
-  });
+  // const mongodumpCmd = `mongodump "${dbConStr}" --username goqrorder`;
+  // exec(mongodumpCmd, (error, stdout, stderr) => {
+  //   if (error) {
+  //     console.error(`Error executing mongodump: ${error.message}`);
+  //     return;
+  //   }
+  //   if (stderr) {
+  //     console.error(`mongodump stderr: ${stderr}`);
+  //     return;
+  //   }
+  //   console.log(`Backup successful: ${backupFilePath}`);
+  // });
 });
 
 // Mongodump command with connection string
