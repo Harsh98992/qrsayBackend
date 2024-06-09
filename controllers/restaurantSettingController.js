@@ -92,6 +92,7 @@ exports.updateRestaurantCashOnDelivery = catchAsync(async (req, res, next) => {
     },
   });
 });
+
 exports.updateRestaurantDineInGstSetting = catchAsync(
   async (req, res, next) => {
     // if (req?.isDineInGstApplicable===null || req?.isDineInGstApplicable===undefined) {
@@ -408,5 +409,13 @@ exports.checkAciveDineIn = catchAsync(async (req, res, next) => {
   }
   res.status(200).json({
     status: "success",
+  });
+});
+exports.generatebill = catchAsync(async (req, res, next) => {
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Record Updated Successfully!",
+    },
   });
 });
