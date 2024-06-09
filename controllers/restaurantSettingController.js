@@ -11,7 +11,7 @@ const Room = require("../models/RoomModel");
 const {
   default: roundToNearestMinutes,
 } = require("date-fns/fp/roundToNearestMinutes");
-
+const { generateBillHelper } = require("../helpers/printer");
 exports.updateRestaurantPlaceId = catchAsync(async (req, res, next) => {
   if (!req.body.placeId) {
     return next(new AppError("Please provide place id!", 400));
@@ -103,10 +103,8 @@ exports.updateRestaurantDineInGstSetting = catchAsync(
       {
         isDineInPricingInclusiveOfGST:
           req.body.isDineInPricingInclusiveOfGST ?? false,
-        isDineInGstApplicable:
-          req.body.isDineInGstApplicable ?? false,
-        customDineInGSTPercentage:
-          req.body.customDineInGSTPercentage ?? 0,
+        isDineInGstApplicable: req.body.isDineInGstApplicable ?? false,
+        customDineInGSTPercentage: req.body.customDineInGSTPercentage ?? 0,
       }
     );
 
@@ -411,11 +409,26 @@ exports.checkAciveDineIn = catchAsync(async (req, res, next) => {
     status: "success",
   });
 });
-exports.generatebill = catchAsync(async (req, res, next) => {
+exports.generateBill = catchAsync(async (req, res, next) => {
+  const orderDetail = req.body?.orderDetail;
+  const restaurantDetail = req.body?.restaurantDetail;
+
+  if (orderDetail && restaurantDetail) {
+    const result = await generateBillHelper(orderDetail, restaurantDetail);
+    if (!result) {
+      res.status(200).json({
+        status: "success",
+        data: {
+          state: "fail",
+        },
+      });
+      return
+    }
+  }
   res.status(200).json({
     status: "success",
     data: {
-      message: "Record Updated Successfully!",
+      state: "pass",
     },
   });
 });
