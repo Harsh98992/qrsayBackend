@@ -2,6 +2,7 @@ const escpos = require("escpos");
 const { prependListener } = require("../models/promoCodeModel");
 // install escpos-usb adapter module manually
 escpos.USB = require("escpos-usb");
+var _ = require('lodash');
 // Select the adapter based on your printer type
 
 // const device  = new escpos.Network('localhost');
@@ -9,7 +10,7 @@ escpos.USB = require("escpos-usb");
 
 // encoding is optional
 const generateBillHelper = async (
-  orderDetail,
+  orderData,
   restaurantDetail,
   kotFlag = false
 ) => {

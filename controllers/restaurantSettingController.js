@@ -416,7 +416,7 @@ exports.generateBill = catchAsync(async (req, res, next) => {
 
   if (orderDetail && restaurantDetail) {
     const result = await generateBillHelper(orderDetail, restaurantDetail,kotFlag);
-    if (!result) {
+    if (result===false) {
       res.status(200).json({
         status: "success",
         data: {
