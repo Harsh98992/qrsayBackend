@@ -8,7 +8,7 @@ escpos.USB = require("escpos-usb");
 // const device  = new escpos.Serial('/dev/usb/lp0');
 
 // encoding is optional
-const generateBillHelper = async (orderDetail, restaurantDetail) => {
+const generateBillHelper = async (orderDetail, restaurantDetail, kotFlag=false) => {
   try {
     const device = new escpos.USB();
     const printer = new escpos.Printer(device);
@@ -79,19 +79,23 @@ const generateBillHelper = async (orderDetail, restaurantDetail) => {
         .align("ct")
 
         .size(0.5, 0.5)
-        .text(`${restaurantDetail.restaurantName?.toUpperCase()}`)
-        .text(
-          `${restaurantDetail.address.street?.toUpperCase()} ,${restaurantDetail.address.city?.toUpperCase()},${restaurantDetail.address.state.toUpperCase()},${
-            restaurantDetail.address.pinCode
-          }`
-        )
-        .text(
-          `${
-            restaurantDetail.gstNumber
-              ? "GST Number:- " + restaurantDetail.gstNumber
-              : ""
-          }`
-        )
+        .text(`${restaurantDetail.restaurantName?.toUpperCase()}`);
+      if (!kotFlag) {
+        printer
+          .text(
+            `${restaurantDetail.address.street?.toUpperCase()} ,${restaurantDetail.address.city?.toUpperCase()},${restaurantDetail.address.state.toUpperCase()},${
+              restaurantDetail.address.pinCode
+            }`
+          )
+          .text(
+            `${
+              restaurantDetail.gstNumber
+                ? "GST Number:- " + restaurantDetail.gstNumber
+                : ""
+            }`
+          );
+      }
+      printer
         .text(
           `${
             orderDetail.customerPreferences.preference.toLowerCase() ===
@@ -117,157 +121,191 @@ const generateBillHelper = async (orderDetail, restaurantDetail) => {
 
       printer.align("LT");
       printer.text(` Order ID: ${orderDetail.orderId}`);
-      printer.text(
-        `Payment Status: : ${
-          orderDetail.payment_method
-            ? "Paid via " + orderDetail.payment_method
-            : "Pending"
-        }`
-      );
+      if (!kotFlag) {
+        printer.text(
+          `Payment Status: : ${
+            orderDetail.payment_method
+              ? "Paid via " + orderDetail.payment_method
+              : "Pending"
+          }`
+        );
+      }
       printer.text(` ${orderDetail.customerName}`);
-      printer.text(
-        `  ${orderDetail.customerPhoneNumber} - ${orderDetail.customerEmail}`
-      );
-
-      printer
-        .marginBottom(10)
-        .drawLine()
-        .table(["Items", "Price", "Qty", "Amount"])
-        .drawLine();
-      for (const order of orderDetail.orderDetails[0].orderSummary) {
-        const dishName = order.dishName;
-        var checkIfFirst = true;
-        if (order.extraSelected && order.extraSelected.length) {
-          for (const extra of order.extraSelected) {
-            if (checkIfFirst) {
-              dishName += ` with ${extra.addOnDisplayName}(${extra.addOnsSelected[0].addOnName})`;
-              checkIfFirst = false;
-            } else {
-              dishName += ` and ${extra.addOnDisplayName}(${extra.addOnsSelected[0].addOnName})`;
+      if (!kotFlag) {
+        printer.text(
+          `  ${orderDetail.customerPhoneNumber} - ${orderDetail.customerEmail}`
+        );
+      }
+      if (!kotFlag) {
+        printer
+          .marginBottom(10)
+          .drawLine()
+          .table(["Items", "Price", "Qty", "Amount"])
+          .drawLine();
+        for (const order of orderDetail.orderDetails[0].orderSummary) {
+          const dishName = order.dishName;
+          var checkIfFirst = true;
+          if (order.extraSelected && order.extraSelected.length) {
+            for (const extra of order.extraSelected) {
+              if (checkIfFirst) {
+                dishName += ` with ${extra.addOnDisplayName}(${extra.addOnsSelected[0].addOnName})`;
+                checkIfFirst = false;
+              } else {
+                dishName += ` and ${extra.addOnDisplayName}(${extra.addOnsSelected[0].addOnName})`;
+              }
             }
           }
+          printer.tableCustom(
+            [
+              { text: `${dishName}`, align: "LEFT" },
+              { text: `${order.priceOneItem}`, align: "LEFT" },
+              { text: `${order.dishQuantity}`, align: "LEFT" },
+              { text: `${order.totalPrice}`, align: "LEFT" },
+            ],
+            { encoding: "cp857", size: [1, 1] } // Optional
+          );
         }
-        printer.tableCustom(
-          [
-            { text: `${dishName}`, align: "LEFT" },
-            { text: `${order.priceOneItem}`, align: "LEFT" },
-            { text: `${order.dishQuantity}`, align: "LEFT" },
-            { text: `${order.totalPrice}`, align: "LEFT" },
-          ],
-          { encoding: "cp857", size: [1, 1] } // Optional
-        );
+      } else {
+        printer.marginBottom(10).drawLine().table(["Items", "Qty"]).drawLine();
+        for (const order of orderDetail.orderDetails[0].orderSummary) {
+          const dishName = order.dishName;
+          var checkIfFirst = true;
+          if (order.extraSelected && order.extraSelected.length) {
+            for (const extra of order.extraSelected) {
+              if (checkIfFirst) {
+                dishName += ` with ${extra.addOnDisplayName}(${extra.addOnsSelected[0].addOnName})`;
+                checkIfFirst = false;
+              } else {
+                dishName += ` and ${extra.addOnDisplayName}(${extra.addOnsSelected[0].addOnName})`;
+              }
+            }
+          }
+          printer.tableCustom(
+            [
+              { text: `${dishName}`, align: "LEFT" },
+
+              { text: `${order.dishQuantity}`, align: "LEFT" },
+            ],
+            { encoding: "cp857", size: [1, 1] } // Optional
+          );
+        }
       }
       printer.drawLine();
       //printer.alignLeft();
       printer.text(
         `Total Quantity: ${orderDetail.orderDetails[0].orderSummary.length}`
       );
-      if (restaurantDetail.isGstApplicable) {
+      if (!kotFlag) {
+        if (restaurantDetail.isGstApplicable) {
+          printer.tableCustom([
+            { text: "Net Amt. ", align: "LEFT" },
+            {
+              text: `${orderDetail.orderDetails[0].orderAmount}`,
+              align: "RIGHT",
+            },
+          ]);
+          printer.tableCustom([
+            {
+              text: `Tax (${
+                orderDetail.customerPreferences.preference.toLowerCase() ===
+                "dining"
+                  ? restaurantDetail.customDineInGSTPercentage
+                  : restaurantDetail.customGSTPercentage
+              }%)`,
+              align: "LEFT",
+            },
+            {
+              text: `>${orderDetail.orderDetails[0].gstAmount}`,
+              align: "RIGHT",
+            },
+          ]);
+        }
         printer.tableCustom([
-          { text: "Net Amt. ", align: "LEFT" },
+          { text: "Total Amt.", align: "LEFT" },
           {
-            text: `${orderDetail.orderDetails[0].orderAmount}`,
+            text: `${
+              orderDetail.orderDetails[0].orderAmount +
+              orderDetail.orderDetails[0].gstAmount
+            }`,
             align: "RIGHT",
           },
         ]);
-        printer.tableCustom([
-          {
-            text: `Tax (${
-              orderDetail.customerPreferences.preference.toLowerCase() ===
-              "dining"
-                ? restaurantDetail.customDineInGSTPercentage
-                : restaurantDetail.customGSTPercentage
-            }%)`,
-            align: "LEFT",
-          },
-          { text: `>${orderDetail.orderDetails[0].gstAmount}`, align: "RIGHT" },
-        ]);
-      }
-      printer.tableCustom([
-        { text: "Total Amt.", align: "LEFT" },
-        {
-          text: `${
-            orderDetail.orderDetails[0].orderAmount +
-            orderDetail.orderDetails[0].gstAmount
-          }`,
-          align: "RIGHT",
-        },
-      ]);
-      printer.drawLine();
-      if (restaurantDetail.isGstApplicable) {
-        printer.println("Tax Summary");
+        printer.drawLine();
+        if (restaurantDetail.isGstApplicable) {
+          printer.println("Tax Summary");
 
+          printer
+            .drawLine()
+            .table([
+              `Tax (${
+                orderDetail.customerPreferences.preference.toLowerCase() ===
+                "dining"
+                  ? restaurantDetail.customDineInGSTPercentage
+                  : restaurantDetail.customGSTPercentage
+              }%)`,
+              "Basic Amt",
+              "Tax Amt",
+            ])
+            .drawLine()
+            .tableCustom(
+              [
+                {
+                  text: `CGST (${
+                    orderDetail.customerPreferences.preference.toLowerCase() ===
+                    "dining"
+                      ? restaurantDetail.customDineInGSTPercentage / 2
+                      : restaurantDetail.customGSTPercentage / 2
+                  }%)`,
+                  align: "LEFT",
+                },
+                {
+                  text: `${orderDetail.orderDetails[0].orderAmount}`,
+                  align: "LEFT",
+                },
+                {
+                  text: `${orderDetail.orderDetails[0].gstAmount / 2}`,
+                  align: "LEFT",
+                },
+              ],
+              { encoding: "cp857", size: [1, 1] } // Optional
+            )
+            .tableCustom(
+              [
+                {
+                  text: `SGST (${
+                    orderDetail.customerPreferences.preference.toLowerCase() ===
+                    "dining"
+                      ? restaurantDetail.customDineInGSTPercentage / 2
+                      : restaurantDetail.customGSTPercentage / 2
+                  }%)`,
+                  align: "LEFT",
+                },
+                {
+                  text: `${orderDetail.orderDetails[0].orderAmount}`,
+                  align: "LEFT",
+                },
+                {
+                  text: `${orderDetail.orderDetails[0].gstAmount / 2}`,
+                  align: "LEFT",
+                },
+              ],
+              { encoding: "cp857", size: [1, 1] } // Optional
+            );
+        }
         printer
           .drawLine()
-          .table([
-            `Tax (${
-              orderDetail.customerPreferences.preference.toLowerCase() ===
-              "dining"
-                ? restaurantDetail.customDineInGSTPercentage
-                : restaurantDetail.customGSTPercentage
-            }%)`,
-            "Basic Amt",
-            "Tax Amt",
-          ])
-          .drawLine()
-          .tableCustom(
-            [
-              {
-                text: `CGST (${
-                  orderDetail.customerPreferences.preference.toLowerCase() ===
-                  "dining"
-                    ? restaurantDetail.customDineInGSTPercentage / 2
-                    : restaurantDetail.customGSTPercentage / 2
-                }%)`,
-                align: "LEFT",
-              },
-              {
-                text: `${orderDetail.orderDetails[0].orderAmount}`,
-                align: "LEFT",
-              },
-              {
-                text: `${orderDetail.orderDetails[0].gstAmount / 2}`,
-                align: "LEFT",
-              },
-            ],
-            { encoding: "cp857", size: [1, 1] } // Optional
+          .align("ct")
+          .size(1, 1)
+          .text(
+            `Payable Amt.: ${
+              orderDetail.orderDetails[0].orderAmount +
+              orderDetail.orderDetails[0].gstAmount
+            }`
           )
-          .tableCustom(
-            [
-              {
-                text: `SGST (${
-                  orderDetail.customerPreferences.preference.toLowerCase() ===
-                  "dining"
-                    ? restaurantDetail.customDineInGSTPercentage / 2
-                    : restaurantDetail.customGSTPercentage / 2
-                }%)`,
-                align: "LEFT",
-              },
-              {
-                text: `${orderDetail.orderDetails[0].orderAmount}`,
-                align: "LEFT",
-              },
-              {
-                text: `${orderDetail.orderDetails[0].gstAmount / 2}`,
-                align: "LEFT",
-              },
-            ],
-            { encoding: "cp857", size: [1, 1] } // Optional
-          );
+          .size(0.5, 0.5)
+          .text("Thanks for your visit !!!")
+          .text("Have a good day");
       }
-      printer
-        .drawLine()
-        .align("ct")
-        .size(1, 1)
-        .text(
-          `Payable Amt.: ${
-            orderDetail.orderDetails[0].orderAmount +
-            orderDetail.orderDetails[0].gstAmount
-          }`
-        )
-        .size(0.5, 0.5)
-        .text("Thanks for your visit !!!")
-        .text("Have a good day");
       printer.cut();
       printer.close();
       return true;

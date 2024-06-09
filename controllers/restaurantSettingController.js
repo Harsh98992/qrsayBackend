@@ -412,9 +412,10 @@ exports.checkAciveDineIn = catchAsync(async (req, res, next) => {
 exports.generateBill = catchAsync(async (req, res, next) => {
   const orderDetail = req.body?.orderDetail;
   const restaurantDetail = req.body?.restaurantDetail;
+  const kotFlag = res.body?.kotFlag ? true : false;
 
   if (orderDetail && restaurantDetail) {
-    const result = await generateBillHelper(orderDetail, restaurantDetail);
+    const result = await generateBillHelper(orderDetail, restaurantDetail,kotFlag);
     if (!result) {
       res.status(200).json({
         status: "success",
@@ -422,7 +423,7 @@ exports.generateBill = catchAsync(async (req, res, next) => {
           state: "fail",
         },
       });
-      return
+      return;
     }
   }
   res.status(200).json({
