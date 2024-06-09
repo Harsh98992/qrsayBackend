@@ -8,7 +8,11 @@ escpos.USB = require("escpos-usb");
 // const device  = new escpos.Serial('/dev/usb/lp0');
 
 // encoding is optional
-const generateBillHelper = async (orderDetail, restaurantDetail, kotFlag=false) => {
+const generateBillHelper = async (
+  orderDetail,
+  restaurantDetail,
+  kotFlag = false
+) => {
   try {
     const device = new escpos.USB();
     const printer = new escpos.Printer(device);
@@ -134,6 +138,12 @@ const generateBillHelper = async (orderDetail, restaurantDetail, kotFlag=false) 
       if (!kotFlag) {
         printer.text(
           `  ${orderDetail.customerPhoneNumber} - ${orderDetail.customerEmail}`
+        );
+      } else {
+        printer.text(
+          `    Cooking Instructions: ${
+            orderDetail?.orderDetails?.[0].cookingInstruction ?? ""
+          }`
         );
       }
       if (!kotFlag) {
