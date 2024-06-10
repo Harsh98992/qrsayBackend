@@ -29,6 +29,7 @@ const {
   updateRestaurantCashOnDelivery,
   updateRestaurantByPassAuth,
   updateRestaurantDineInGstSetting,
+  generateBill
 } = require("../controllers/restaurantSettingController");
 const authenticateController = require("../controllers/authenticaionController");
 const {
@@ -70,6 +71,13 @@ router.patch(
   authenticateController.protect,
   authenticateController.ristrictTo("restaurantOwner"),
   updateStoreSettings
+);
+
+router.post(
+  "/generateBill",
+  authenticateController.protect,
+  authenticateController.ristrictTo("restaurantOwner",'staff'),
+  generateBill
 );
 
 router.patch(

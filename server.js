@@ -76,13 +76,13 @@ cron.schedule("*/10 * * * *", async function () {
 
   try {
     // Replace 'http://your-server-endpoint' with the actual endpoint of your server
-    const response = await axios.get(
+    const response =  axios.get(
       "https://qrsay-backend.onrender.com/api/v1/customer/getAllRestaurants"
     );
-    const abc = await axios.get(
+    const abc =  axios.get(
       "https://qrsaybackend-ksaw.onrender.com/api/v1/customer/getAllRestaurants"
     );
-    const ab = await axios.get(
+    const ab =  axios.get(
       "https://qrsaybackend-gurg.onrender.com/api/v1/customer/getAllRestaurants"
     );
   } catch (error) {}
@@ -121,6 +121,13 @@ cron.schedule("0 0 * * *", () => {
 });
 
 // Mongodump command with connection string
+
+
+
+
+
+
+
 
 server.listen(port, () => {
   console.log(`App running on port ${port}...`);
