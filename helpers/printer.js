@@ -1,7 +1,7 @@
-const escpos = require("escpos");
+
 const { prependListener } = require("../models/promoCodeModel");
 // install escpos-usb adapter module manually
-escpos.USB = require("escpos-usb");
+
 var _ = require("lodash");
 // Select the adapter based on your printer type
 
@@ -17,6 +17,8 @@ const generateBillHelper = async (
 ) => {
   try {
     //  let printer=null;
+    const escpos = require("escpos");
+    escpos.USB = require("escpos-usb");
     const device = new escpos.USB();
     console.log(device,"device")
     const printer = new escpos.Printer(device);
