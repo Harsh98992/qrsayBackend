@@ -18,7 +18,9 @@ const generateBillHelper = async (
   try {
     //  let printer=null;
     const device = new escpos.USB();
+    console.log(device,"device")
     const printer = new escpos.Printer(device);
+    console.log(printer,"printer")
     device.open(function (error) {
       let orderTypeStr = "";
       const options = { year: "numeric", month: "short", day: "numeric" };
