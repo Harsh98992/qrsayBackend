@@ -2,26 +2,24 @@ const escpos = require("escpos");
 const { prependListener } = require("../models/promoCodeModel");
 // install escpos-usb adapter module manually
 escpos.USB = require("escpos-usb");
-var _ = require("lodash");
 // Select the adapter based on your printer type
-
 
 // const device  = new escpos.Network('localhost');
 // const device  = new escpos.Serial('/dev/usb/lp0');
 
 // encoding is optional
 const generateBillHelper = async (
-  orderData,
+  orderDetail,
   restaurantDetail,
   kotFlag = false
 ) => {
   try {
-    //  let printer=null;
     const device = new escpos.USB();
     const printer = new escpos.Printer(device);
+
     device.open(function (error) {
       let orderTypeStr = "";
-      const options = { year: "numeric", month: "short", day: "numeric" };
+
       // Please convert the above style of the bill code into the typescript code for making the print content of the bill on the print window
       const orderDetail = _.cloneDeep(orderData);
       if (
@@ -84,7 +82,7 @@ const generateBillHelper = async (
         .font("a")
         .align("ct")
 
-        .size(0, 0)
+        .size(0.5, 0.5)
         .text(`${restaurantDetail.restaurantName?.toUpperCase()}`);
       if (!kotFlag) {
         printer
@@ -116,10 +114,7 @@ const generateBillHelper = async (
       printer.align("LT");
       printer.tableCustom([
         {
-          text: `${new Date(orderDetail.orderDate).toLocaleDateString(
-            "en-US",
-            options
-          )}`,
+          text: `   ${new Date(orderDetail.orderDate).getDate()}`,
           align: "LEFT",
         },
         {
@@ -129,7 +124,7 @@ const generateBillHelper = async (
       ]);
 
       printer.align("LT");
-      printer.text(`Order ID: ${orderDetail.orderId}`);
+      printer.text(` Order ID: ${orderDetail.orderId}`);
       if (!kotFlag) {
         printer.text(
           `Payment Status: : ${
@@ -139,30 +134,23 @@ const generateBillHelper = async (
           }`
         );
       }
-      printer.text(`${orderDetail.customerName}`);
+      printer.text(` ${orderDetail.customerName}`);
       if (!kotFlag) {
         printer.text(
-          `${orderDetail.customerPhoneNumber} - ${orderDetail.customerEmail}`
+          `  ${orderDetail.customerPhoneNumber} - ${orderDetail.customerEmail}`
         );
       } else {
         printer.text(
-          `Cooking Instructions: ${
+          `    Cooking Instructions: ${
             orderDetail?.orderDetails?.[0].cookingInstruction ?? ""
           }`
         );
       }
       if (!kotFlag) {
-        printer.marginBottom(10).drawLine();
         printer
-          .tableCustom(
-            [
-              { text: `Items`, align: "LEFT", width: 0.46 },
-              { text: `Price`, align: "LEFT", width: 0.18 },
-              { text: `Qty`, align: "CENTER", width: 0.18 },
-              { text: `Amount`, align: "LEFT", width: 0.18 },
-            ],
-            { encoding: "cp857", size: [1, 1] } // Optional
-          )
+          .marginBottom(10)
+          .drawLine()
+          .table(["Items", "Price", "Qty", "Amount"])
           .drawLine();
         for (const order of orderDetail.orderDetails[0].orderSummary) {
           const dishName = order.dishName;
@@ -179,24 +167,16 @@ const generateBillHelper = async (
           }
           printer.tableCustom(
             [
-              { text: `${dishName}`, align: "LEFT", width: 0.46 },
-              { text: `${order.priceOneItem}`, align: "CENTER", width: 0.18 },
-              { text: `${order.dishQuantity}`, align: "CENTER", width: 0.18 },
-              { text: `${order.totalPrice}`, align: "CENTER", width: 0.18 },
+              { text: `${dishName}`, align: "LEFT" },
+              { text: `${order.priceOneItem}`, align: "LEFT" },
+              { text: `${order.dishQuantity}`, align: "LEFT" },
+              { text: `${order.totalPrice}`, align: "LEFT" },
             ],
             { encoding: "cp857", size: [1, 1] } // Optional
           );
         }
       } else {
-        printer.marginBottom(10)
-        .drawLine().tableCustom(
-          [
-            { text: `Items`, align: "LEFT", width: 0.80 },
-
-            { text: `Qty`, align: "RIGHT",width: 0.20 },
-          ],
-          { encoding: "cp857", size: [1, 1] } // Optional
-        ).drawLine()
+        printer.marginBottom(10).drawLine().table(["Items", "Qty"]).drawLine();
         for (const order of orderDetail.orderDetails[0].orderSummary) {
           const dishName = order.dishName;
           var checkIfFirst = true;
@@ -212,9 +192,9 @@ const generateBillHelper = async (
           }
           printer.tableCustom(
             [
-              { text: `${dishName}`, align: "LEFT", width: 0.80  },
+              { text: `${dishName}`, align: "LEFT" },
 
-              { text: `${order.dishQuantity}`, align: "RIGHT",width: 0.20 },
+              { text: `${order.dishQuantity}`, align: "LEFT" },
             ],
             { encoding: "cp857", size: [1, 1] } // Optional
           );
@@ -236,7 +216,7 @@ const generateBillHelper = async (
           ]);
           printer.tableCustom([
             {
-              text: `Tax(${
+              text: `Tax (${
                 orderDetail.customerPreferences.preference.toLowerCase() ===
                 "dining"
                   ? restaurantDetail.customDineInGSTPercentage
@@ -245,7 +225,7 @@ const generateBillHelper = async (
               align: "LEFT",
             },
             {
-              text: `${orderDetail.orderDetails[0].gstAmount}`,
+              text: `>${orderDetail.orderDetails[0].gstAmount}`,
               align: "RIGHT",
             },
           ]);
@@ -267,20 +247,20 @@ const generateBillHelper = async (
           printer
             .drawLine()
             .table([
-              `Tax(${
+              `Tax (${
                 orderDetail.customerPreferences.preference.toLowerCase() ===
                 "dining"
                   ? restaurantDetail.customDineInGSTPercentage
                   : restaurantDetail.customGSTPercentage
               }%)`,
-              "Basic Amt.",
-              "Tax Amt.",
+              "Basic Amt",
+              "Tax Amt",
             ])
             .drawLine()
             .tableCustom(
               [
                 {
-                  text: `CGST(${
+                  text: `CGST (${
                     orderDetail.customerPreferences.preference.toLowerCase() ===
                     "dining"
                       ? restaurantDetail.customDineInGSTPercentage / 2
@@ -302,7 +282,7 @@ const generateBillHelper = async (
             .tableCustom(
               [
                 {
-                  text: `SGST(${
+                  text: `SGST (${
                     orderDetail.customerPreferences.preference.toLowerCase() ===
                     "dining"
                       ? restaurantDetail.customDineInGSTPercentage / 2
@@ -325,14 +305,14 @@ const generateBillHelper = async (
         printer
           .drawLine()
           .align("ct")
-
+          .size(1, 1)
           .text(
             `Payable Amt.: ${
               orderDetail.orderDetails[0].orderAmount +
               orderDetail.orderDetails[0].gstAmount
             }`
           )
-
+          .size(0.5, 0.5)
           .text("Thanks for your visit !!!")
           .text("Have a good day");
       }
