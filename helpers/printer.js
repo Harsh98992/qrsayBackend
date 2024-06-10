@@ -4,7 +4,7 @@ const { prependListener } = require("../models/promoCodeModel");
 escpos.USB = require("escpos-usb");
 var _ = require("lodash");
 // Select the adapter based on your printer type
-const device = new escpos.USB();
+
 
 // const device  = new escpos.Network('localhost');
 // const device  = new escpos.Serial('/dev/usb/lp0');
@@ -17,6 +17,7 @@ const generateBillHelper = async (
 ) => {
   try {
     //  let printer=null;
+    const device = new escpos.USB();
     const printer = new escpos.Printer(device);
     device.open(function (error) {
       let orderTypeStr = "";
