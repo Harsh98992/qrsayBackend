@@ -40,6 +40,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^7.1.1",
     "node-cron": "^3.0.2",
+    "node-hid": "^3.1.0",
     "nodemailer": "^6.9.2",
     "otp-generator": "^4.0.1",
     "passport": "^0.6.0",
