@@ -15,6 +15,7 @@ const Customer = require("../models/CustomerModel");
 const {
   sendCustomWhatsAppMessage,
   sendTrackOrderWhatsAppMessage,
+  sendRestaurantOrderMessage,
 } = require("../helpers/whatsapp");
 const generateOtp = require("../helpers/generateOtp");
 const Room = require("../models/RoomModel");
@@ -290,8 +291,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   if (
     reqData["customerPreferences"].preference?.toLowerCase() ===
       "room service" ||
-    reqData["customerPreferences"].preference?.toLowerCase() === "grab and go"
-    ||
+    reqData["customerPreferences"].preference?.toLowerCase() ===
+      "grab and go" ||
     reqData["customerPreferences"].preference?.toLowerCase() === "dining"
   ) {
     if (
@@ -336,7 +337,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_time: paymentDetails.items[0]["created_at"],
         payment_method: paymentDetails.items[0]["method"],
         payment_amount: paymentDetails.items[0]["amount"] / 100,
-        transfer_amount:  reqData?.["razorpay_tranferData"]?.["amount"] / 100,
+        transfer_amount: reqData?.["razorpay_tranferData"]?.["amount"] / 100,
       };
     } else {
       savedData = {
@@ -350,7 +351,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
         // send a WhatsApp message to the customer that order has been placed successfully
         // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
-
+        sendRestaurantOrderMessage(
+          reqData["customerPreferences"]?.userDetail?.phoneNumber,
+          savedData
+        );
         sendTrackOrderWhatsAppMessage(
           reqData["customerPreferences"]?.userDetail?.phoneNumber,
           `Order placed successfully!`,
@@ -476,7 +480,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_time: paymentDetails.items[0]["created_at"],
         payment_method: paymentDetails.items[0]["method"],
         payment_amount: paymentDetails.items[0]["amount"] / 100,
-        transfer_amount:  reqData?.["razorpay_tranferData"]?.["amount"] / 100,
+        transfer_amount: reqData?.["razorpay_tranferData"]?.["amount"] / 100,
       };
     } else {
       savedData = {
@@ -530,7 +534,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       if (process.env.WHATSAPP_ORDER_STATUS === "true") {
         // send a WhatsApp message to the customer that order has been placed successfully
         // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
-
+        sendRestaurantOrderMessage(
+          reqData["customerPreferences"]?.userDetail?.phoneNumber,
+          savedData
+        );
         sendCustomWhatsAppMessage(
           req.user["phoneNumber"],
           `Order placed Successfully.`
