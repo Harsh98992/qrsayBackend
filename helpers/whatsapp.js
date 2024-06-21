@@ -136,73 +136,96 @@ const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
     return res;
   } catch (e) {}
 };
-const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
-
-  try {
-  let orderTypeStr = "";
-  if (
-    orderData.customerPreferences.preference.toLowerCase() === "room service"
-  ) {
-    orderTypeStr = "Room Number :- " + orderData.customerPreferences.value;
-  } else if (
-    orderData.customerPreferences.preference.toLowerCase() === "delivery"
-  ) {
-    orderTypeStr = "Address :- " + orderData.customerPreferences.value.address;
-  } else if (
-    orderData.customerPreferences.preference.toLowerCase() === "dine in"
-  ) {
-    orderTypeStr = "Table Number :- " + orderData.customerPreferences.value;
-  } else if (
-    orderData.customerPreferences.preference.toLowerCase() === "dining"
-  ) {
-    orderTypeStr = "Table Number :- " + orderData.customerPreferences.value;
-  } else if (
-    orderData.customerPreferences.preference.toLowerCase() === "take away"
-  ) {
-    orderTypeStr = "Take Away :- " + orderData.customerPreferences.value;
-  } else if (
-    orderData.customerPreferences.preference.toLowerCase() === "grab and go"
-  ) {
-    orderTypeStr = "Take Away :- " + orderData.customerPreferences.value;
-  } else if (
-    orderData.customerPreferences.preference.toLowerCase() === "schedule dining"
-  ) {
-    orderTypeStr = "Schedule Dining :- " + orderData.customerPreferences.value;
+function dishNameWithExtra(order) {
+  let orderStr = "";
+  if (order?.itemSizeSelected?.size) {
+    orderStr += ` [ Size:-${order.itemSizeSelected.size} ] `;
   }
-
-  if (orderData?.customerPreferences?.preference?.toLowerCase() === "dine in") {
-    for (const [index, order] of orderData.orderDatas.entries()) {
-      if (index > 0) {
-        orderData.orderDatas[0]["orderSummary"].push(...order["orderSummary"]);
-        orderData.orderDatas[0]["orderAmount"] += order["orderAmount"];
-        orderData.orderDatas[0]["gstAmount"] += order["gstAmount"];
-        orderData.orderDatas[0]["deliveryAmount"] += order["deliveryAmount"];
-        orderData.orderDatas[0]["discountAmount"] += order["discountAmount"];
+  if (order.dishChoicesSelected && order.dishChoicesSelected?.length) {
+    let str = "";
+    for (const data of order.dishChoicesSelected) {
+      for (const choice of data.choicesSelected) {
+        str += `${choice.choiceName} ,`;
       }
     }
+    const res = str.slice(0, -1);
+    orderStr += `[ Choices:- ${res}] `;
   }
-  let dishStr = "";
-  let count=1
-  for (const order of orderData.orderDetails[0].orderSummary) {
-    dishStr += `${count}. ${order.dishName}`;
-    count+=1;
-    var checkIfFirst = true;
-    if (order.extraSelected && order.extraSelected.length) {
-      dishStr += "( ";
-      for (const extra of order.extraSelected) {
-        if (checkIfFirst) {
-          dishStr += `with ${extra.addOnDisplayName}(${extra.addOnsSelected[0].addOnName})`;
-          checkIfFirst = false;
-        } else {
-          dishStr += `and ${extra.addOnDisplayName}(${extra.addOnsSelected[0].addOnName})`;
+
+  if (order.extraSelected && order.extraSelected?.length) {
+    let str = "";
+    for (const data of order.extraSelected) {
+      for (const addon of data.addOnsSelected) {
+        str += `${addon.addOnName} ,`;
+      }
+    }
+    const res = str.slice(0, -1);
+    orderStr += `[ Extras:- ${res}] `;
+  }
+  return orderStr;
+}
+const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
+  try {
+    let orderTypeStr = "";
+    if (
+      orderData.customerPreferences.preference.toLowerCase() === "room service"
+    ) {
+      orderTypeStr = "Room Number :- " + orderData.customerPreferences.value;
+    } else if (
+      orderData.customerPreferences.preference.toLowerCase() === "delivery"
+    ) {
+      orderTypeStr =
+        "Address :- " + orderData.customerPreferences.value.address;
+    } else if (
+      orderData.customerPreferences.preference.toLowerCase() === "dine in"
+    ) {
+      orderTypeStr = "Table Number :- " + orderData.customerPreferences.value;
+    } else if (
+      orderData.customerPreferences.preference.toLowerCase() === "dining"
+    ) {
+      orderTypeStr = "Table Number :- " + orderData.customerPreferences.value;
+    } else if (
+      orderData.customerPreferences.preference.toLowerCase() === "take away"
+    ) {
+      orderTypeStr = "Take Away :- " + orderData.customerPreferences.value;
+    } else if (
+      orderData.customerPreferences.preference.toLowerCase() === "grab and go"
+    ) {
+      orderTypeStr = "Take Away :- " + orderData.customerPreferences.value;
+    } else if (
+      orderData.customerPreferences.preference.toLowerCase() ===
+      "schedule dining"
+    ) {
+      orderTypeStr =
+        "Schedule Dining :- " + orderData.customerPreferences.value;
+    }
+
+    if (
+      orderData?.customerPreferences?.preference?.toLowerCase() === "dine in"
+    ) {
+      for (const [index, order] of orderData.orderDatas.entries()) {
+        if (index > 0) {
+          orderData.orderDatas[0]["orderSummary"].push(
+            ...order["orderSummary"]
+          );
+          orderData.orderDatas[0]["orderAmount"] += order["orderAmount"];
+          orderData.orderDatas[0]["gstAmount"] += order["gstAmount"];
+          orderData.orderDatas[0]["deliveryAmount"] += order["deliveryAmount"];
+          orderData.orderDatas[0]["discountAmount"] += order["discountAmount"];
         }
       }
-      dishStr += " )";
     }
-    dishStr += ` = ${order.dishQuantity};\\n`;
-  }
-  console.log(dishStr);
-  
+    let dishStr = "";
+    let count = 1;
+    for (const order of orderData.orderDetails[0].orderSummary) {
+      dishStr += `${count}. ${order.dishName}`;
+      count += 1;
+      let orderStr = this.dishNameWithExtra(order);
+
+      dishStr += `${orderStr} `;
+      dishStr += ` = ${order.dishQuantity};\\n`;
+    }
+
     const config = {
       headers: {
         "Content-Type": "application/json",
