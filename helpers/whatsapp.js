@@ -239,7 +239,7 @@ const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
       type: "template",
 
       template: {
-        name: "orderrecivetest",
+        name: "orderrecievemessage",
         language: {
           code: "en",
         },
