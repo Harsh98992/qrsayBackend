@@ -165,6 +165,7 @@ function dishNameWithExtra(order) {
   return orderStr;
 }
 const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
+  console.log(phoneNumber)
   try {
     let orderTypeStr = "";
     if (
@@ -220,7 +221,7 @@ const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
     for (const order of orderData.orderDetails[0].orderSummary) {
       dishStr += `${count}. ${order.dishName}`;
       count += 1;
-      let orderStr = this.dishNameWithExtra(order);
+      let orderStr = dishNameWithExtra(order);
 
       dishStr += `${orderStr} `;
       dishStr += ` = ${order.dishQuantity};\\n`;
@@ -287,7 +288,9 @@ const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
     );
 
     return res;
-  } catch {}
+  } catch(e) {
+    console.log(e,"err")
+  }
 };
 module.exports = {
   sendWhatsAppMessage,
