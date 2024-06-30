@@ -352,7 +352,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         // send a WhatsApp message to the customer that order has been placed successfully
         // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
         sendRestaurantOrderMessage(
-          reqData["customerPreferences"]?.userDetail?.phoneNumber,
+          restaurantDetail?.restaurantPhoneNumber,
           savedData
         );
         sendTrackOrderWhatsAppMessage(
@@ -535,7 +535,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         // send a WhatsApp message to the customer that order has been placed successfully
         // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
         sendRestaurantOrderMessage(
-          reqData["customerPreferences"]?.userDetail?.phoneNumber,
+          restaurantDetail?.restaurantPhoneNumber,
           savedData
         );
         sendCustomWhatsAppMessage(
