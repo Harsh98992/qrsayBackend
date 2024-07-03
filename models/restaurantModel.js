@@ -288,6 +288,10 @@ const restaurantSchema = new mongoose.Schema({
     type: "Boolean",
     default: false,
   },
+  autoRejectFlag: {
+    type: "Boolean",
+    default: true,
+  },
   customGSTPercentage: {
     type: "Number",
     default: 0,

@@ -110,7 +110,10 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         
     },
-    
+    autoRejectFlag: {
+        type: "Boolean",
+        default: true,
+      },
     payment_id: {
         type: String,
         default: "",

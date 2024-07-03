@@ -331,6 +331,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       savedData = {
         ...savedData,
         payment_order_id: reqData["razorpay_order_id"],
+        autoRejectFlag: restaurantDetail.autoRejectFlag ?? true,
         payment_transfer_id: reqData?.["razorpay_tranferData"]?.["id"] ?? "",
         payment_id: reqData["razorpay_payment_id"],
         payment_signature: reqData["razorpay_signature"],
@@ -474,6 +475,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       savedData = {
         ...savedData,
         payment_order_id: reqData["razorpay_order_id"],
+        autoRejectFlag: restaurantDetail.autoRejectFlag ?? true,
         payment_transfer_id: reqData?.["razorpay_tranferData"]?.["id"] ?? "",
         payment_id: reqData["razorpay_payment_id"],
         payment_signature: reqData["razorpay_signature"],
@@ -1321,6 +1323,21 @@ exports.getOrderwithOrderId = catchAsync(async (req, res, next) => {
     status: "success",
     data: {
       orderData: result,
+    },
+  });
+});
+exports.deleteOrderById = catchAsync(async (req, res, next) => {
+  if (!req.params?.orderId) {
+    return next(new AppError("Please provide order Id!", 400));
+  }
+  const result = await Order.deleteOne({ _id: req.params.orderId }).lean();
+  if (!result) {
+    return next(new AppError("Unable to find order!", 400));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Record deleted successfully.",
     },
   });
 });
