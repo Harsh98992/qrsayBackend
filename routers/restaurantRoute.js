@@ -28,6 +28,7 @@ const {
   deleteRestaurantImage,
   updateRestaurantCashOnDelivery,
   updateRestaurantByPassAuth,
+  updateRestaurantAutoReject,
   updateRestaurantDineInGstSetting,
   generateBill
 } = require("../controllers/restaurantSettingController");
@@ -144,6 +145,12 @@ router.patch(
   authenticateController.protect,
   authenticateController.ristrictTo("restaurantOwner"),
   updateRestaurantByPassAuth
+);
+router.patch(
+  "/updateRestaurantAutoReject",
+  authenticateController.protect,
+  authenticateController.ristrictTo("restaurantOwner"),
+  updateRestaurantAutoReject
 );
 router.patch(
   "/updateRestaurantDineInGstSetting",

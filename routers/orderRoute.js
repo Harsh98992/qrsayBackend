@@ -13,9 +13,10 @@ const {
   generateBill,
   getCustomerActiveOrder,
   getOrderwithOrderId,
+  deleteOrderById,
   getRestaurantWithRoomService,
   getOrderwithRestaurantNameCustomerNameRoomName,
-  validationBeforeOrder
+  validationBeforeOrder,
 } = require("../controllers/OrderController");
 const authenticateController = require("../controllers/authenticaionController");
 const { getPaymentGatewayCredentials } = require("../helpers/razorPayHelper");
@@ -25,6 +26,12 @@ router.post("/validationBeforeOrder", customerProtect, validationBeforeOrder);
 router.post("/placeOrder", customerProtect, placeOrder);
 router.get("/customerOrder", customerProtect, getCustomerOrder);
 router.get("/getOrderwithOrderId/:orderId", getOrderwithOrderId);
+router.delete(
+  "/deleteOrderById/:orderId",
+  authenticateController.protect,
+  authenticateController.ristrictTo("restaurantOwner", "staff"),
+  deleteOrderById
+);
 router.get("/getRestaurantWithRoomService", getRestaurantWithRoomService);
 router.post(
   "/getOrderwithRestaurantNameCustomerNameRoomName",
