@@ -31,7 +31,8 @@ const {
   updateRestaurantAutoReject,
   updateRestaurantDineInGstSetting,
   generateBill,
-  updateDineInAvailablity
+  updateDineInAvailablity,
+  deleteTableById
 } = require("../controllers/restaurantSettingController");
 const authenticateController = require("../controllers/authenticaionController");
 const {
@@ -66,6 +67,12 @@ router.post(
   authenticateController.protect,
   authenticateController.ristrictTo("restaurantOwner"),
   updateRestaurantDetail
+);
+router.delete(
+  "/deleteTableById/:tableId",
+  authenticateController.protect,
+  authenticateController.ristrictTo("restaurantOwner"),
+  deleteTableById
 );
 
 router.patch(
