@@ -129,6 +129,19 @@ exports.updateRestaurantByPassAuth = catchAsync(async (req, res, next) => {
     },
   });
 });
+exports.updateDineInAvailablity = catchAsync(async (req, res, next) => {
+  await Restaurant.findOneAndUpdate(
+    { _id: req.user.restaurantKey },
+    { isDineInAvailableRestaurant: req.body.isDineInAvailableRestaurant ?? false }
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Record Updated Successfully!",
+    },
+  });
+});
 exports.updateRestaurantAutoReject = catchAsync(async (req, res, next) => {
   await Restaurant.findOneAndUpdate(
     { _id: req.user.restaurantKey },

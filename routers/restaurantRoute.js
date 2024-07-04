@@ -30,7 +30,8 @@ const {
   updateRestaurantByPassAuth,
   updateRestaurantAutoReject,
   updateRestaurantDineInGstSetting,
-  generateBill
+  generateBill,
+  updateDineInAvailablity
 } = require("../controllers/restaurantSettingController");
 const authenticateController = require("../controllers/authenticaionController");
 const {
@@ -145,6 +146,12 @@ router.patch(
   authenticateController.protect,
   authenticateController.ristrictTo("restaurantOwner"),
   updateRestaurantByPassAuth
+);
+router.patch(
+  "/updateDineInAvailablity",
+  authenticateController.protect,
+  authenticateController.ristrictTo("restaurantOwner"),
+  updateDineInAvailablity
 );
 router.patch(
   "/updateRestaurantAutoReject",
