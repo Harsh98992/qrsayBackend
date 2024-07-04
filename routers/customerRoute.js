@@ -113,7 +113,7 @@ router.post(
 
 router.get(
   "/isDineInAvailable/:restaurantId",
-  customerAuthenticationController.customerProtectNoError,
+  
   customerController.isDineInAvailable
 );
 

@@ -296,6 +296,10 @@ const restaurantSchema = new mongoose.Schema({
     type: "Number",
     default: 0,
   },
+  isDineInAvailableRestaurant:{
+    type: "Boolean",
+    default: true,
+  },
   isDineInPricingInclusiveOfGST: {
     type: "Boolean",
     default: false,
