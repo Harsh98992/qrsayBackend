@@ -20,6 +20,7 @@ const restaurantRoute = require("./routers/restaurantRoute");
 const userRoute = require("./routers/userRoute");
 const globalHandler = require("./controllers/errorController");
 const orderSchema = require("./models/OrderModel");
+const orderTempSchema = require("./models/OrderModelTemp");
 dotenv.config({ path: "./config.env" });
 const axios = require("axios");
 const app = express();
@@ -114,6 +115,9 @@ cron.schedule("*/10 * * * *", async function () {
       reason: "The restaurant cannot fulfill the order at this time.",
     }
   );
+  const deleted = await orderTempSchema.deleteMany({
+    orderDate: { $lte: eightHoursAgo },
+  });
 });
 cron.schedule("0 0 * * *", () => {
   // const mongodumpCmd = `mongodump "${dbConStr}" --username goqrorder`;
