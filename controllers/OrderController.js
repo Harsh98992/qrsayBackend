@@ -647,7 +647,7 @@ exports.paymentVerification = async (req, res, next) => {
         if (process.env.EMAIL_ORDER_STATUS === "true") {
           // send a mail to the customer that order has been placed successfully
           sendMail(
-            req.user.email,
+            req?.user?.email,
             "Order Placed Successfully",
             `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
   
