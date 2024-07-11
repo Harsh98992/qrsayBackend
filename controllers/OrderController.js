@@ -11,6 +11,8 @@ const Table = require("../models/tableModel");
 const io = require("../server"); // Make sure to import the correct 'io' object
 const Restaurant = require("../models/restaurantModel");
 const Customer = require("../models/CustomerModel");
+const crypto = require("crypto");
+const {getRazorPayKey}=require("../helpers/razorPayHelper");
 // const sendCustomWhatsAppMessage = require("../helpers/whatsapp");
 const {
   sendCustomWhatsAppMessage,
@@ -19,6 +21,7 @@ const {
 } = require("../helpers/whatsapp");
 const generateOtp = require("../helpers/generateOtp");
 const Room = require("../models/RoomModel");
+const OrderTemp = require("../models/OrderModelTemp");
 
 exports.validationBeforeOrder = catchAsync(async (req, res, next) => {
   const reqData = {
@@ -181,7 +184,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   const reqData = {
     ...req.body,
   };
-
+  const storeFlag = reqData["storeFlag"] ?? false;
   const restaurantDetail = await Restaurant.findOne({
     _id: reqData["restaurantId"],
   });
@@ -323,9 +326,11 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       restaurantId: reqData["restaurantId"],
     };
     if (reqData["paymentMethod"] === "payOnline") {
+      const razorpayKeys=getRazorPayKey();
+     
       const paymentDetails = await fetchOrderById(
-        process.env["razorpay_key_id"],
-        process.env["razorpay_key_secret"],
+        razorpayKeys["razorpay_key_id"],
+        razorpayKeys["razorpay_key_secret"],
         req.body.razorpay_order_id
       );
       savedData = {
@@ -333,11 +338,13 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_order_id: reqData["razorpay_order_id"],
         autoRejectFlag: restaurantDetail.autoRejectFlag ?? true,
         payment_transfer_id: reqData?.["razorpay_tranferData"]?.["id"] ?? "",
-        payment_id: reqData["razorpay_payment_id"],
-        payment_signature: reqData["razorpay_signature"],
-        payment_time: paymentDetails.items[0]["created_at"],
-        payment_method: paymentDetails.items[0]["method"],
-        payment_amount: paymentDetails.items[0]["amount"] / 100,
+        payment_id: reqData["razorpay_payment_id"] ?? null,
+        payment_signature: reqData["razorpay_signature"] ?? null,
+        payment_time: paymentDetails?.items?.[0]?.["created_at"] ?? null,
+        payment_method: paymentDetails?.items?.[0]?.["method"] ?? null,
+        payment_amount: paymentDetails?.items?.[0]?.["amount"]
+          ? paymentDetails?.items?.[0]?.["amount"] / 100
+          : 0,
         transfer_amount: reqData?.["razorpay_tranferData"]?.["amount"] / 100,
       };
     } else {
@@ -346,36 +353,46 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_method: "Cash On Delivery",
       };
     }
-
-    // send a mail to the customer that order has been placed successfully
-    try {
-      if (process.env.WHATSAPP_ORDER_STATUS === "true") {
-        // send a WhatsApp message to the customer that order has been placed successfully
-        // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
-        sendRestaurantOrderMessage(
-          restaurantDetail?.restaurantPhoneNumber,
-          savedData
-        );
-        sendTrackOrderWhatsAppMessage(
-          reqData["customerPreferences"]?.userDetail?.phoneNumber,
-          `Order placed successfully!`,
-          `${orderId}`
-        );
+    if (!storeFlag) {
+      // send a mail to the customer that order has been placed successfully
+      try {
+        if (process.env.WHATSAPP_ORDER_STATUS === "true") {
+          // send a WhatsApp message to the customer that order has been placed successfully
+          // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
+          sendRestaurantOrderMessage(
+            restaurantDetail?.restaurantPhoneNumber,
+            savedData
+          );
+          sendTrackOrderWhatsAppMessage(
+            reqData["customerPreferences"]?.userDetail?.phoneNumber,
+            `Order placed successfully!`,
+            `${orderId}`
+          );
+        }
+      } catch (error) {
+        // print error
       }
-    } catch (error) {
-      // print error
     }
+    if (storeFlag) {
+      await OrderTemp.create(savedData);
+      res.status(200).json({
+        status: "success",
+        data: {
+          savedData: savedData,
+        },
+      });
+    } else {
+      await Order.create(savedData);
+      res.status(200).json({
+        status: "success",
+        data: {
+          message:
+            "Order placed successfully! Thank you for your purchase. You will soon receive a confirmation once your order is verified by the restaurant.",
 
-    await Order.create(savedData);
-    res.status(200).json({
-      status: "success",
-      data: {
-        message:
-          "Order placed successfully! Thank you for your purchase. You will soon receive a confirmation once your order is verified by the restaurant.",
-
-        savedData: savedData,
-      },
-    });
+          savedData: savedData,
+        },
+      });
+    }
   } else {
     if (
       req.user &&
@@ -467,9 +484,11 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       restaurantId: reqData["restaurantId"],
     };
     if (reqData["paymentMethod"] === "payOnline") {
+      const razorpayKeys=getRazorPayKey();
+     
       const paymentDetails = await fetchOrderById(
-        process.env["razorpay_key_id"],
-        process.env["razorpay_key_secret"],
+        razorpayKeys["razorpay_key_id"],
+        razorpayKeys["razorpay_key_secret"],
         req.body.razorpay_order_id
       );
       savedData = {
@@ -477,11 +496,13 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_order_id: reqData["razorpay_order_id"],
         autoRejectFlag: restaurantDetail.autoRejectFlag ?? true,
         payment_transfer_id: reqData?.["razorpay_tranferData"]?.["id"] ?? "",
-        payment_id: reqData["razorpay_payment_id"],
-        payment_signature: reqData["razorpay_signature"],
-        payment_time: paymentDetails.items[0]["created_at"],
-        payment_method: paymentDetails.items[0]["method"],
-        payment_amount: paymentDetails.items[0]["amount"] / 100,
+        payment_id: reqData["razorpay_payment_id"] ?? null,
+        payment_signature: reqData["razorpay_signature"] ?? null,
+        payment_time: paymentDetails?.items?.[0]?.["created_at"] ?? null,
+        payment_method: paymentDetails?.items?.[0]?.["method"] ?? null,
+        payment_amount: paymentDetails?.items?.[0]?.["amount"]
+          ? paymentDetails?.items?.[0]?.["amount"] / 100
+          : 0,
         transfer_amount: reqData?.["razorpay_tranferData"]?.["amount"] / 100,
       };
     } else {
@@ -490,25 +511,35 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         payment_method: "Cash On Delivery",
       };
     }
+    if (storeFlag) {
+      await OrderTemp.create(savedData);
+      res.status(200).json({
+        status: "success",
+        data: {
+          savedData: savedData,
+        },
+      });
+    } else {
+      await Order.create(savedData);
+      res.status(200).json({
+        status: "success",
+        data: {
+          message:
+            "Order placed successfully! Thank you for your purchase. You will soon receive a confirmation once your order is verified by the restaurant.",
 
-    await Order.create(savedData);
-    res.status(200).json({
-      status: "success",
-      data: {
-        message:
-          "Order placed successfully! Thank you for your purchase. You will soon receive a confirmation once your order is verified by the restaurant.",
-
-        savedData: savedData,
-      },
-    });
-    // send a mail to the customer that order has been placed successfully
-    try {
-      if (process.env.EMAIL_ORDER_STATUS === "true") {
-        // send a mail to the customer that order has been placed successfully
-        sendMail(
-          req.user.email,
-          "Order Placed Successfully",
-          `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
+          savedData: savedData,
+        },
+      });
+    }
+    if (!storeFlag) {
+      // send a mail to the customer that order has been placed successfully
+      try {
+        if (process.env.EMAIL_ORDER_STATUS === "true") {
+          // send a mail to the customer that order has been placed successfully
+          sendMail(
+            req.user.email,
+            "Order Placed Successfully",
+            `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
 
   Order Id: ${orderId}
 
@@ -517,42 +548,42 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
   Order Date: ${new Date().toLocaleString()}
 
   Order Status: Pending`
-        );
-      }
+          );
+        }
 
-      if (process.env.SMS_ORDER_STATUS === "true") {
-        // send an SMS to the customer that order has been placed successfully
-        await axios.get(
-          process.env.SMS_API_URL +
-            orderId +
-            "%7C" +
-            "Pending" +
-            "%7C" +
-            "&flash=0&numbers=" +
-            req.user.phoneNumber
-        );
-      }
+        if (process.env.SMS_ORDER_STATUS === "true") {
+          // send an SMS to the customer that order has been placed successfully
+          await axios.get(
+            process.env.SMS_API_URL +
+              orderId +
+              "%7C" +
+              "Pending" +
+              "%7C" +
+              "&flash=0&numbers=" +
+              req.user.phoneNumber
+          );
+        }
 
-      if (process.env.WHATSAPP_ORDER_STATUS === "true") {
-        // send a WhatsApp message to the customer that order has been placed successfully
-        // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
-        sendRestaurantOrderMessage(
-          restaurantDetail?.restaurantPhoneNumber,
-          savedData
-        );
-        sendCustomWhatsAppMessage(
-          req.user["phoneNumber"],
-          `Order placed Successfully.`
-        );
-      }
-    } catch (error) {}
+        if (process.env.WHATSAPP_ORDER_STATUS === "true") {
+          // send a WhatsApp message to the customer that order has been placed successfully
+          // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
+          sendRestaurantOrderMessage(
+            restaurantDetail?.restaurantPhoneNumber,
+            savedData
+          );
+          sendCustomWhatsAppMessage(
+            req.user["phoneNumber"],
+            `Order placed Successfully.`
+          );
+        }
+      } catch (error) {}
 
-    // send a mail to the restaurant that order has been placed successfully
+      // send a mail to the restaurant that order has been placed successfully
 
-    sendMail(
-      restaurantDetail?.restaurantEmail,
-      "New Order Received",
-      `You have received a new order from ${req.user.name}.
+      sendMail(
+        restaurantDetail?.restaurantEmail,
+        "New Order Received",
+        `You have received a new order from ${req.user.name}.
 
         Order Id: ${orderId}
 
@@ -561,10 +592,89 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
         Order Date: ${new Date().toLocaleString()}
 
         Order Status: Pending`
-    );
+      );
+    }
   }
 });
 
+exports.paymentVerification = async (req, res, next) => {
+  console.log("payment verification");
+  // const receivedSignature = req.headers["x-razorpay-signature"];
+  // const generatedSignature = crypto
+  //   .createHmac("sha256", "123456789")
+  //   .update(req.rawBody)
+  //   .digest("hex");
+
+  // if (receivedSignature !== generatedSignature) {
+  //   return res.status(400).send("Invalid signature");
+  // }
+
+  const event = req.body;
+
+  // Handle the payment.captured event
+  if (event.event === "payment.captured") {
+    const payment = event.payload.payment.entity;
+    if(payment){
+      const orderData = await OrderTemp.findOne({
+        payment_order_id: payment.order_id,
+      });
+      const reqData = Object.assign({}, orderData._doc);
+      reqData["payment_time"] = payment["created_at"] ?? null;
+      reqData["payment_method"] = payment["method"] ?? null;
+      reqData["payment_amount"] = payment["amount"] ? payment["amount"] / 100 : 0;
+      reqData["payment_id"] = payment["id"] ?? null;
+  
+      delete reqData["_id"];
+  
+      await Order.create(reqData);
+      const io = req.io;
+     
+      io.to(reqData.restaurantId.toString()).emit("orderUpdate", {});
+      try {
+        if (process.env.WHATSAPP_ORDER_STATUS === "true") {
+          // send a WhatsApp message to the customer that order has been placed successfully
+          // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
+          sendRestaurantOrderMessage(
+            restaurantDetail?.restaurantPhoneNumber,
+            savedData
+          );
+          sendTrackOrderWhatsAppMessage(
+            reqData["customerPreferences"]?.userDetail?.phoneNumber,
+            `Order placed successfully!`,
+            `${orderId}`
+          );
+        }
+        if (process.env.EMAIL_ORDER_STATUS === "true") {
+          // send a mail to the customer that order has been placed successfully
+          sendMail(
+            req.user.email,
+            "Order Placed Successfully",
+            `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
+  
+            Order Id: ${orderId}
+  
+            Order Amount: ${reqData["orderAmount"]}
+  
+            Order Date: ${new Date().toLocaleString()}
+  
+              Order Status: Pending`
+          );
+        }
+      } catch (error) {
+        // print error
+      }
+    }
+    else{
+      return new AppError("Some Issue happened with payment", 400);
+    }
+    // Process the payment capture event (e.g., update your database, notify user, etc.)
+  } else {
+    console.log(`Unhandled event type ${event.event}`);
+  }
+
+  // Respond to acknowledge receipt of the webhook
+  res.status(200).send("Webhook received");
+};
 exports.getRestaurantOrdersByStatus = catchAsync(async (req, res, next) => {
   if (!req.body?.orderStatus) {
     return next(new AppError("Please provide order status!", 400));
@@ -1058,9 +1168,10 @@ exports.changeOrderStatusByUser = catchAsync(async (req, res, next) => {
   const reqData = {
     ...req.body,
   };
+  const razorpayKeys=getRazorPayKey();
   const paymentDetails = await fetchOrderById(
-    process.env["razorpay_key_id"],
-    process.env["razorpay_key_secret"],
+    razorpayKeys["razorpay_key_id"],
+    razorpayKeys["razorpay_key_secret"],
     req.body.razorpay_order_id
   );
   await Order.findOneAndUpdate(
@@ -1311,6 +1422,25 @@ exports.getRestaurantWithRoomService = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getOrderwithPaymentOrderId = catchAsync(async (req, res, next) => {
+  if (!req.params?.orderId) {
+    return next(new AppError("Please provide order Id!", 400));
+  }
+  const result = await Order.findOne({
+    payment_order_id: req.params?.orderId,
+  }).lean();
+  if (!result) {
+    return next(
+      new AppError("Unable to find order for payment order id!", 400)
+    );
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      orderData: result,
+    },
+  });
+});
 exports.getOrderwithOrderId = catchAsync(async (req, res, next) => {
   if (!req.params?.orderId) {
     return next(new AppError("Please provide order Id!", 400));

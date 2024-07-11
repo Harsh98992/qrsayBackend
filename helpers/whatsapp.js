@@ -40,6 +40,7 @@ const sendWhatsAppMessage = async (phoneNumber, otp) => {
   return res;
 };
 const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
+  if(process.env.NODE_ENV === "prouction"){
   try {
     const config = {
       headers: {
@@ -79,8 +80,10 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
 
     return res;
   } catch {}
+}
 };
 const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
+  if(process.env.NODE_ENV === "prouction"){
   try {
     const config = {
       headers: {
@@ -135,6 +138,7 @@ const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
 
     return res;
   } catch (e) {}
+}
 };
 function dishNameWithExtra(order) {
   let orderStr = "";
@@ -165,7 +169,7 @@ function dishNameWithExtra(order) {
   return orderStr;
 }
 const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
-  console.log(phoneNumber)
+  if(process.env.NODE_ENV === "prouction"){
   try {
     let orderTypeStr = "";
     if (
@@ -291,6 +295,7 @@ const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
   } catch(e) {
     console.log(e,"err")
   }
+}
 };
 module.exports = {
   sendWhatsAppMessage,
