@@ -1,11 +1,14 @@
 const catchAsync = require("../helpers/catchAsync");
 var Razorpay = require("razorpay");
 const AppError = require("../helpers/appError");
+const {getRazorPayKey}=require("../helpers/razorPayHelper");
 
 exports.createRazorPayOrder = catchAsync(async (req, res, next) => {
+  const razorpayKeys=getRazorPayKey();
+
   const instance = new Razorpay({
-    key_id: process.env["razorpay_key_id"],
-    key_secret: process.env["razorpay_key_secret"],
+    key_id: razorpayKeys["razorpay_key_id"],
+    key_secret: razorpayKeys["razorpay_key_secret"],
   });
   const amount = parseInt(req.body.amount) * 100;
 
@@ -43,9 +46,10 @@ exports.createRazorPayOrder = catchAsync(async (req, res, next) => {
   });
 });
 exports.getAccountPaymentDetails = catchAsync(async (req, res, next) => {
+  const razorpayKeys=getRazorPayKey();
   const instance = new Razorpay({
-    key_id: process.env["razorpay_key_id"],
-    key_secret: process.env["razorpay_key_secret"],
+    key_id: razorpayKeys["razorpay_key_id"],
+    key_secret: razorpayKeys["razorpay_key_secret"],
   });
   console.log(req.paymentData.restaurantAccountId);
 
@@ -64,9 +68,11 @@ exports.getAccountPaymentDetails = catchAsync(async (req, res, next) => {
 });
 
 exports.getAccountTransferDetails = catchAsync(async (req, res, next) => {
+  const razorpayKeys=getRazorPayKey();
+
   const instance = new Razorpay({
-    key_id: process.env["razorpay_key_id"],
-    key_secret: process.env["razorpay_key_secret"],
+    key_id: razorpayKeys["razorpay_key_id"],
+    key_secret: razorpayKeys["razorpay_key_secret"],
   });
 
   const orderId = req.params.orderId;

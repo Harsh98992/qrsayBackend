@@ -20,35 +20,10 @@ const restaurantRoute = require("./routers/restaurantRoute");
 const userRoute = require("./routers/userRoute");
 const globalHandler = require("./controllers/errorController");
 const orderSchema = require("./models/OrderModel");
+const orderTempSchema = require("./models/OrderModelTemp");
 dotenv.config({ path: "./config.env" });
 const axios = require("axios");
 const app = express();
-
-app.use(express.json({ limit: "50mb" }));
-app.use(cors());
-app.use(bodyParser.json());
-
-app.use("/api/v1/restaurant", restaurantRoute);
-app.use("/api/v1/admin", adminRoute);
-app.use("/api/v1/restaurant/dishes", dishesRoute);
-app.use("/api/v1/user", userRoute);
-app.use("/api/v1/customer", customerRoute);
-app.use("/api/v1/payment", paymentRoute);
-app.use("/api/v1/orders", orderRoute);
-app.use("/api/v1/google-maps", googlemapRoute);
-app.get("/", (req, res) => {
-  res.status(200).json({
-    status: 200,
-    message: "Hello from server",
-  });
-});
-
-app.all("*", (req, res, next) => {
-  console.log(req.originalUrl);
-  next(new AppError("No route found", 404));
-});
-
-app.use(globalHandler);
 
 const port = process.env.PORT || 3000;
 const dbConStr =
@@ -67,7 +42,37 @@ mongoose
 const server = http.createServer(app);
 
 // Initialize Socket.IO and pass the server object to the function
-const io = initializeSocket(server);
+const io = initializeSocket.initializeSocket(server);
+app.use(express.json({ limit: "50mb" }));
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  req.io = initializeSocket.io;
+  next();
+});
+app.use("/api/v1/restaurant", restaurantRoute);
+app.use("/api/v1/admin", adminRoute);
+app.use("/api/v1/restaurant/dishes", dishesRoute);
+app.use("/api/v1/user", userRoute);
+app.use("/api/v1/customer", customerRoute);
+app.use("/api/v1/payment", paymentRoute);
+app.use("/api/v1/orders", orderRoute);
+app.use("/api/v1/google-maps", googlemapRoute);
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: 200,
+    message: "Hello from server",
+  });
+});
+
+app.all("*", (req, res, next) => {
+  console.log(req.originalUrl);
+  next(new AppError("No route found", 404));
+});
+
+app.use(globalHandler);
 cron.schedule("*/10 * * * *", async function () {
   console.log("job executed");
   const tenMinutesAgo = new Date();
@@ -110,6 +115,9 @@ cron.schedule("*/10 * * * *", async function () {
       reason: "The restaurant cannot fulfill the order at this time.",
     }
   );
+  const deleted = await orderTempSchema.deleteMany({
+    orderDate: { $lte: eightHoursAgo },
+  });
 });
 cron.schedule("0 0 * * *", () => {
   // const mongodumpCmd = `mongodump "${dbConStr}" --username goqrorder`;
@@ -128,6 +136,6 @@ cron.schedule("0 0 * * *", () => {
 
 // Mongodump command with connection string
 
-server.listen(port, () => {
+server.listen(port, async () => {
   console.log(`App running on port ${port}...`);
 });

@@ -1,8 +1,8 @@
 const socketIo = require("socket.io");
 const Order = require("./models/OrderModel");
-
+let io=null;
 function initializeSocket(server) {
-    const io = socketIo(server, {
+     io = socketIo(server, {
         cors: {
             origin: "*",
         },rejectUnauthorized: false
@@ -57,4 +57,9 @@ function initializeSocket(server) {
     });
 }
 
-module.exports = initializeSocket;
+module.exports = {initializeSocket, get io() {
+    if (!io) {
+      
+    }
+    return io;
+  },};

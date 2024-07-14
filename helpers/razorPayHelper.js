@@ -3,6 +3,18 @@ const AppError = require("./appError");
 const catchAsync = require("./catchAsync");
 const Restaurant = require("../models/restaurantModel");
 const crypto = require("crypto");
+
+exports.getRazorPayKey = () => {
+  const res = {};
+  if (process.env.NODE_ENV === "production") {
+    res["razorpay_key_id"] = process.env.razorpay_prod_key_id;
+    res["razorpay_key_secret"] = process.env.razorpay_prod_key_secret;
+  } else {
+    res["razorpay_key_id"] = process.env.razorpay_key_id;
+    res["razorpay_key_secret"] = process.env.razorpay_key_secret;
+  }
+  return res;
+};
 exports.fetchOrderById = async (key, secret, orderId) => {
   var instance = new Razorpay({
     key_id: key,
