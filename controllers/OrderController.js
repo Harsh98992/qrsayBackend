@@ -637,6 +637,9 @@ exports.paymentVerification = async (req, res, next) => {
           if (process.env.WHATSAPP_ORDER_STATUS === "true") {
             // send a WhatsApp message to the customer that order has been placed successfully
             // Assuming you have a function sendWhatsAppMessage(phoneNumber, message)
+            const restaurantDetail = await Restaurant.findOne({
+              _id: reqData["restaurantId"],
+            });
             sendRestaurantOrderMessage(
               restaurantDetail?.restaurantPhoneNumber,
               savedData
