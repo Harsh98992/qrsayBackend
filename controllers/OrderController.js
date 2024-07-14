@@ -619,7 +619,7 @@ exports.paymentVerification = async (req, res, next) => {
         payment_order_id: payment.order_id,
       });
       if (orderData?._doc) {
-        console.log("came inside")
+     
         const reqData = Object.assign({}, orderData._doc);
         reqData["payment_time"] = payment["created_at"] ?? null;
         reqData["payment_method"] = payment["method"] ?? null;
@@ -641,16 +641,16 @@ exports.paymentVerification = async (req, res, next) => {
             const restaurantDetail = await Restaurant.findOne({
               _id: reqData["restaurantId"],
             });
-            console.log(restaurantDetail?.restaurantPhoneNumber,)
+ 
             sendRestaurantOrderMessage(
               restaurantDetail?.restaurantPhoneNumber,
-              savedData
+              reqData
             );
-            console.log( reqData["customerPreferences"]?.userDetail?.phoneNumber)
+           
             sendTrackOrderWhatsAppMessage(
               reqData["customerPreferences"]?.userDetail?.phoneNumber,
               `Order placed successfully!`,
-              `${orderId}`
+              `${reqData["orderId"]}`
             );
           }
           if (process.env.EMAIL_ORDER_STATUS === "true") {
