@@ -40,7 +40,7 @@ const sendWhatsAppMessage = async (phoneNumber, otp) => {
   return res;
 };
 const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
-  if(process.env.NODE_ENV === "production"){
+  if(process.env.NODE_ENV  ){
   try {
     const config = {
       headers: {
@@ -83,7 +83,7 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
 }
 };
 const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
-  if(process.env.NODE_ENV === "production"){
+  if(process.env.NODE_ENV ){
   try {
     const config = {
       headers: {
@@ -169,7 +169,7 @@ function dishNameWithExtra(order) {
   return orderStr;
 }
 const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
-  if(process.env.NODE_ENV === "production"){
+  if(process.env.NODE_ENV ){
   try {
     let orderTypeStr = "";
     if (
