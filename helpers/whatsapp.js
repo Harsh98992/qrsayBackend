@@ -169,7 +169,7 @@ function dishNameWithExtra(order) {
   return orderStr;
 }
 const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV) {
     try {
       let orderTypeStr = "";
       if (
@@ -247,7 +247,7 @@ const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
         type: "template",
 
         template: {
-          name: "orderrecievemessage",
+          name: "new_order_received",
           language: {
             code: "en",
           },
@@ -282,6 +282,17 @@ const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
                 {
                   type: "text",
                   text: `${dishStr ?? ""}`,
+                },
+              ],
+            },
+            {
+              type: "button",
+              sub_type: "url",
+              index: 0,
+              parameters: [
+                {
+                  type: "text",
+                  text: `${orderData.orderId}`,
                 },
               ],
             },
