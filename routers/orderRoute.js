@@ -56,8 +56,8 @@ router.put(
 );
 router.patch(
   "/changeOrderStatus",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner", "staff"),
+  // authenticateController.protect,
+  // authenticateController.ristrictTo("restaurantOwner", "staff"),
   changeOrderStatus
 );
 router.patch(
