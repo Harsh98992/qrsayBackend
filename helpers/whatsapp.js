@@ -39,7 +39,7 @@ const sendWhatsAppMessage = async (phoneNumber, otp) => {
 
   return res;
 };
-const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
+const sendCustomWhatsAppMessage = async (phoneNumber, message,restaurant) => {
   if (process.env.NODE_ENV ) {
     try {
       const config = {
@@ -66,6 +66,14 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
                 {
                   type: "text",
                   text: `${message}`,
+                },
+                {
+                  type: "text",
+                  text: toTitleCase(`${restaurant?.restaurantName}`),
+                },
+                {
+                  type: "text",
+                  text: `https://qrsay.com/restaurant?detail=${restaurant?.restaurantUrl}`,
                 },
               ],
             },
@@ -116,7 +124,7 @@ const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId,resta
                 },
                 {
                   type: "text",
-                  text: `${restaurant?.restaurantName}`,
+                  text: toTitleCase(`${restaurant?.restaurantName}`),
                 },
                 {
                   type: "text",
@@ -148,6 +156,15 @@ const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId,resta
     } catch (e) {}
   }
 };
+function toTitleCase(str) {
+  return str.split(' ').map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
+// Example usage
+
+
 function dishNameWithExtra(order) {
   let orderStr = "";
   if (order?.itemSizeSelected?.size) {

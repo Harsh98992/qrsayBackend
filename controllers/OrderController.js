@@ -574,7 +574,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
           );
           sendCustomWhatsAppMessage(
             req.user["phoneNumber"],
-            `Order placed Successfully.`
+            `Order placed Successfully.`,
+            restaurantDetail
           );
         }
       } catch (error) {}
@@ -1165,7 +1166,8 @@ const whatsappHelper = (restaurantData, orderData, message = "") => {
     sendCustomWhatsAppMessage(
       orderData.customerPhoneNumber,
 
-      `${message}`
+      `${message}`,
+      restaurantData
     );
   }
 };
