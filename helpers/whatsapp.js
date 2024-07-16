@@ -40,7 +40,7 @@ const sendWhatsAppMessage = async (phoneNumber, otp) => {
   return res;
 };
 const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV ) {
     try {
       const config = {
         headers: {
@@ -83,7 +83,7 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
   }
 };
 const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV ) {
     try {
       const config = {
         headers: {
@@ -113,6 +113,14 @@ const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
                 {
                   type: "text",
                   text: `${orderId}`,
+                },
+                {
+                  type: "text",
+                  text: `${restaurant?.restaurantName}`,
+                },
+                {
+                  type: "text",
+                  text: `https://qrsay.com/restaurant?detail=${restaurant?.restaurantUrl}`,
                 },
               ],
             },
