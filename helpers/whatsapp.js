@@ -82,7 +82,7 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
     } catch {}
   }
 };
-const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
+const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId,restaurant) => {
   if (process.env.NODE_ENV ) {
     try {
       const config = {
