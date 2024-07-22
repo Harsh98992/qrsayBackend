@@ -194,6 +194,7 @@ function dishNameWithExtra(order) {
   return orderStr;
 }
 const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
+  console.log("phoneNumber", phoneNumber);
   if (process.env.NODE_ENV) {
     try {
       let orderTypeStr = "";
