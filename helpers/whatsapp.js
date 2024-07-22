@@ -234,16 +234,16 @@ const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
       if (
         orderData?.customerPreferences?.preference?.toLowerCase() === "dine in"
       ) {
-        for (const [index, order] of orderData.orderDatas.entries()) {
+        for (const [index, order] of orderData.orderDetails.entries()) {
           if (index > 0) {
-            orderData.orderDatas[0]["orderSummary"].push(
+            orderData.orderDetails[0]["orderSummary"].push(
               ...order["orderSummary"]
             );
-            orderData.orderDatas[0]["orderAmount"] += order["orderAmount"];
-            orderData.orderDatas[0]["gstAmount"] += order["gstAmount"];
-            orderData.orderDatas[0]["deliveryAmount"] +=
+            orderData.orderDetails[0]["orderAmount"] += order["orderAmount"];
+            orderData.orderDetails[0]["gstAmount"] += order["gstAmount"];
+            orderData.orderDetails[0]["deliveryAmount"] +=
               order["deliveryAmount"];
-            orderData.orderDatas[0]["discountAmount"] +=
+            orderData.orderDetails[0]["discountAmount"] +=
               order["discountAmount"];
           }
         }
@@ -324,6 +324,7 @@ const sendRestaurantOrderMessage = async (phoneNumber, orderData) => {
           ],
         },
       };
+      console.log("message sended")
       const res = await axios.post(
         "https://graph.facebook.com/v17.0/207695905761327/messages",
         data,
