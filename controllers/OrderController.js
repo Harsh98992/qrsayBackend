@@ -479,7 +479,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       customerId: req.user["_id"],
       customerName: req.user["name"],
       customerEmail: req.user["email"],
-      customerPhoneNumber: req.user["phoneNumber"],
+      customerPhoneNumber: reqData["customerPreferences"]?.userDetail
+        ?.phoneNumber
+        ? reqData["customerPreferences"]?.userDetail?.phoneNumber
+        : req.user["phoneNumber"] ?? "",
       customerPreferences: reqData["customerPreferences"],
       orderDetails: orderData,
       restaurantId: reqData["restaurantId"],
@@ -621,7 +624,6 @@ exports.paymentVerification = async (req, res, next) => {
         payment_order_id: payment.order_id,
       });
       if (orderData?._doc) {
-     
         const reqData = Object.assign({}, orderData._doc);
         reqData["payment_time"] = payment["created_at"] ?? null;
         reqData["payment_method"] = payment["method"] ?? null;
@@ -643,12 +645,12 @@ exports.paymentVerification = async (req, res, next) => {
             const restaurantDetail = await Restaurant.findOne({
               _id: reqData["restaurantId"],
             });
- 
+
             sendRestaurantOrderMessage(
               restaurantDetail?.restaurantPhoneNumber,
               reqData
             );
-           
+
             sendTrackOrderWhatsAppMessage(
               reqData["customerPreferences"]?.userDetail?.phoneNumber,
               `Order placed successfully!`,
