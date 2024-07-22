@@ -366,7 +366,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
           sendTrackOrderWhatsAppMessage(
             reqData["customerPreferences"]?.userDetail?.phoneNumber,
             `Order placed successfully!`,
-            `${orderId}`
+            `${orderId}`,
+            restaurantDetail
           );
         }
       } catch (error) {
@@ -573,7 +574,8 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
           );
           sendCustomWhatsAppMessage(
             req.user["phoneNumber"],
-            `Order placed Successfully.`
+            `Order placed Successfully.`,
+            restaurantDetail
           );
         }
       } catch (error) {}
@@ -650,7 +652,8 @@ exports.paymentVerification = async (req, res, next) => {
             sendTrackOrderWhatsAppMessage(
               reqData["customerPreferences"]?.userDetail?.phoneNumber,
               `Order placed successfully!`,
-              `${reqData["orderId"]}`
+              `${reqData["orderId"]}`,
+              restaurantDetail
             );
           }
           if (process.env.EMAIL_ORDER_STATUS === "true") {
@@ -1155,14 +1158,16 @@ const whatsappHelper = (restaurantData, orderData, message = "") => {
       sendTrackOrderWhatsAppMessage(
         orderData["customerPreferences"]?.userDetail?.phoneNumber,
         `${message}`,
-        `${orderData.orderId}`
+        `${orderData.orderId}`,
+        restaurantData
       );
     }
   } else {
     sendCustomWhatsAppMessage(
       orderData.customerPhoneNumber,
 
-      `${message}`
+      `${message}`,
+      restaurantData
     );
   }
 };

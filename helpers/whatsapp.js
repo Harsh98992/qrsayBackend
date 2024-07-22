@@ -39,8 +39,8 @@ const sendWhatsAppMessage = async (phoneNumber, otp) => {
 
   return res;
 };
-const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
-  if (process.env.NODE_ENV === "production") {
+const sendCustomWhatsAppMessage = async (phoneNumber, message,restaurant) => {
+  if (process.env.NODE_ENV ) {
     try {
       const config = {
         headers: {
@@ -67,6 +67,14 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
                   type: "text",
                   text: `${message}`,
                 },
+                {
+                  type: "text",
+                  text: toTitleCase(`${restaurant?.restaurantName}`),
+                },
+                {
+                  type: "text",
+                  text: `https://qrsay.com/restaurant?detail=${restaurant?.restaurantUrl}`,
+                },
               ],
             },
           ],
@@ -82,8 +90,8 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message) => {
     } catch {}
   }
 };
-const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
-  if (process.env.NODE_ENV === "production") {
+const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId,restaurant) => {
+  if (process.env.NODE_ENV ) {
     try {
       const config = {
         headers: {
@@ -114,6 +122,14 @@ const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
                   type: "text",
                   text: `${orderId}`,
                 },
+                {
+                  type: "text",
+                  text: toTitleCase(`${restaurant?.restaurantName}`),
+                },
+                {
+                  type: "text",
+                  text: `https://qrsay.com/restaurant?detail=${restaurant?.restaurantUrl}`,
+                },
               ],
             },
             {
@@ -140,6 +156,15 @@ const sendTrackOrderWhatsAppMessage = async (phoneNumber, message, orderId) => {
     } catch (e) {}
   }
 };
+function toTitleCase(str) {
+  return str.split(' ').map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
+// Example usage
+
+
 function dishNameWithExtra(order) {
   let orderStr = "";
   if (order?.itemSizeSelected?.size) {
