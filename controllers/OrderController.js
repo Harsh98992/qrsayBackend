@@ -576,7 +576,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
             savedData
           );
           sendCustomWhatsAppMessage(
-            req.user["phoneNumber"],
+            savedData['customerPhoneNumber'],
             `Order placed Successfully.`,
             restaurantDetail
           );
