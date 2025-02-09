@@ -4,7 +4,6 @@ const {
 } = require("../controllers/customerAuthenticationController");
 const {
   placeOrder,
-  storeOrder,
   getRestaurantOrdersByStatus,
   changeOrderStatus,
   getCustomerOrder,
