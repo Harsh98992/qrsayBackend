@@ -1,69 +1,103 @@
-Sure! Here’s a documentation in Markdown format for the provided Express.js application file:
+# API Documentation
 
-```markdown
-# Express.js Application Documentation
+This document provides an overview of the Express.js application setup, including the routes and middleware used in the application.
 
 ## Overview
-This application is built using Express.js and serves as a RESTful API for managing various resources such as restaurants, dishes, users, customers, payments, and orders. It also integrates Google Maps functionality.
+
+This application is built using Express.js and includes various routes for handling different aspects of a restaurant management system. The application is designed to handle requests related to restaurants, dishes, users, customers, payments, orders, and Google Maps integration.
 
 ## Dependencies
-The application requires the following Node.js packages:
+
+The following dependencies are used in this application:
+
 - `express`: A web framework for Node.js.
-- `cors`: Middleware to enable Cross-Origin Resource Sharing.
-- `body-parser`: Middleware to parse incoming request bodies.
-- `request_trimmer`: A utility to trim request data.
-- Custom modules for routing and error handling.
-
-## Setup
-To set up the application, ensure you have Node.js installed. Then, install the required dependencies:
-
-```bash
-npm install express cors body-parser request_trimmer
-```
-
-## Application Structure
-The application is structured into various routes, each handling specific API endpoints:
-
-- **Restaurant Route**: Manages restaurant-related operations.
-- **Dishes Route**: Handles operations related to dishes.
-- **User Route**: Manages user-related functionalities.
-- **Customer Route**: Handles customer-related operations.
-- **Payment Route**: Manages payment processing.
-- **Admin Route**: Handles administrative tasks.
-- **Order Route**: Manages order processing.
-- **Google Map Route**: Integrates Google Maps functionalities.
+- `cors`: A middleware for enabling Cross-Origin Resource Sharing.
+- `body-parser`: A middleware for parsing incoming request bodies.
+- `request_trimmer`: A custom middleware for trimming request data.
+- `./helpers/appError`: A custom error handling class.
+- `./controllers/errorController`: A global error handling controller.
 
 ## Middleware
-The application uses the following middleware:
 
-- `express.json()`: Parses incoming JSON requests with a limit of 50mb.
-- `trim_all`: Trims all incoming request data.
-- `cors()`: Enables CORS for all routes.
+The following middleware is used in the application:
+
+1. **JSON Body Parser**: Configured to accept JSON requests with a limit of 50MB.
+   ```javascript
+   app.use(express.json({ limit: "50mb" }));
+   ```
+
+2. **Request Trimmer**: A custom middleware to trim all incoming request data.
+   ```javascript
+   app.use(trim_all);
+   ```
+
+3. **CORS**: Enables Cross-Origin Resource Sharing.
+   ```javascript
+   app.use(cors());
+   ```
+
+4. **Body Parser**: Parses incoming request bodies in a middleware before your handlers.
+   ```javascript
+   app.use(bodyParser.json());
+   ```
 
 ## Routes
-The following API endpoints are defined in the application:
 
-- `POST /api/v1/restaurant`: Manage restaurants.
-- `POST /api/v1/admin`: Admin functionalities.
-- `GET /api/v1/restaurant/dishes`: Retrieve dishes for a restaurant.
-- `POST /api/v1/user`: User management.
-- `POST /api/v1/customer`: Customer management.
-- `POST /api/v1/payment`: Payment processing.
-- `POST /api/v1/orders`: Order management.
-- `GET /api/v1/google-maps`: Google Maps functionalities.
+The application defines the following routes:
+
+- **Restaurant Routes**
+  - Base URL: `/api/v1/restaurant`
+  - Handled by: `restaurantRoute`
+
+- **Admin Routes**
+  - Base URL: `/api/v1/admin`
+  - Handled by: `adminRoute`
+
+- **Dishes Routes**
+  - Base URL: `/api/v1/restaurant/dishes`
+  - Handled by: `dishesRoute`
+
+- **User Routes**
+  - Base URL: `/api/v1/user`
+  - Handled by: `userRoute`
+
+- **Customer Routes**
+  - Base URL: `/api/v1/customer`
+  - Handled by: `customerRoute`
+
+- **Payment Routes**
+  - Base URL: `/api/v1/payment`
+  - Handled by: `paymentRoute`
+
+- **Order Routes**
+  - Base URL: `/api/v1/orders`
+  - Handled by: `orderRoute`
+
+- **Google Maps Routes**
+  - Base URL: `/api/v1/google-maps`
+  - Handled by: `googlemapRoute`
 
 ## Error Handling
-The application includes a global error handler that catches all unhandled routes and errors. If a route is not found, it logs the original URL and returns a 404 error.
+
+The application includes a global error handler that catches all unhandled routes and errors. If a request is made to a route that does not exist, a 404 error is returned.
+
+```javascript
+app.all("*", (req, res, next) => {
+    console.log(req.originalUrl);
+    next(new AppError("No route found", 404));
+});
+```
+
+The global error handler is defined in `./controllers/errorController`.
 
 ## Export
-The application is exported as a module for use in other parts of the application.
+
+The Express application is exported for use in other modules.
 
 ```javascript
 module.exports = app;
 ```
 
 ## Conclusion
-This Express.js application provides a robust framework for managing various resources through a RESTful API. Ensure to follow the setup instructions and explore the defined routes for full functionality.
-```
 
-Feel free to modify any sections as needed! If you have any other requests or questions, just let me know!
+This documentation provides a high-level overview of the Express.js application, its middleware, routes, and error handling mechanisms. For further details on specific routes and their functionalities, please refer to the respective route handler files.

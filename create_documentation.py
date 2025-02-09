@@ -13,7 +13,11 @@ def get_response(message):
     return response.choices[0].message.content
 
 # not only python files but also other files like txt, md, etc
+# files = glob.glob('**/*.*', recursive=True) remove documentation folder
 files = glob.glob('**/*.*', recursive=True)
+files = [file for file in files if not re.match(r'documentation', file)]
+files = [file for file in files if not re.match(r'create_documentation', file)]
+files = [file for file in files if not re.match(r'g4f', file)]
 
 for file in files:
     with open(file) as f:

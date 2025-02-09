@@ -97,16 +97,46 @@
         - [1.8.2.5.2. Get Geocode Details](#18252-get-geocode-details)
         - [1.8.2.5.3. Get Formatted Geocode Details](#18253-get-formatted-geocode-details)
         - [1.8.2.5.4. Get Place Details](#18254-get-place-details)
+      - [Order Service Endpoints](#order-service-endpoints)
+        - [Place Order](#place-order)
+        - [Store Order](#store-order)
+        - [Get Customer Active Order](#get-customer-active-order)
+        - [Get Restaurant Orders By Status](#get-restaurant-orders-by-status)
+        - [Delete Order By ID](#delete-order-by-id)
+        - [Change Order Status](#change-order-status)
+        - [Change Order Status By User](#change-order-status-by-user)
+        - [Change Order Status By User For Cash On Delivery](#change-order-status-by-user-for-cash-on-delivery)
+        - [Get Customer Order](#get-customer-order)
+        - [Get Order With Payment Order ID](#get-order-with-payment-order-id)
+        - [Get Customer Payment Pending Order](#get-customer-payment-pending-order)
+        - [Generate Bill](#generate-bill)
+        - [Download Bill](#download-bill)
     - [1.8.3. Error Codes and Handling](#183-error-codes-and-handling)
-      - [Error Dialog Component](#error-dialog-component)
-      - [Common Error Scenarios](#common-error-scenarios)
-      - [Error Handling Best Practices](#error-handling-best-practices)
+      - [1.8.3.1. Error Dialog Component](#1831-error-dialog-component)
+      - [1.8.3.2. Common Error Scenarios](#1832-common-error-scenarios)
+      - [1.8.3.3. Error Handling Best Practices](#1833-error-handling-best-practices)
     - [1.8.4. How to Test APIs as a Beginner](#184-how-to-test-apis-as-a-beginner)
   - [1.9. Database Design](#19-database-design)
     - [1.9.1. Database Schema Overview](#191-database-schema-overview)
-    - [1.9.2. Key Tables and Their Purpose](#192-key-tables-and-their-purpose)
-    - [1.9.3. Entity-Relationship Diagrams (ERD)](#193-entity-relationship-diagrams-erd)
-    - [1.9.4. Sample Queries for Common Use Cases](#194-sample-queries-for-common-use-cases)
+    - [1.9.2. **Entities and Attributes**](#192-entities-and-attributes)
+      - [1.9.2.1. **Customer**](#1921-customer)
+      - [1.9.2.2. **IdentifierOTP**](#1922-identifierotp)
+      - [1.9.2.3. **Order**](#1923-order)
+      - [1.9.2.4. **PromoCode**](#1924-promocode)
+      - [1.9.2.5. **Restaurant**](#1925-restaurant)
+      - [1.9.2.6. **Table**](#1926-table)
+      - [1.9.2.7. **User**](#1927-user)
+    - [1.9.3. **Relationships**](#193-relationships)
+    - [1.9.4. Key Tables and Their Purpose](#194-key-tables-and-their-purpose)
+      - [1.9.4.1. Customer Table](#1941-customer-table)
+      - [1.9.4.2. IdentifierOTP Table](#1942-identifierotp-table)
+      - [1.9.4.3. Order Table](#1943-order-table)
+      - [1.9.4.4. PromoCode Table](#1944-promocode-table)
+      - [1.9.4.5. Restaurant Table](#1945-restaurant-table)
+      - [1.9.4.6. Table Table](#1946-table-table)
+      - [1.9.4.7. User Table](#1947-user-table)
+    - [1.9.5. Entity-Relationship Diagrams (ERD)](#195-entity-relationship-diagrams-erd)
+    - [1.9.6. Sample Queries for Common Use Cases](#196-sample-queries-for-common-use-cases)
   - [1.10. User Interface (UI)](#110-user-interface-ui)
     - [1.10.1. Screenshots of All Pages (annotated with descriptions)](#1101-screenshots-of-all-pages-annotated-with-descriptions)
     - [1.10.2. Navigation Map](#1102-navigation-map)
@@ -637,6 +667,8 @@ The website is deployed on firebase.com and hosted on Google Cloud Platform. The
     ![init](https://i.imgur.com/E0jXBGn.png "init")
 11. Deploy to Firebase Hosting using `firebase deploy`.
     ![deploy](https://i.imgur.com/Fe3OCQ1.png "deploy")
+12. deployment successful.
+    ![success](https://i.imgur.com/LyCoQqH.png "success")
 
 ## 1.6. Beginner’s Guide to Programming
 
@@ -890,87 +922,6 @@ The digital menu system's API infrastructure serves as the backbone of communica
 All APIs use JSON for data exchange and require proper authentication using JWT tokens. The base URL for all API endpoints is `/api/v1`, and requests are secured using HTTPS protocol.
 
 ### 1.8.2. API Endpoint List
-
-<!-- import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { environment } from "src/environments/environment";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-@Injectable({
-    providedIn: "root",
-})
-export class AdminPanelService {
-    apiUrl = environment.apiUrl;
-    EXCEL_TYPE =
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-    EXCEL_EXTENSION = ".xlsx";
-    constructor(private http: HttpClient) {}
-    getRestaurantsByStatus(restaurantVerified) {
-        return this.http.get(
-            `${this.apiUrl}/v1/admin/getRestaurantsByStatus/${restaurantVerified}`
-        );
-    }
-    getRestaurantPayment() {
-        return this.http.get(
-            `${this.apiUrl}/v1/payment/getAccountPaymentDetails`
-        );
-    }
-    getAccountTransferDetails(orderId) {
-        return this.http.get(
-            `${this.apiUrl}/v1/payment/getAccountTransferDetails/${orderId}`
-        );
-    }
-    getAdminRestaurantData(id: string) {
-        return this.http.get(
-            `${this.apiUrl}/v1/admin/getRestaurantDetail/${id}`
-        );
-    }
-    changeRestaurantStatus(id: string, data: any) {
-        return this.http.patch(
-            `${this.apiUrl}/v1/admin/changeRestaurantStatus/${id}`,
-            data
-        );
-    }
-
-    editRestaurant(id: string, data: any) {
-        return this.http.patch(
-            `${this.apiUrl}/v1/admin/editRestaurant/${id}`,
-            data
-        );
-    }
-
-    viewAllUsersOfRestaurant(id: string) {
-        return this.http.get(
-            `${this.apiUrl}/v1/admin/viewAllUsersOfRestaurant/${id}`
-        );
-    }
-
-    sendEmailToRestaurant(data: any) {
-        return this.http.post(
-            `${this.apiUrl}/v1/admin/sendEmailToRestaurant`,
-            data
-        );
-    }
-    public exportJsonToExcel(jsonData: any[], fileName: string): void {
-        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(jsonData);
-        const workbook: XLSX.WorkBook = {
-            Sheets: { data: worksheet },
-            SheetNames: ["data"],
-        };
-        const excelBuffer: any = XLSX.write(workbook, {
-            bookType: "xlsx",
-            type: "array",
-        });
-        this.saveAsExcelFile(excelBuffer, fileName);
-    }
-    private saveAsExcelFile(buffer: any, fileName: string): void {
-        const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
-        saveAs(
-            data,
-            fileName + "_export_" + new Date().getTime() + this.EXCEL_EXTENSION
-        );
-    }
-} -->
 
 #### 1.8.2.1. Admin Panel endpoints
 
@@ -2262,11 +2213,636 @@ export class AdminPanelService {
     });
     ```
 
+#### Order Service Endpoints
+<!--
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
+import { environment } from "src/environments/environment";
+import { PaymentDialogComponent } from "../angular-material/payment-dialog/payment-dialog.component";
+import { io } from "socket.io-client";
+
+@Injectable({
+    providedIn: "root",
+})
+export class OrderService {
+    apiUrl = environment.apiUrl;
+    constructor(private http: HttpClient, private dialog: MatDialog) {
+        this.socket = io(this.socketApiUrl);
+    }
+
+    socket: any;
+    socketApiUrl = environment.socketApiUrl;
+
+    placeOrder(data: any) {
+        return this.http.post(`${this.apiUrl}/v1/orders/placeOrder`, data);
+    }
+    storeOrder(data: any) {
+        return this.http.post(`${this.apiUrl}/v1/orders/storeOrder`, data);
+    }
+    getCustomerActiveOrder() {
+        return this.http.get(`${this.apiUrl}/v1/orders/getCustomerActiveOrder`);
+    }
+    getRestaurantOrdersByStatus(data) {
+        return this.http.put(
+            `${this.apiUrl}/v1/orders/getRestaurantOrdersByStatus`,
+            data
+        );
+    }
+    deleteOrderById(orderId: String) {
+        return this.http.delete(
+            `${this.apiUrl}/v1/orders/deleteOrderById/${orderId}`
+        );
+    }
+    changeOrderStatus(data) {
+        return this.http.patch(
+            `${this.apiUrl}/v1/orders/changeOrderStatus`,
+            data
+        );
+    }
+    changeOrderStatusByUser(data) {
+        return this.http.patch(
+            `${this.apiUrl}/v1/orders/changeOrderStatusByUser`,
+            data
+        );
+    }
+    changeOrderStatusByUserForCashOnDelivery(data) {
+        return this.http.patch(
+            `${this.apiUrl}/v1/orders/changeOrderStatusByUserForCashOnDelivery`,
+            data
+        );
+    }
+    getCustomerOrder() {
+        return this.http.get(`${this.apiUrl}/v1/orders/customerOrder`);
+    }
+    getOrderwithPaymentOrderId(orderId) {
+        return this.http.get(`${this.apiUrl}/v1/orders/getOrderwithPaymentOrderId/${orderId}`);
+    }
+    getCustomerPaymentPendingOrder() {
+        return this.http.get(
+            `${this.apiUrl}/v1/orders/getCustomerPaymentPendingOrder`
+        );
+    }
+    generateBill(orderId: String) {
+        return this.http.get(
+            `${this.apiUrl}/v1/orders/generateBill/${orderId}`
+        );
+    }
+    downloadBill(base64String: string, filename: string) {
+        const blob = this.base64toBlob(base64String, "application/pdf");
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.click();
+
+        window.URL.revokeObjectURL(url);
+    }
+    base64toBlob(base64: string, mimeType: string): Blob {
+        const byteCharacters = atob(base64);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+            const slice = byteCharacters.slice(offset, offset + 512);
+
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        return new Blob(byteArrays, { type: mimeType });
+    }
+    checkForOrderWithPendingPayment() {
+        // this.getCustomerPaymentPendingOrder().subscribe({
+        //     next: (res: any) => {
+        //         if (res && res.data && res.data?.orderData?._id)
+        //             this.dialog.open(PaymentDialogComponent, {
+        //                 panelClass: "add-item-dialog",
+        //                 data: res.data.orderData,
+        //                 disableClose: true,
+        //             });
+        //     },
+        // });
+    }
+} -->
+
+##### Place Order
+
+- **Endpoint**: `/api/v1/orders/placeOrder`
+- **Method**: POST
+- **Description**: Places an order for the customer.
+- **Parameters**:
+  - `data`: An object containing the order details.
+    - Example structure:
+
+```json
+{
+    "restaurantId": "123",
+    "items": [
+        {
+            "itemId": "456",
+            "quantity": 2
+        }
+    ],
+    "totalAmount": 100,
+    "paymentMethod": "card"
+}
+```
+
+- **Response**: Returns a success message with the order details.
+- **Authorization**: Customer authentication required.
+- **Error Handling**: Returns an error message if the order placement fails (e.g., invalid data or server error).
+- **Sample Code**:
+
+    ```typescript
+    placeOrder(data) {
+        return this.http.post(`${this.apiUrl}/v1/orders/placeOrder`, data);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const orderData = {
+        restaurantId: "123",
+        items: [
+            {
+                itemId: "456",
+                quantity: 2,
+            },
+        ],
+        totalAmount: 100,
+        paymentMethod: "card",
+    };
+
+    orderService.placeOrder(orderData).subscribe((response) => {
+        console.log("Order placed successfully:", response);
+    });
+    ```
+
+##### Store Order
+
+- **Endpoint**: `/api/v1/orders/storeOrder`
+- **Method**: POST
+- **Description**: Stores an order in the system for later processing or review.
+- **Parameters**:
+  - `data`: An object containing the order details to be stored.
+    - Example structure:
+
+```json
+{
+    "restaurantId": "123",
+    "items": [
+        {
+            "itemId": "456",
+            "quantity": 2
+        }
+    ],
+    "totalAmount": 100,
+    "paymentMethod": "card"
+}
+```
+
+- **Response**: Returns a success message with the order data.
+- **Authorization**: Customer or admin authentication required.
+- **Error Handling**: Returns an error message if storing the order fails (e.g., invalid data, server error, or missing required fields).
+- **Sample Code**:
+
+    ```typescript
+    storeOrder(data) {
+        return this.http.post(`${this.apiUrl}/v1/orders/storeOrder`, data);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const orderData = {
+        restaurantId: "123",
+        items: [
+            {
+                itemId: "456",
+                quantity: 2,
+            },
+        ],
+        totalAmount: 100,
+        paymentMethod: "card",
+    };
+
+    orderService.storeOrder(orderData).subscribe((response) => {
+        console.log("Order stored successfully:", response);
+    });
+    ```
+
+---
+
+##### Get Customer Active Order
+
+- **Endpoint**: `/api/v1/orders/getCustomerActiveOrder`
+- **Method**: GET
+- **Description**: Retrieves the customer's active order, if any.
+- **Parameters**: None
+- **Response**: Returns the details of the active order.
+- **Authorization**: Customer authentication required.
+- **Error Handling**: Returns an error message if no active order is found or if there is an issue with the request.
+- **Sample Code**:
+
+    ```typescript
+    getCustomerActiveOrder() {
+        return this.http.get(`${this.apiUrl}/v1/orders/getCustomerActiveOrder`);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    orderService.getCustomerActiveOrder().subscribe((response) => {
+        console.log("Active order:", response);
+    });
+    ```
+
+---
+
+##### Get Restaurant Orders By Status
+
+- **Endpoint**: `/api/v1/orders/getRestaurantOrdersByStatus`
+- **Method**: PUT
+- **Description**: Retrieves orders from a restaurant based on their current status.
+- **Parameters**:
+  - `data`: An object containing the status filter criteria.
+    - Example structure:
+
+```json
+{
+    "restaurantId": "123",
+    "status": "pending"
+}
+```
+
+- **Response**: Returns a list of orders that match the status.
+- **Authorization**: Restaurant authentication required.
+- **Error Handling**: Returns an error message if no orders are found or if the request fails.
+- **Sample Code**:
+
+    ```typescript
+    getRestaurantOrdersByStatus(data) {
+        return this.http.put(`${this.apiUrl}/v1/orders/getRestaurantOrdersByStatus`, data);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const statusData = {
+        restaurantId: "123",
+        status: "pending",
+    };
+
+    orderService.getRestaurantOrdersByStatus(statusData).subscribe((response) => {
+        console.log("Orders by status:", response);
+    });
+    ```
+
+---
+
+##### Delete Order By ID
+
+- **Endpoint**: `/api/v1/orders/deleteOrderById/:orderId`
+- **Method**: DELETE
+- **Description**: Deletes an order from the system based on the provided order ID.
+- **Parameters**:
+  - `orderId`: The unique identifier of the order to delete.
+- **Response**: Returns a success message if the order is deleted successfully.
+- **Authorization**: Admin authentication required.
+- **Error Handling**: Returns an error message if the order deletion fails (e.g., invalid order ID or server error).
+- **Sample Code**:
+
+    ```typescript
+    deleteOrderById(orderId: String) {
+        return this.http.delete(`${this.apiUrl}/v1/orders/deleteOrderById/${orderId}`);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const orderId = "789";
+
+    orderService.deleteOrderById(orderId).subscribe((response) => {
+        console.log("Order deleted successfully:", response);
+    });
+    ```
+
+---
+
+##### Change Order Status
+
+- **Endpoint**: `/api/v1/orders/changeOrderStatus`
+- **Method**: PATCH
+- **Description**: Changes the status of an order.
+- **Parameters**:
+  - `data`: An object containing the order ID and the new status.
+    - Example structure:
+
+```json
+{
+    "orderId": "789",
+    "status": "completed"
+}
+```
+
+- **Response**: Returns the updated order details with the new status.
+- **Authorization**: Admin or restaurant authentication required.
+- **Error Handling**: Returns an error message if the status update fails (e.g., invalid status, order not found, or server error).
+- **Sample Code**:
+
+    ```typescript
+    changeOrderStatus(data) {
+        return this.http.patch(`${this.apiUrl}/v1/orders/changeOrderStatus`, data);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const statusData = {
+        orderId: "789",
+        status: "completed",
+    };
+
+    orderService.changeOrderStatus(statusData).subscribe((response) => {
+        console.log("Order status updated:", response);
+    });
+    ```
+
+---
+
+##### Change Order Status By User
+
+- **Endpoint**: `/api/v1/orders/changeOrderStatusByUser`
+- **Method**: PATCH
+- **Description**: Allows a customer to change the status of their order.
+- **Parameters**:
+  - `data`: An object containing the order ID and the new status chosen by the user.
+    - Example structure:
+
+```json
+{
+    "orderId": "789",
+    "status": "canceled"
+}
+```
+
+- **Response**: Returns the updated order details with the new status.
+- **Authorization**: Customer authentication required.
+- **Error Handling**: Returns an error message if the status change is invalid or the order is already completed.
+- **Sample Code**:
+
+    ```typescript
+    changeOrderStatusByUser(data) {
+        return this.http.patch(`${this.apiUrl}/v1/orders/changeOrderStatusByUser`, data);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const statusData = {
+        orderId: "789",
+        status: "canceled",
+    };
+
+    orderService.changeOrderStatusByUser(statusData).subscribe((response) => {
+        console.log("User status updated:", response);
+    });
+    ```
+
+---
+
+##### Change Order Status By User For Cash On Delivery
+
+- **Endpoint**: `/api/v1/orders/changeOrderStatusByUserForCashOnDelivery`
+- **Method**: PATCH
+- **Description**: Allows a customer to change the status of their Cash on Delivery order.
+- **Parameters**:
+  - `data`: An object containing the order ID and the new status.
+    - Example structure:
+
+```json
+{
+    "orderId": "789",
+    "status": "waiting for payment"
+}
+```
+
+- **Response**: Returns the updated order details.
+- **Authorization**: Customer authentication required.
+- **Error Handling**: Returns an error message if the request fails.
+- **Sample Code**:
+
+    ```typescript
+    changeOrderStatusByUserForCashOnDelivery(data) {
+        return this.http.patch(`${this.apiUrl}/v1/orders/changeOrderStatusByUserForCashOnDelivery`, data);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const statusData = {
+        orderId: "789",
+        status: "waiting for payment",
+    };
+
+    orderService.changeOrderStatusByUserForCashOnDelivery(statusData).subscribe((response) => {
+        console.log("Cash on delivery order status updated:", response);
+    });
+    ```
+
+---
+
+##### Get Customer Order
+
+- **Endpoint**: `/api/v1/orders/customerOrder`
+- **Method**: GET
+- **Description**: Retrieves all orders placed by the customer.
+- **Parameters**: None
+- **Response**: Returns a list of the customer's orders.
+- **Authorization**: Customer authentication required.
+- **Error Handling**: Returns an error message if the request fails.
+- **Sample Code**:
+
+    ```typescript
+    getCustomerOrder() {
+        return this.http.get(`${this.apiUrl}/v1/orders/customerOrder`);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    orderService.getCustomerOrder().subscribe((response) => {
+        console.log("Customer orders:", response);
+    });
+    ```
+
+---
+
+##### Get Order With Payment Order ID
+
+- **Endpoint**: `/api/v1/orders/getOrderwithPaymentOrderId/:orderId`
+- **Method**: GET
+- **Description**: Retrieves an order's details based on the payment order ID.
+- **Parameters**:
+  - `orderId`: The payment order ID to look up.
+- **Response**: Returns the order details corresponding to the payment order ID.
+- **Authorization**: Customer authentication required.
+- **Error Handling**: Returns an error message if the order is not found or if the payment order ID is incorrect.
+- **Sample Code**:
+
+    ```typescript
+    getOrderwithPaymentOrderId(orderId) {
+        return this.http.get(`${this.apiUrl}/v1/orders/getOrderwithPaymentOrderId/${orderId}`);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const orderId = "456";
+
+    orderService.get
+
+OrderwithPaymentOrderId(orderId).subscribe((response) => {
+        console.log("Order details:", response);
+    });
+    ```
+
+---
+
+##### Get Customer Payment Pending Order
+
+- **Endpoint**: `/api/v1/orders/getCustomerPaymentPendingOrder`
+- **Method**: GET
+- **Description**: Retrieves orders with pending payment for the customer.
+- **Parameters**: None
+- **Response**: Returns a list of orders with pending payments.
+- **Authorization**: Customer authentication required.
+- **Error Handling**: Returns an error message if there are no pending orders or the request fails.
+- **Sample Code**:
+
+    ```typescript
+    getCustomerPaymentPendingOrder() {
+        return this.http.get(`${this.apiUrl}/v1/orders/getCustomerPaymentPendingOrder`);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    orderService.getCustomerPaymentPendingOrder().subscribe((response) => {
+        console.log("Payment pending orders:", response);
+    });
+    ```
+
+---
+
+##### Generate Bill
+
+- **Endpoint**: `/api/v1/orders/generateBill/:orderId`
+- **Method**: GET
+- **Description**: Generates a bill for the given order ID.
+- **Parameters**:
+  - `orderId`: The order ID to generate a bill for.
+- **Response**: Returns the generated bill (usually in PDF format).
+- **Authorization**: Customer authentication required.
+- **Error Handling**: Returns an error message if the order is not found or the bill generation fails.
+- **Sample Code**:
+
+    ```typescript
+    generateBill(orderId: String) {
+        return this.http.get(`${this.apiUrl}/v1/orders/generateBill/${orderId}`);
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const orderId = "789";
+
+    orderService.generateBill(orderId).subscribe((response) => {
+        console.log("Bill generated:", response);
+    });
+    ```
+
+---
+
+##### Download Bill
+
+- **Endpoint**: N/A (Method is for client-side processing)
+- **Method**: N/A
+- **Description**: Downloads the generated bill in PDF format.
+- **Parameters**:
+  - `base64String`: The base64 encoded string of the bill.
+  - `filename`: The name of the file to download.
+- **Response**: Initiates the download of the bill.
+- **Authorization**: None required.
+- **Sample Code**:
+
+    ```typescript
+    downloadBill(base64String: string, filename: string) {
+        const blob = this.base64toBlob(base64String, "application/pdf");
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.click();
+
+        window.URL.revokeObjectURL(url);
+    }
+
+    base64toBlob(base64: string, mimeType: string): Blob {
+        const byteCharacters = atob(base64);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+            const slice = byteCharacters.slice(offset, offset + 512);
+
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        return new Blob(byteArrays, { type: mimeType });
+    }
+    ```
+
+- **Usage**:
+
+    ```typescript
+    const base64String = "<base64 encoded string>";
+    const filename = "bill.pdf";
+
+    orderService.downloadBill(base64String, filename);
+    ```
+
+
+
 ### 1.8.3. Error Codes and Handling
 
 The Digital Menu application implements a comprehensive error handling system using Angular's Material Dialog components and HTTP interceptors. Here's how errors are handled:
 
-#### Error Dialog Component
+#### 1.8.3.1. Error Dialog Component
 
 The application uses a centralized error dialog component (`ErrorDialogComponent`) to display user-friendly error messages. The dialog includes:
 
@@ -2275,7 +2851,7 @@ The application uses a centralized error dialog component (`ErrorDialogComponent
 - Action buttons for user response
 - Option to contact the restaurant in case of critical errors
 
-#### Common Error Scenarios
+#### 1.8.3.2. Common Error Scenarios
 
 1. **Authentication Errors**
    - 401: Unauthorized access - User needs to log in
@@ -2294,7 +2870,7 @@ The application uses a centralized error dialog component (`ErrorDialogComponent
    - Network unavailable
    - Server unreachable
 
-#### Error Handling Best Practices
+#### 1.8.3.3. Error Handling Best Practices
 
 1. **User Communication**
    - Display clear, non-technical error messages
@@ -2317,9 +2893,211 @@ The application uses a centralized error dialog component (`ErrorDialogComponent
 
 ### 1.9.1. Database Schema Overview
 
-### 1.9.2. Key Tables and Their Purpose
+The database schema models the relationships and data for a restaurant management and ordering system. Below is an explanation of the entities, attributes, and their relationships:
 
-### 1.9.3. Entity-Relationship Diagrams (ERD)
+---
+
+### 1.9.2. **Entities and Attributes**
+
+#### 1.9.2.1. **Customer**
+
+- **Purpose:** Stores customer details.
+- **Attributes:**
+  - `id`: Primary key (ObjectId).
+  - `email`: Customer's email.
+  - `name`: Customer's name.
+  - `phoneNumber`: Customer's phone number.
+  - `password`: Password for account login.
+  - `addresses`: List of saved addresses (AddressSchema).
+  - `pastLocations`: Previously visited locations (AddressSchema).
+  - `socialLogin`: Social login details, if applicable.
+  - `previousRestaurant`: Customer's last searched restaurant (PreviousRestaurantSearch).
+
+---
+
+#### 1.9.2.2. **IdentifierOTP**
+
+- **Purpose:** Manages OTP-based verification for customers.
+- **Attributes:**
+  - `id`: Primary key (ObjectId).
+  - `identifier`: Email or phone number for verification.
+  - `otp`: OTP code.
+  - `firstAttempt`: Timestamp of the first verification attempt.
+  - `attempts`: Number of OTP attempts made.
+  - `identifierVerified`: Status of identifier verification (Boolean).
+  - `otpCreatedAt`: OTP creation timestamp.
+
+---
+
+#### 1.9.2.3. **Order**
+
+- **Purpose:** Represents orders placed by customers.
+- **Attributes:**
+  - `id`: Primary key (ObjectId).
+  - `customer`: Foreign key referencing the customer who placed the order.
+  - `restaurant`: Foreign key referencing the restaurant where the order was placed.
+  - `orderId`: Unique order identifier.
+  - `customerName`: Name of the customer.
+  - `orderDate`: Timestamp of the order.
+  - `orderDetails`: Details of the order (OrderDetailSchema).
+  - `customerEmail`: Customer's email.
+  - `customerPreferences`: Additional preferences provided by the customer.
+  - `orderStatus`: Status of the order (e.g., pending, completed).
+  - `reason`: Reason for order cancellation, if applicable.
+  - `payment_order_id`: ID for payment order.
+  - `payment_id`: ID for payment transaction.
+  - `cashOnDeliveryAvailable`: Indicates if cash on delivery is available.
+  - `payment_signature`: Signature for payment verification.
+
+---
+
+#### 1.9.2.4. **PromoCode**
+
+- **Purpose:** Stores promo codes offered by restaurants.
+- **Attributes:**
+  - `id`: Primary key (ObjectId).
+  - `restaurant`: Foreign key referencing the associated restaurant.
+  - `promoCodes`: Promo code details (IndividualPromoCodeSchema).
+
+---
+
+#### 1.9.2.5. **Restaurant**
+
+- **Purpose:** Represents restaurant details.
+- **Attributes:**
+  - `id`: Primary key (ObjectId).
+  - `restaurantName`: Name of the restaurant.
+  - `restaurantVerified`: Whether the restaurant is verified.
+  - `restaurantUrl`: Website URL.
+  - `restaurantBackgroundImage`: Background image URL.
+  - `restaurantPhoneNumber`: Contact number.
+  - `restaurantEmail`: Contact email.
+  - `restaurantStatus`: Operational status of the restaurant.
+  - `restaurantType`: Type/category of the restaurant.
+  - `restaurantImages`: Images of the restaurant.
+  - `address`: Address of the restaurant (AddressSchema).
+  - `openTime`: Opening time.
+  - `closeTime`: Closing time.
+  - `gstNumber`: GST registration number.
+  - `isPricingInclusiveOfGST`: Indicates if pricing includes GST.
+  - `customGSTPercentage`: Custom GST percentage, if applicable.
+  - `placeId`: Identifier for the restaurant location.
+  - `addOns`: Add-on items available at the restaurant (AddOnSchema).
+  - `dishChoices`: Options for dishes (ChoicesSchema).
+  - `fssaiLicenseNumber`: FSSAI license number.
+  - `social_links`: Social media links (SocialSchema).
+  - `cuisine`: Type of cuisines offered (CategorySchema).
+  - `contact`: Contact details (ContactSchema).
+
+---
+
+#### 1.9.2.6. **Table**
+
+- **Purpose:** Represents tables available in a restaurant.
+- **Attributes:**
+  - `id`: Primary key (ObjectId).
+  - `restaurant`: Foreign key referencing the associated restaurant.
+  - `tables`: Details of tables (TableSchema).
+
+---
+
+#### 1.9.2.7. **User**
+
+- **Purpose:** Represents employees working at restaurants.
+- **Attributes:**
+  - `id`: Primary key (ObjectId).
+  - `name`: Name of the user.
+  - `restaurant`: Foreign key referencing the associated restaurant.
+  - `email`: User's email.
+  - `phoneNumber`: User's phone number.
+  - `role`: Role of the user (e.g., manager, staff).
+  - `password`: User account password.
+  - `passwordChangedAt`: Timestamp of the last password change.
+  - `passwordResetToken`: Token for password reset.
+  - `passwordResetExpires`: Expiration timestamp for the reset token.
+  - `emailOtp`: OTP for email verification.
+  - `emailVerified`: Indicates if the email is verified.
+  - `active`: Status of the user's account (active/inactive).
+
+---
+
+### 1.9.3. **Relationships**
+
+1. **Customer ↔ Order**:
+   - One customer can place many orders (`1:N` relationship).
+2. **Customer ↔ IdentifierOTP**:
+   - One customer can have multiple OTP identifiers (`1:N` relationship).
+3. **Restaurant ↔ Order**:
+   - One restaurant can have many orders (`1:N` relationship).
+4. **Restaurant ↔ PromoCode**:
+   - One restaurant can offer multiple promo codes (`1:N` relationship).
+5. **Restaurant ↔ Table**:
+   - One restaurant can have many tables (`1:N` relationship).
+6. **Restaurant ↔ User**:
+   - One restaurant can employ many users (`1:N` relationship).
+
+---
+
+This schema is well-suited for handling complex workflows in restaurant and food delivery platforms. Each entity is designed with extensibility in mind to accommodate future growth.
+
+### 1.9.4. Key Tables and Their Purpose
+
+The database schema includes several key tables, each with a distinct role in managing customer interactions, restaurant operations, and orders. Below is an explanation of the purpose of the primary tables:
+
+---
+
+#### 1.9.4.1. Customer Table
+
+- **Purpose:**
+  The `Customer` table stores information about the users of the platform, such as personal details, contact information, and account credentials. It also tracks addresses, past locations, and previous restaurant searches for a personalized user experience.
+
+---
+
+#### 1.9.4.2. IdentifierOTP Table
+
+- **Purpose:**
+  The `IdentifierOTP` table manages the OTP verification process, storing details like the OTP code, number of attempts, and verification status for secure user authentication during registration, login, or sensitive operations.
+
+---
+
+#### 1.9.4.3. Order Table
+
+- **Purpose:**
+  The `Order` table records all details related to customer orders, including the customer placing the order, the restaurant fulfilling it, the items ordered, payment details, and the order's status. It acts as the central hub for tracking transaction and delivery details.
+
+---
+
+#### 1.9.4.4. PromoCode Table
+
+- **Purpose:**
+  The `PromoCode` table stores promotional offers provided by restaurants. It helps in managing discounts and deals, which can be associated with specific restaurants and applied during customer orders.
+
+---
+
+#### 1.9.4.5. Restaurant Table
+
+- **Purpose:**
+  The `Restaurant` table captures comprehensive details about restaurants, such as their name, address, contact information, opening and closing times, GST information, and available cuisines. It is the core table for managing restaurant-related data.
+
+---
+
+#### 1.9.4.6. Table Table
+
+- **Purpose:**
+  The `Table` table manages seating arrangements in restaurants, including table availability and details. This table can assist in reservation systems or for tracking dine-in seating.
+
+---
+
+#### 1.9.4.7. User Table
+
+- **Purpose:**
+  The `User` table stores details about employees working in restaurants, including their roles, contact information, and account credentials. It ensures restaurant staff management and operational control.
+
+---
+
+These tables collectively form the backbone of the system, ensuring efficient storage and retrieval of information related to customers, orders, promotions, and restaurant operations. They are designed to handle various functionalities critical for a restaurant and food delivery platform.
+
+### 1.9.5. Entity-Relationship Diagrams (ERD)
 
 ```mermaid
 erDiagram
@@ -2419,7 +3197,7 @@ erDiagram
     }
 ```
 
-### 1.9.4. Sample Queries for Common Use Cases
+### 1.9.6. Sample Queries for Common Use Cases
 
 ## 1.10. User Interface (UI)
 
