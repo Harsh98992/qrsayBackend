@@ -57,3 +57,20 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 6. use the sendResponse utility function to send responses from the controllers.
 7. use the sendError utility function to send errors from the controllers.
 8. use the sendErrorDev utility function to send errors in development mode.
+
+Key	Value
+Key
+NODE_ENV
+Value
+production
+
+Key
+razorpay_key_id
+Value
+rzp_live_QEAKYdNlLVbqvB
+
+Key
+razorpay_key_secret
+Value
+h91lWciJSRFD2y6tIXiZBnpP
+
