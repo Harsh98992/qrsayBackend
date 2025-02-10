@@ -227,6 +227,7 @@ const restaurantSchema = new mongoose.Schema({
     type: "string",
     required: true,
     maxLength: 50,
+    index: true, // Add index
   },
   disabled: {
     type: "boolean",
@@ -240,6 +241,7 @@ const restaurantSchema = new mongoose.Schema({
   restaurantUrl: {
     type: "string",
     default: "",
+    index: true, // Add index
   },
   restaurantBackgroundImage: {
     type: "string",
