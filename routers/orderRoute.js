@@ -4,10 +4,10 @@ const {
 } = require("../controllers/customerAuthenticationController");
 const {
   placeOrder,
-  storeOrder,
   getRestaurantOrdersByStatus,
   changeOrderStatus,
   getCustomerOrder,
+  getLastOrder,
   getCustomerPaymentPendingOrder,
   changeOrderStatusByUser,
   changeOrderStatusByUserForCashOnDelivery,
@@ -29,6 +29,10 @@ router.post("/validationBeforeOrder", customerProtect, validationBeforeOrder);
 router.post("/placeOrder", customerProtect, placeOrder);
 router.post("/verification", paymentVerification);
 router.get("/customerOrder", customerProtect, getCustomerOrder);
+
+// get last order of a customer of a restaurant
+router.get("/getLastOrder/:restaurantId", customerProtect, getLastOrder);
+
 router.get("/getOrderwithOrderId/:orderId", getOrderwithOrderId);
 router.get("/getOrderwithPaymentOrderId/:orderId", getOrderwithPaymentOrderId);
 router.delete(

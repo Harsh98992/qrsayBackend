@@ -68,6 +68,7 @@ const customerSchema = new mongoose.Schema({
     email: {
         type: String,
         validate: [validator.isEmail, "Please provide a valid email"],
+        index: true, // Add index
     },
     name: {
         type: String,
@@ -75,6 +76,7 @@ const customerSchema = new mongoose.Schema({
     phoneNumber: {
         type: String,
         default: "",
+        index: true, // Add index
     },
     password: {
         type: String,

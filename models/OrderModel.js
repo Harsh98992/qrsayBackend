@@ -142,6 +142,17 @@ const orderSchema = new mongoose.Schema({
     },
 });
 
+// Add performance indexes for order queries
+orderSchema.index({ orderStatus: 1 });
+orderSchema.index({ restaurantId: 1 });
+orderSchema.index({ customerId: 1 });
+orderSchema.index({ orderDate: -1 }); // -1 for descending order since we often sort by most recent
+orderSchema.index({ 'customerPreferences.preference': 1 });
+
+// Compound indexes for common query patterns
+orderSchema.index({ restaurantId: 1, orderStatus: 1 });
+orderSchema.index({ customerId: 1, orderStatus: 1 });
+
 const Order = mongoose.model("Order", orderSchema);
 
 module.exports = Order;

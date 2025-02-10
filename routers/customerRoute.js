@@ -83,7 +83,7 @@ router.post("/contactUs", sendContactUsMail);
 
 // getNearbyRestaurants
 
-router.get("/getNearbyRestaurants", getNearbyRestaurants);
+router.get("/getNearbyRestaurants", cache("5 minutes"), getNearbyRestaurants);
 
 router.get("/getAllRestaurants", cache("5 minutes"), getAllRestaurants);
 

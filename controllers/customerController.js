@@ -276,21 +276,19 @@ exports.getNearbyRestaurants = catchAsync(async (req, res, next) => {
     return res.status(201).json({ error: "Invalid latitude or longitude" });
   }
 
-  // Find all restaurants in the database
-  let restaurants = await Restaurant.find();
-
-  // remove disabled restaurants4
-
-  restaurants = restaurants.filter((restaurant) => !restaurant.disabled);
-
-  restaurants = restaurants.map((restaurant) => {
-    return {
-      restaurantUrl: restaurant.restaurantUrl,
-
-      restaurantName: restaurant.restaurantName,
-      _id: restaurant._id,
-    };
-  });
+  // Use geospatial query to find nearby restaurants
+  const restaurants = await Restaurant.find({
+    location: {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [customerLongitude, customerLatitude],
+        },
+        $maxDistance: 5000, // 5 km radius
+      },
+    },
+    disabled: false,
+  }).select("restaurantUrl restaurantName _id");
 
   res.status(200).json({
     status: "success",

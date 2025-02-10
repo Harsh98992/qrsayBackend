@@ -664,13 +664,13 @@ exports.paymentVerification = async (req, res, next) => {
               req?.user?.email,
               "Order Placed Successfully",
               `Thank you for your purchase. You will soon receive a confirmation once your order is accepted by the restaurant.
-  
+
             Order Id: ${orderId}
-  
+
             Order Amount: ${reqData["orderAmount"]}
-  
+
             Order Date: ${new Date().toLocaleString()}
-  
+
               Order Status: Pending`
             );
           }
@@ -750,6 +750,23 @@ exports.getCustomerOrder = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getLastOrder = catchAsync(async (req, res, next) => {
+  const result = await Order.find({
+    customerId: req.user._id,
+  })
+    .sort({ createdAt: -1 })
+    .limit(1);
+
+  res.status(200).json({
+    status: "success",
+
+    data: {
+      orderData: result,
+    },
+  });
+});
+
 exports.getCustomerPaymentPendingOrder = catchAsync(async (req, res, next) => {
   const result = await Order.findOne({
     customerId: req.user._id,
