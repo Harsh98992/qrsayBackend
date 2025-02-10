@@ -48,7 +48,19 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(compression());
+
+// Add compression with optimal settings
+app.use(compression({
+  level: 6,
+  threshold: 0,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
+
 app.use((req, res, next) => {
   req.io = initializeSocket.io;
   next();
