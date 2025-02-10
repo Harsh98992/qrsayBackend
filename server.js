@@ -21,6 +21,7 @@ const userRoute = require("./routers/userRoute");
 const globalHandler = require("./controllers/errorController");
 const orderSchema = require("./models/OrderModel");
 const orderTempSchema = require("./models/OrderModelTemp");
+const compression = require("compression");
 dotenv.config({ path: "./config.env" });
 const axios = require("axios");
 const app = express();
@@ -47,6 +48,19 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Add compression with optimal settings
+app.use(compression({
+  level: 6,
+  threshold: 0,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
+
 app.use((req, res, next) => {
   req.io = initializeSocket.io;
   next();

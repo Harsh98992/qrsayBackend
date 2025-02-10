@@ -227,6 +227,7 @@ const restaurantSchema = new mongoose.Schema({
     type: "string",
     required: true,
     maxLength: 50,
+    index: true, // Add index
   },
   disabled: {
     type: "boolean",
@@ -240,6 +241,7 @@ const restaurantSchema = new mongoose.Schema({
   restaurantUrl: {
     type: "string",
     default: "",
+    index: true, // Add index
   },
   restaurantBackgroundImage: {
     type: "string",
@@ -439,6 +441,12 @@ const restaurantSchema = new mongoose.Schema({
     ],
   },
 });
+
+// Add performance indexes
+restaurantSchema.index({ restaurantUrl: 1 });
+restaurantSchema.index({ restaurantVerified: 1 });
+restaurantSchema.index({ disabled: 1 });
+restaurantSchema.index({ "address.location": "2dsphere" });
 
 const Restaurant = new mongoose.model("Restaurant", restaurantSchema);
 module.exports = Restaurant;
