@@ -46,6 +46,20 @@ restaurantSettingController = require("../controllers/restaurantSettingControlle
 const apicache = require("apicache");
 const cache = apicache.middleware;
 
+// Cache configuration
+const cacheRoutes = {
+  '/getRestaurant': '10 minutes',
+  '/getRestaurantById/:restaurantId': '5 minutes',
+  '/restaurantDetail': '5 minutes',
+  '/reviews/:placeId': '30 minutes'
+};
+
+// Apply cache to specific routes
+Object.entries(cacheRoutes).forEach(([route, duration]) => {
+  const originalRoute = router.get.bind(router, route);
+  router.get(route, cache(duration), (...args) => originalRoute(...args));
+});
+
 const cacheOptions = {
   defaultDuration: 5 * 60 * 1000, // 5 minutes in milliseconds
 };

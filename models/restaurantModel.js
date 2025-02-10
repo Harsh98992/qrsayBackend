@@ -442,5 +442,11 @@ const restaurantSchema = new mongoose.Schema({
   },
 });
 
+// Add performance indexes
+restaurantSchema.index({ restaurantUrl: 1 });
+restaurantSchema.index({ restaurantVerified: 1 });
+restaurantSchema.index({ disabled: 1 });
+restaurantSchema.index({ "address.location": "2dsphere" });
+
 const Restaurant = new mongoose.model("Restaurant", restaurantSchema);
 module.exports = Restaurant;
