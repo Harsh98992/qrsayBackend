@@ -30,8 +30,6 @@ dotenv.config({ path: "./config.env" });
 const axios = require("axios");
 const app = express();
 
-<<<<<<< HEAD
-=======
 // Security Headers
 app.use(helmet());
 
@@ -60,7 +58,6 @@ app.use((req, res, next) => {
   }
   next();
 });
->>>>>>> ef20a23eafd3448047e41487f4687432da230698
 
 const port = process.env.PORT || 3000;
 const dbConStr =
