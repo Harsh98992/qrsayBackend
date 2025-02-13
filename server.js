@@ -22,10 +22,45 @@ const globalHandler = require("./controllers/errorController");
 const orderSchema = require("./models/OrderModel");
 const orderTempSchema = require("./models/OrderModelTemp");
 const compression = require("compression");
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 dotenv.config({ path: "./config.env" });
 const axios = require("axios");
 const app = express();
 
+<<<<<<< HEAD
+=======
+// Security Headers
+app.use(helmet());
+
+// Rate limiting
+const limiter = rateLimit({
+  max: 100, // 100 requests
+  windowMs: 15 * 60 * 1000, // per 15 minutes
+  message: 'Too many requests from this IP, please try again in 15 minutes'
+});
+app.use('/api/', limiter);
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+app.use(xss());
+
+// Enable response caching
+app.use((req, res, next) => {
+  // Cache successful responses for 1 hour
+  if (req.method === 'GET') {
+    res.set('Cache-Control', 'public, max-age=3600');
+  } else {
+    // For other methods, prevent caching
+    res.set('Cache-Control', 'no-store');
+  }
+  next();
+});
+>>>>>>> ef20a23eafd3448047e41487f4687432da230698
 
 const port = process.env.PORT || 3000;
 const dbConStr =
@@ -38,28 +73,45 @@ mongoose
     useUnifiedTopology: true,
     useNewUrlParser: true,
     autoIndex: true,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+    family: 4,
+    maxPoolSize: 10,  // Updated from poolSize to maxPoolSize
+    keepAlive: true,
+    keepAliveInitialDelay: 300000
   })
   .then(() => console.log("Connected to the database"));
+
+// // Enable MongoDB query explain logging in development
+// if (process.env.NODE_ENV !== 'production') {
+//   mongoose.set('debug', true);
+// }
 
 const server = http.createServer(app);
 
 // Initialize Socket.IO and pass the server object to the function
 const io = initializeSocket.initializeSocket(server);
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "10mb" }));
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
-// Add compression with optimal settings
+// Enhanced compression settings
 app.use(compression({
   level: 6,
-  threshold: 0,
+  threshold: 100, // Only compress responses above 100 bytes
   filter: (req, res) => {
     if (req.headers['x-no-compression']) {
       return false;
     }
+    // Don't compress images, they're already compressed
+    if (req.path.match(/\.(jpg|png|gif|jpeg|webp)$/i)) {
+      return false;
+    }
     return compression.filter(req, res);
-  }
+  },
+  // Add Brotli compression when possible
+  brotli: { enabled: true, zlib: {} }
 }));
 
 app.use((req, res, next) => {
