@@ -157,7 +157,7 @@ cron.schedule("*/10 * * * *", async function () {
       "https://qrsay-backend-testing.onrender.com/test"
 
     ];
-    await Promise.all(apiEndpoints.map(endpoint => axios.get(endpoint)));
+     await Promise.all(apiEndpoints.map(endpoint => axios.get(endpoint)));
   } catch (error) {
     console.log(error, "err");
   }
