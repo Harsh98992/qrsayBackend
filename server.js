@@ -101,22 +101,17 @@ cron.schedule("*/10 * * * *", async function () {
 
   try {
     // Replace 'http://your-server-endpoint' with the actual endpoint of your server
-  
-    const apiEndpoints = [
-      "https://qrsay-backend.onrender.com/test",
-      "https://qrsaybackend-ksaw.onrender.com/test",
-      "https://qrsaybackend-gurg.onrender.com/test"
-    ];
-    const apiEndpoint = "https://qrsay-backend.onrender.com/test";
-    const response = await axios.get(apiEndpoint);
 
-    
-   
-    const [response1, response2, response3] = await Promise.all(apiEndpoints.map(endpoint => axios.get(endpoint)));
+    const apiEndpoints = [
+      "https://qrsaybackend.onrender.com/test",
+      "https://qrsay-backend-testing.onrender.com/test"
+
+    ];
+    await Promise.all(apiEndpoints.map(endpoint => axios.get(endpoint)));
   } catch (error) {
-    console.log(error,"err");
-   }
-    const res = await orderSchema.updateMany(
+    console.log(error, "err");
+  }
+  const res = await orderSchema.updateMany(
     {
       orderDate: { $lte: tenMinutesAgo },
       orderStatus: "pending",
