@@ -4,8 +4,12 @@ let io=null;
 function initializeSocket(server) {
      io = socketIo(server, {
         cors: {
-            origin: "*",
-        },rejectUnauthorized: false
+            origin: ["https://qrsay-testing.web.app", "https://qrsay.web.app"],
+            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allowedHeaders: ["Content-Type", "Authorization"],
+            credentials: true
+        },
+        rejectUnauthorized: false
     });
 
     io.on("connection", (socket) => {
@@ -59,7 +63,7 @@ function initializeSocket(server) {
 
 module.exports = {initializeSocket, get io() {
     if (!io) {
-      
+
     }
     return io;
   },};
