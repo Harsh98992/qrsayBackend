@@ -153,7 +153,7 @@ cron.schedule("*/10 * * * *", async function () {
     // Replace 'http://your-server-endpoint' with the actual endpoint of your server
 
     const apiEndpoints = [
-      "https://qrsaybackend.onrender.com/test"
+      "https://qrsaybackend-36c9.onrender.com/test"
 
     ];
      await Promise.all(apiEndpoints.map(endpoint => axios.get(endpoint)));
