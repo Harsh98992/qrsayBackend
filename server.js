@@ -13,6 +13,7 @@ const Order = require("./models/OrderModel");
 const adminRoute = require("./routers/adminRoute");
 const customerRoute = require("./routers/customerRoute");
 const dishesRoute = require("./routers/dishesRoute");
+const feedbackRoute = require("./routers/feedbackRoute");
 const googlemapRoute = require("./routers/googlemapRoute");
 const orderRoute = require("./routers/orderRoute");
 const paymentRoute = require("./routers/paymentRoute");
@@ -133,6 +134,7 @@ app.use("/api/v1/customer", customerRoute);
 app.use("/api/v1/payment", paymentRoute);
 app.use("/api/v1/orders", orderRoute);
 app.use("/api/v1/google-maps", googlemapRoute);
+app.use("/api/v1/feedback", feedbackRoute);
 
 app.get("/test", (req, res) => {
     res.status(200).json({
