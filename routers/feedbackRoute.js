@@ -4,6 +4,7 @@ const {
     addFeedback,
     getFeedbackByRestaurant,
     getFeedbackStats,
+    checkFeedbackCollection,
 } = require("../controllers/feedbackController");
 const authenticateController = require("../controllers/authenticaionController");
 
@@ -14,5 +15,8 @@ router.post("/", addFeedback);
 router.get("/restaurant/:restaurantId", getFeedbackByRestaurant);
 
 router.get("/stats/:restaurantId", getFeedbackStats);
+
+// Route to check if feedback collection exists
+router.get("/check-collection", checkFeedbackCollection);
 
 module.exports = router;

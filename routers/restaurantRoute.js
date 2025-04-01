@@ -11,6 +11,7 @@ const {
     getRestaurantReview,
     getRestaurant,
     searchRestaurants,
+    getAllRestaurants,
     updateStoreSettings,
     changeRestaurantStatus,
     addContactDetail,
@@ -64,6 +65,7 @@ const cacheOptions = {
     defaultDuration: 5 * 60 * 1000, // 5 minutes in milliseconds
 };
 router.get("/getRestaurant", getRestaurant);
+router.get("/all", getAllRestaurants);
 router.get("/search", searchRestaurants);
 router.get(
     "/getRestaurantById/:restaurantId",

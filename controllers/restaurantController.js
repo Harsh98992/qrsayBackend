@@ -26,6 +26,24 @@ exports.getRestaurantDetail = catchAsync(async (req, res, next) => {
         },
     });
 });
+exports.getAllRestaurants = catchAsync(async (req, res, next) => {
+    try {
+        // Get all restaurants, limit to 10 for performance
+        const restaurants = await Restaurant.find({})
+            .limit(10)
+            .select("_id restaurantName restaurantUrl");
+
+        res.status(200).json({
+            status: "success",
+            results: restaurants.length,
+            data: restaurants,
+        });
+    } catch (error) {
+        console.error("Error getting all restaurants:", error);
+        return next(new AppError("Error getting restaurants", 500));
+    }
+});
+
 exports.getRestaurant = catchAsync(async (req, res, next) => {
     const url = req.query.restaurant;
 
