@@ -14,6 +14,11 @@ exports.addFeedback = catchAsync(async (req, res, next) => {
         return next(new AppError("Restaurant not found", 404));
     }
 
+    // console.log("Restaurant found:", restaurant);
+
+
+    console.log("Feedback details:", { restaurantId, emoji, feedbackText, customerInfo });
+
     // Create new feedback
     const feedback = await Feedback.create({
         restaurantId,
@@ -21,6 +26,7 @@ exports.addFeedback = catchAsync(async (req, res, next) => {
         feedbackText,
         customerInfo: customerInfo || {},
     });
+    console.log("Feedback added successfully.");
 
     res.status(201).json({
         status: "success",

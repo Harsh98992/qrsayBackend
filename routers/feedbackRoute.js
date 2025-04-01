@@ -3,26 +3,16 @@ const router = express.Router();
 const {
     addFeedback,
     getFeedbackByRestaurant,
-    getFeedbackStats
+    getFeedbackStats,
 } = require("../controllers/feedbackController");
 const authenticateController = require("../controllers/authenticaionController");
 
 // Public route to add feedback (no authentication required)
 router.post("/", addFeedback);
 
-// Protected routes for restaurant owners and staff
-router.get(
-    "/restaurant/:restaurantId",
-    authenticateController.protect,
-    authenticateController.ristrictTo("restaurantOwner", "staff"),
-    getFeedbackByRestaurant
-);
+// Routes for feedback - accessible to all users
+router.get("/restaurant/:restaurantId", getFeedbackByRestaurant);
 
-router.get(
-    "/stats/:restaurantId",
-    authenticateController.protect,
-    authenticateController.ristrictTo("restaurantOwner", "staff"),
-    getFeedbackStats
-);
+router.get("/stats/:restaurantId", getFeedbackStats);
 
 module.exports = router;
