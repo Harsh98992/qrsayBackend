@@ -3,43 +3,43 @@ const router = express.Router();
 const Restaurant = require("../models/restaurantModel");
 const catchAsync = require("../helpers/catchAsync");
 const {
-  getRestaurantDetail,
-
-  updateRestaurantDetail,
-  updateRestaurantBannerImage,
-  updateRestaurantBannerImageForMobile,
-  updateRestaurantBannerImageForSmall,
-  getRestaurantReview,
-  getRestaurant,
-  updateStoreSettings,
-  changeRestaurantStatus,
-  addContactDetail,
-  getCustomerList,
-  updateContactDetail,
-  addPromoCode,
-  deleteContactDetail,
-  getPromoCode,
+    getRestaurantDetail,
+    updateRestaurantDetail,
+    updateRestaurantBannerImage,
+    updateRestaurantBannerImageForMobile,
+    updateRestaurantBannerImageForSmall,
+    getRestaurantReview,
+    getRestaurant,
+    searchRestaurants,
+    updateStoreSettings,
+    changeRestaurantStatus,
+    addContactDetail,
+    getCustomerList,
+    updateContactDetail,
+    addPromoCode,
+    deleteContactDetail,
+    getPromoCode,
 } = require("../controllers/restaurantController");
 
 const restaurantController = require("../controllers/restaurantController");
 const {
-  updateRestaurantPlaceId,
-  updateRestaurantImage,
-  deleteRestaurantImage,
-  updateRestaurantCashOnDelivery,
-  updateRestaurantByPassAuth,
-  updateRestaurantAutoReject,
-  updateRestaurantDineInGstSetting,
-  generateBill,
-  updateDineInAvailablity,
-  deleteTableById
+    updateRestaurantPlaceId,
+    updateRestaurantImage,
+    deleteRestaurantImage,
+    updateRestaurantCashOnDelivery,
+    updateRestaurantByPassAuth,
+    updateRestaurantAutoReject,
+    updateRestaurantDineInGstSetting,
+    generateBill,
+    updateDineInAvailablity,
+    deleteTableById,
 } = require("../controllers/restaurantSettingController");
 const authenticateController = require("../controllers/authenticaionController");
 const {
-  customerProtect,
+    customerProtect,
 } = require("../controllers/customerAuthenticationController");
 const {
-  getRestaurantDetailsFromRestaurantId,
+    getRestaurantDetailsFromRestaurantId,
 } = require("../controllers/customerController");
 
 restaurantSettingController = require("../controllers/restaurantSettingController");
@@ -61,252 +61,253 @@ const cache = apicache.middleware;
 // });
 
 const cacheOptions = {
-  defaultDuration: 5 * 60 * 1000, // 5 minutes in milliseconds
+    defaultDuration: 5 * 60 * 1000, // 5 minutes in milliseconds
 };
 router.get("/getRestaurant", getRestaurant);
+router.get("/search", searchRestaurants);
 router.get(
-  "/getRestaurantById/:restaurantId",
-  getRestaurantDetailsFromRestaurantId
+    "/getRestaurantById/:restaurantId",
+    getRestaurantDetailsFromRestaurantId
 );
 
 router.get(
-  "/restaurantDetail",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner", "staff"),
-  getRestaurantDetail
+    "/restaurantDetail",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner", "staff"),
+    getRestaurantDetail
 );
 
 router.post(
-  "/restaurantDetail",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantDetail
+    "/restaurantDetail",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantDetail
 );
 router.delete(
-  "/deleteTableById/:tableId",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  deleteTableById
+    "/deleteTableById/:tableId",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    deleteTableById
 );
 
 router.patch(
-  "/updateStoreSettings",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateStoreSettings
+    "/updateStoreSettings",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateStoreSettings
 );
 
 router.post(
-  "/generateBill",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner",'staff'),
-  generateBill
+    "/generateBill",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner", "staff"),
+    generateBill
 );
 
 router.patch(
-  "/addContactDetail",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  addContactDetail
+    "/addContactDetail",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    addContactDetail
 );
 
 router.delete(
-  "/deleteContactDetail/:id",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  deleteContactDetail
+    "/deleteContactDetail/:id",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    deleteContactDetail
 );
 
 router.patch(
-  "/updateContactDetail",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateContactDetail
-);
-
-router.put(
-  "/updateImage",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantBannerImage
+    "/updateContactDetail",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateContactDetail
 );
 
 router.put(
-  "/updateRestaurantBannerImageForMobile",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantBannerImageForMobile
+    "/updateImage",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantBannerImage
 );
 
 router.put(
-  "/updateRestaurantBannerImageForSmall",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantBannerImageForSmall
+    "/updateRestaurantBannerImageForMobile",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantBannerImageForMobile
+);
+
+router.put(
+    "/updateRestaurantBannerImageForSmall",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantBannerImageForSmall
 );
 router.patch(
-  "/changeRestaurantStatus",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  changeRestaurantStatus
+    "/changeRestaurantStatus",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    changeRestaurantStatus
 );
 router.patch(
-  "/updateRestaurantImage",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantImage
+    "/updateRestaurantImage",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantImage
 );
 router.patch(
-  "/updateRestaurantCashOnDelivery",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantCashOnDelivery
+    "/updateRestaurantCashOnDelivery",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantCashOnDelivery
 );
 router.patch(
-  "/updateRestaurantByPassAuth",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantByPassAuth
+    "/updateRestaurantByPassAuth",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantByPassAuth
 );
 router.patch(
-  "/updateDineInAvailablity",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateDineInAvailablity
+    "/updateDineInAvailablity",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateDineInAvailablity
 );
 router.patch(
-  "/updateRestaurantAutoReject",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantAutoReject
+    "/updateRestaurantAutoReject",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantAutoReject
 );
 router.patch(
-  "/updateRestaurantDineInGstSetting",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantDineInGstSetting
+    "/updateRestaurantDineInGstSetting",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantDineInGstSetting
 );
 router.patch(
-  "/deleteRestaurantImage",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  deleteRestaurantImage
+    "/deleteRestaurantImage",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    deleteRestaurantImage
 );
 
 router.get(
-  "/getRestaurantImages",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  updateRestaurantImage
+    "/getRestaurantImages",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    updateRestaurantImage
 );
 
 router.get("/reviews/:placeId", cache("5 minutes"), getRestaurantReview);
 router.patch(
-  "/placeId",
-  authenticateController.protect,
-  updateRestaurantPlaceId
+    "/placeId",
+    authenticateController.protect,
+    updateRestaurantPlaceId
 );
 
 router.get(
-  "/getAllTables",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  restaurantSettingController.getAllTables
+    "/getAllTables",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.getAllTables
 );
 router.get(
-  "/getAllRooms",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  restaurantSettingController.getAllRooms
+    "/getAllRooms",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.getAllRooms
 );
 
 router.post(
-  "/createTableEntry",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  restaurantSettingController.createTableEntry
+    "/createTableEntry",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.createTableEntry
 );
 router.post(
-  "/createRoomEntry",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  restaurantSettingController.createRoomEntry
+    "/createRoomEntry",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.createRoomEntry
 );
 router.patch(
-  "/editTableById",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  restaurantSettingController.editTableById
+    "/editTableById",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.editTableById
 );
 router.patch(
-  "/editRoomById",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  restaurantSettingController.editRoomById
+    "/editRoomById",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.editRoomById
 );
 
 router.patch(
-  "/checkDineInTableAvailability",
-  authenticateController.protect,
-  customerProtect,
-  restaurantSettingController.checkDineInAvailable
+    "/checkDineInTableAvailability",
+    authenticateController.protect,
+    customerProtect,
+    restaurantSettingController.checkDineInAvailable
 );
 router.get(
-  "/checkAciveDineIn/:restaurantId",
-  restaurantSettingController.checkAciveDineIn
+    "/checkAciveDineIn/:restaurantId",
+    restaurantSettingController.checkAciveDineIn
 );
 
 router.delete(
-  "/deleteRoomById/:roomId",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  restaurantSettingController.deleteRoomById
+    "/deleteRoomById/:roomId",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    restaurantSettingController.deleteRoomById
 );
 
 router.patch(
-  "/addPromoCode",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  addPromoCode
+    "/addPromoCode",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    addPromoCode
 );
 
 router.get(
-  "/getPromoCode",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
+    "/getPromoCode",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
 
-  getPromoCode
+    getPromoCode
 );
 
 router.get(
-  "/getCustomerList",
-  authenticateController.protect,
-  authenticateController.ristrictTo("restaurantOwner"),
-  getCustomerList
+    "/getCustomerList",
+    authenticateController.protect,
+    authenticateController.ristrictTo("restaurantOwner"),
+    getCustomerList
 );
 
 router.patch(
-  "/loyal/add",
-  authenticateController.protect,
-  restaurantController.addLoyalRestaurant
+    "/loyal/add",
+    authenticateController.protect,
+    restaurantController.addLoyalRestaurant
 );
 
 router.patch(
-  "/loyal/remove",
-  authenticateController.protect,
-  restaurantController.removeLoyalRestaurant
+    "/loyal/remove",
+    authenticateController.protect,
+    restaurantController.removeLoyalRestaurant
 );
 
 router.patch(
-  "/block/add",
-  authenticateController.protect,
-  restaurantController.addBlockedRestaurant
+    "/block/add",
+    authenticateController.protect,
+    restaurantController.addBlockedRestaurant
 );
 
 router.patch(
-  "/block/remove",
-  authenticateController.protect,
-  restaurantController.removeBlockedRestaurant
+    "/block/remove",
+    authenticateController.protect,
+    restaurantController.removeBlockedRestaurant
 );
 
 module.exports = router;
