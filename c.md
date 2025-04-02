@@ -1,4 +1,4 @@
-This is a website called qrsay which offers the ordering food platform. The code for the customer front end is in the digitalMenu\src\app\restaurant, and the admin frontend code is in the digitalMenu\src\app\admin.The back end is in qrsayBackend folder. The database is in the database folder.
+This is a website called qrsay which offers the ordering food platform. The code for the customer front end is in the digitalMenu\src\app\restaurant, and the admin frontend code is in the digitalMenu\src\app\admin.The back end is in qrsayBackend folder.
 
 
 
