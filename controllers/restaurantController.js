@@ -26,10 +26,29 @@ exports.getRestaurantDetail = catchAsync(async (req, res, next) => {
         },
     });
 });
+exports.getAllRestaurants = catchAsync(async (req, res, next) => {
+    try {
+        // Get all restaurants, limit to 10 for performance
+        const restaurants = await Restaurant.find({})
+            .limit(10)
+            .select("_id restaurantName restaurantUrl");
+
+        res.status(200).json({
+            status: "success",
+            results: restaurants.length,
+            data: restaurants,
+        });
+    } catch (error) {
+        console.error("Error getting all restaurants:", error);
+        return next(new AppError("Error getting restaurants", 500));
+    }
+});
+
 exports.getRestaurant = catchAsync(async (req, res, next) => {
     const url = req.query.restaurant;
 
     if (!url) {
+        return next(new AppError("Restaurant URL is required", 400));
     }
     const data = await Restaurant.findOne({ restaurantUrl: url }).collation({
         locale: "en",
@@ -38,8 +57,28 @@ exports.getRestaurant = catchAsync(async (req, res, next) => {
 
     res.status(201).json({
         status: "success",
-
         data: data,
+    });
+});
+
+exports.searchRestaurants = catchAsync(async (req, res, next) => {
+    const query = req.query.query;
+
+    if (!query) {
+        return next(new AppError("Search query is required", 400));
+    }
+
+    // Search for restaurants by name or URL
+    const restaurants = await Restaurant.find({
+        $or: [
+            { restaurantName: { $regex: query, $options: "i" } },
+            { restaurantUrl: { $regex: query, $options: "i" } },
+        ],
+    }).limit(5);
+
+    res.status(200).json({
+        status: "success",
+        data: restaurants,
     });
 });
 
@@ -325,52 +364,49 @@ exports.updateRestaurantBannerImageForMobile = catchAsync(
     }
 );
 
-exports.updateRestaurantBannerImageForSmall = catchAsync( async (req, res, next) => {
-    if (!req.body.image) {
-        return next(new AppError("Please upload a image!", 400));
-    }
-
-    req.body.imageUrl = req.body.image;
-
-    if (req.body.imageUrl.startsWith("data:image/")) {
-        imageDataWithoutPrefix = req.body.imageUrl.replace(
-            /^data:image\/[a-z]+;base64,/,
-            ""
-        );
-    }
-
-    // console.log(imageDataWithoutPrefix);
-
-    imageData = req.body.imageUrl;
-
-    try {
-        console.log("Uploading to Imgur");
-        imgurUrl = await uploadToImgur(imageData.split(",")[1]);
-    } catch (err) {
-        console.log(err);
-        imgurUrl = req.body.imageUrl;
-    }
-
-
-    await Restaurant.findOneAndUpdate(
-        { _id: req.user.restaurantKey },
-        {
-            restaurantBackgroundImageForSmall: imgurUrl,
+exports.updateRestaurantBannerImageForSmall = catchAsync(
+    async (req, res, next) => {
+        if (!req.body.image) {
+            return next(new AppError("Please upload a image!", 400));
         }
-    );
-    console.log("Record Updated Successfully!");
 
-    res.status(200).json({
-        status: "success",
-        data: {
-            message: "Record Updated Successfully!",
-        },
-    });
-}
+        req.body.imageUrl = req.body.image;
 
+        if (req.body.imageUrl.startsWith("data:image/")) {
+            imageDataWithoutPrefix = req.body.imageUrl.replace(
+                /^data:image\/[a-z]+;base64,/,
+                ""
+            );
+        }
+
+        // console.log(imageDataWithoutPrefix);
+
+        imageData = req.body.imageUrl;
+
+        try {
+            console.log("Uploading to Imgur");
+            imgurUrl = await uploadToImgur(imageData.split(",")[1]);
+        } catch (err) {
+            console.log(err);
+            imgurUrl = req.body.imageUrl;
+        }
+
+        await Restaurant.findOneAndUpdate(
+            { _id: req.user.restaurantKey },
+            {
+                restaurantBackgroundImageForSmall: imgurUrl,
+            }
+        );
+        console.log("Record Updated Successfully!");
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                message: "Record Updated Successfully!",
+            },
+        });
+    }
 );
-
-
 
 exports.changeRestaurantStatus = catchAsync(async (req, res, next) => {
     if (!req.body.restaurantStatus) {
