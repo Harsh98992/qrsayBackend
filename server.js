@@ -19,6 +19,7 @@ const orderRoute = require("./routers/orderRoute");
 const paymentRoute = require("./routers/paymentRoute");
 const restaurantRoute = require("./routers/restaurantRoute");
 const userRoute = require("./routers/userRoute");
+const waiterCallRoute = require("./routers/waiterCallRoute");
 const globalHandler = require("./controllers/errorController");
 const orderSchema = require("./models/OrderModel");
 const orderTempSchema = require("./models/OrderModelTemp");
@@ -135,6 +136,9 @@ app.use("/api/v1/payment", paymentRoute);
 app.use("/api/v1/orders", orderRoute);
 app.use("/api/v1/google-maps", googlemapRoute);
 app.use("/api/v1/feedback", feedbackRoute);
+// Register waiter call routes
+app.use("/api/v1/waiter", waiterCallRoute);
+console.log("Waiter call routes registered");
 
 app.get("/test", (req, res) => {
     res.status(200).json({
