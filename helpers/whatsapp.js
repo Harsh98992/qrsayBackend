@@ -1,6 +1,9 @@
 const axios = require("axios");
 
 const sendWhatsAppMessage = async (phoneNumber, otp) => {
+  console.log("phoneNumber", phoneNumber);
+  console.log("otp", otp);
+
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -32,7 +35,7 @@ const sendWhatsAppMessage = async (phoneNumber, otp) => {
     },
   };
   const res = await axios.post(
-    "https://graph.facebook.com/v17.0/207695905761327/messages",
+    "https://graph.facebook.com/v22.0/207695905761327/messages",
     data,
     config
   );
@@ -40,6 +43,10 @@ const sendWhatsAppMessage = async (phoneNumber, otp) => {
   return res;
 };
 const sendCustomWhatsAppMessage = async (phoneNumber, message,restaurant) => {
+  console.log("phoneNumber", phoneNumber);
+  console.log("message", message);
+  console.log("restaurant", restaurant);
+  console.log("process.env.NODE_ENV", process.env.NODE_ENV);
   if (process.env.NODE_ENV ) {
     try {
       const config = {
@@ -81,7 +88,7 @@ const sendCustomWhatsAppMessage = async (phoneNumber, message,restaurant) => {
         },
       };
       const res = await axios.post(
-        "https://graph.facebook.com/v17.0/207695905761327/messages",
+        "https://graph.facebook.com/v22.0/207695905761327/messages",
         data,
         config
       );
