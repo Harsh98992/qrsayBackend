@@ -159,7 +159,7 @@ app.all("*", (req, res, next) => {
 });
 
 app.use(globalHandler);
-cron.schedule("*/10 * * * *", async function () {
+cron.schedule("*/10 6-23 * * *", async function () {
     console.log("job executed");
     const tenMinutesAgo = new Date();
     tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
