@@ -94,7 +94,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(
     cors({
         origin: "*",
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
         exposedHeaders: ["Access-Control-Allow-Origin"],
