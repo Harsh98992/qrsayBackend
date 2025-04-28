@@ -4,15 +4,10 @@ let io = null;
 function initializeSocket(server) {
     io = socketIo(server, {
         cors: {
-            origin: [
-                "https://qrsay-testing.web.app",
-                "https://qrsay.web.app",
-                "http://localhost:4200/",
-                "*"
-            ],
+            origin: "*", // Allow all origins
             methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             allowedHeaders: ["Content-Type", "Authorization"],
-            credentials: true,
+            credentials: true, // Note: credentials with "*" origin can cause issues
         },
         rejectUnauthorized: false,
     });
