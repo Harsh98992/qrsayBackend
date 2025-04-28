@@ -159,23 +159,23 @@ app.all("*", (req, res, next) => {
 });
 
 app.use(globalHandler);
-cron.schedule("*/10 6-23 * * *", async function () {
+cron.schedule("*/10 * * * *", async function () {
     console.log("job executed");
     const tenMinutesAgo = new Date();
     tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
     const eightHoursAgo = new Date(Date.now() - 8 * 60 * 60 * 1000);
 
-    try {
-        // Replace 'http://your-server-endpoint' with the actual endpoint of your server
+    // try {
+    //     // Replace 'http://your-server-endpoint' with the actual endpoint of your server
 
-        const apiEndpoints = [
-            "https://qrsaybackend.onrender.com/test",
-            "https://qrsay-backend-testing.onrender.com/test",
-        ];
-        await Promise.all(apiEndpoints.map((endpoint) => axios.get(endpoint)));
-    } catch (error) {
-        console.log(error, "err");
-    }
+    //     const apiEndpoints = [
+    //         "https://qrsaybackend.onrender.com/test",
+    //         "https://qrsay-backend-testing.onrender.com/test",
+    //     ];
+    //     await Promise.all(apiEndpoints.map((endpoint) => axios.get(endpoint)));
+    // } catch (error) {
+    //     console.log(error, "err");
+    // }
     const res = await orderSchema.updateMany(
         {
             orderDate: { $lte: tenMinutesAgo },
@@ -201,6 +201,21 @@ cron.schedule("*/10 6-23 * * *", async function () {
     const deleted = await orderTempSchema.deleteMany({
         orderDate: { $lte: eightHoursAgo },
     });
+});
+cron.schedule("*/10 6-23 * * *", async function () {
+   
+
+    try {
+        // Replace 'http://your-server-endpoint' with the actual endpoint of your server
+
+        const apiEndpoints = [
+            "https://qrsaybackend.onrender.com/test",
+            "https://qrsay-backend-testing.onrender.com/test",
+        ];
+        await Promise.all(apiEndpoints.map((endpoint) => axios.get(endpoint)));
+    } catch (error) {
+        console.log(error, "err");
+    }
 });
 cron.schedule("0 0 * * *", () => {
     // const mongodumpCmd = `mongodump "${dbConStr}" --username goqrorder`;
