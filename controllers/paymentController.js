@@ -1,10 +1,10 @@
 const catchAsync = require("../helpers/catchAsync");
 var Razorpay = require("razorpay");
 const AppError = require("../helpers/appError");
-const {getRazorPayKey}=require("../helpers/razorPayHelper");
+const { getRazorPayKey } = require("../helpers/razorPayHelper");
 
 exports.createRazorPayOrder = catchAsync(async (req, res, next) => {
-  const razorpayKeys=getRazorPayKey();
+  const razorpayKeys = getRazorPayKey();
 
   const instance = new Razorpay({
     key_id: razorpayKeys["razorpay_key_id"],
@@ -40,13 +40,13 @@ exports.createRazorPayOrder = catchAsync(async (req, res, next) => {
         success: true,
         status: "Order created Successfully",
         value: order,
-        key: "",
+        key: process.env.NODE_ENV === "production" ? '' : razorpayKeys["razorpay_key_id"],
       });
     }
   });
 });
 exports.getAccountPaymentDetails = catchAsync(async (req, res, next) => {
-  const razorpayKeys=getRazorPayKey();
+  const razorpayKeys = getRazorPayKey();
   const instance = new Razorpay({
     key_id: razorpayKeys["razorpay_key_id"],
     key_secret: razorpayKeys["razorpay_key_secret"],
@@ -55,7 +55,7 @@ exports.getAccountPaymentDetails = catchAsync(async (req, res, next) => {
 
   const result = await instance.payments.all({
     "X-Razorpay-Account": req.paymentData.restaurantAccountId,
-    count:100,
+    count: 100,
   });
   if (!result["items"] || !result["items"].length) {
     return next(new AppError("No payment details found for the account!"));
@@ -68,7 +68,7 @@ exports.getAccountPaymentDetails = catchAsync(async (req, res, next) => {
 });
 
 exports.getAccountTransferDetails = catchAsync(async (req, res, next) => {
-  const razorpayKeys=getRazorPayKey();
+  const razorpayKeys = getRazorPayKey();
 
   const instance = new Razorpay({
     key_id: razorpayKeys["razorpay_key_id"],
@@ -79,8 +79,8 @@ exports.getAccountTransferDetails = catchAsync(async (req, res, next) => {
   if (!orderId) {
     return next(new AppError("Order Id is missing"));
   }
-  const result =await instance.orders.fetchTransferOrder(orderId);
-  
+  const result = await instance.orders.fetchTransferOrder(orderId);
+
   if (!result["transfers"] || !result["transfers"]?.['items']?.length) {
     return next(new AppError("No payment details found for the payment!"));
   }

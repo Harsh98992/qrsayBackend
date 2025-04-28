@@ -19,6 +19,7 @@ const orderRoute = require("./routers/orderRoute");
 const paymentRoute = require("./routers/paymentRoute");
 const restaurantRoute = require("./routers/restaurantRoute");
 const userRoute = require("./routers/userRoute");
+const waiterCallRoute = require("./routers/waiterCallRoute");
 const globalHandler = require("./controllers/errorController");
 const orderSchema = require("./models/OrderModel");
 const orderTempSchema = require("./models/OrderModelTemp");
@@ -93,7 +94,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(
     cors({
         origin: "*",
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
         exposedHeaders: ["Access-Control-Allow-Origin"],
@@ -135,6 +136,9 @@ app.use("/api/v1/payment", paymentRoute);
 app.use("/api/v1/orders", orderRoute);
 app.use("/api/v1/google-maps", googlemapRoute);
 app.use("/api/v1/feedback", feedbackRoute);
+// Register waiter call routes
+app.use("/api/v1/waiter", waiterCallRoute);
+console.log("Waiter call routes registered");
 
 app.get("/test", (req, res) => {
     res.status(200).json({
@@ -155,7 +159,7 @@ app.all("*", (req, res, next) => {
 });
 
 app.use(globalHandler);
-cron.schedule("*/10 * * * *", async function () {
+cron.schedule("*/10 6-23 * * *", async function () {
     console.log("job executed");
     const tenMinutesAgo = new Date();
     tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);

@@ -1,23 +1,28 @@
 const socketIo = require("socket.io");
 const Order = require("./models/OrderModel");
-let io=null;
+let io = null;
 function initializeSocket(server) {
-     io = socketIo(server, {
+    io = socketIo(server, {
         cors: {
-            origin: ["https://qrsay-testing.web.app", "https://qrsay.web.app", "http://localhost:4200/"],
+            origin: "*", // Allow all origins
             methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             allowedHeaders: ["Content-Type", "Authorization"],
-            credentials: true
+            credentials: true, // Note: credentials with "*" origin can cause issues
         },
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
     });
 
     io.on("connection", (socket) => {
         // Listen for events and join the corresponding restaurant room
         socket.on("joinRestaurantRoom", (restaurantId) => {
             socket.join(restaurantId);
+            console.log("Restaurant room joined by " + restaurantId);
 
-            // console.log("Restaurant room joined by " + restaurantId);
+            // Emit a confirmation event back to the client
+            socket.emit("joined_restaurant_room", {
+                restaurantId,
+                timestamp: new Date(),
+            });
         });
 
         socket.on("joinCustomerRoom", (customerId) => {
@@ -58,12 +63,52 @@ function initializeSocket(server) {
                 // console.log(  "Order with orderId " + orderId + " does not exist"        );
             }
         });
+
+        // Waiter call events
+        socket.on("waiter_call_acknowledged", (data) => {
+            const restaurantId = data["restaurantId"];
+            console.log(
+                `Waiter call acknowledged for restaurant ${restaurantId}:`,
+                data
+            );
+            io.emit("waiter_call_status_updated", data);
+        });
+
+        socket.on("waiter_call_resolved", (data) => {
+            const restaurantId = data["restaurantId"];
+            console.log(
+                `Waiter call resolved for restaurant ${restaurantId}:`,
+                data
+            );
+            io.emit("waiter_call_status_updated", data);
+        });
+
+        socket.on("waiter_call_created", (data) => {
+            const restaurantId = data["restaurantId"];
+            console.log(
+                `New waiter call created for restaurant ${restaurantId}:`,
+                data
+            );
+            io.emit("new_waiter_call", data);
+            console.log(`Emitted new_waiter_call event to all clients`);
+        });
+
+        // Debug event to check socket connection
+        socket.on("ping_socket", (data) => {
+            console.log(`Received ping from client:`, data);
+            socket.emit("pong_socket", {
+                message: "Server received ping",
+                timestamp: new Date(),
+            });
+        });
     });
 }
 
-module.exports = {initializeSocket, get io() {
-    if (!io) {
-
-    }
-    return io;
-  },};
+module.exports = {
+    initializeSocket,
+    get io() {
+        if (!io) {
+        }
+        return io;
+    },
+};
