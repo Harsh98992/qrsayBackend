@@ -36,12 +36,12 @@ const app = express();
 app.use(helmet());
 
 // Rate limiting
-const limiter = rateLimit({
-    max: 100, // 100 requests
-    windowMs: 15 * 60 * 1000, // per 15 minutes
-    message: "Too many requests from this IP, please try again in 15 minutes",
-});
-app.use("/api/", limiter);
+// const limiter = rateLimit({
+//     max: 100, // 100 requests
+//     windowMs: 15 * 60 * 1000, // per 15 minutes
+//     message: "Too many requests from this IP, please try again in 15 minutes",
+// });
+// app.use("/api/", limiter);
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -203,7 +203,7 @@ cron.schedule("*/10 * * * *", async function () {
     });
 });
 cron.schedule("*/10 6-23 * * *", async function () {
-   
+
 
     try {
         // Replace 'http://your-server-endpoint' with the actual endpoint of your server
