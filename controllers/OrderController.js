@@ -619,6 +619,7 @@ exports.paymentVerification = async (req, res, next) => {
   // Handle the payment.captured event
   if (event.event === "payment.captured") {
     const payment = event.payload.payment.entity;
+    console.log("payment", payment);
     if (payment) {
       const orderData = await OrderTemp.findOne({
         payment_order_id: payment.order_id,
