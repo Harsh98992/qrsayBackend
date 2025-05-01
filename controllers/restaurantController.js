@@ -152,7 +152,8 @@ exports.updateStoreSettings = catchAsync(async (req, res, next) => {
     if (req.user?.restaurantKey) {
         restaurantDetail = await Restaurant.findOneAndUpdate(
             { _id: req.user.restaurantKey },
-            restaurantDetail
+            restaurantDetail,
+            { new: true } // Return the updated document instead of the original one
         );
     } else {
         restaurantDetail = await Restaurant.create(restaurantDetail);
