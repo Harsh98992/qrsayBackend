@@ -49,15 +49,16 @@ app.use(mongoSanitize());
 // Data sanitization against XSS
 app.use(xss());
 
-// Enable response caching
+// Disable caching for all responses
 app.use((req, res, next) => {
-    // Cache successful responses for 1 hour
-    if (req.method === "GET") {
-        res.set("Cache-Control", "public, max-age=3600");
-    } else {
-        // For other methods, prevent caching
-        res.set("Cache-Control", "no-store");
-    }
+    // Set anti-caching headers for all requests
+    res.set(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, proxy-revalidate"
+    );
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    res.set("Surrogate-Control", "no-store");
     next();
 });
 
@@ -94,7 +95,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(
     cors({
         origin: "*",
-        methods: ["GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
         exposedHeaders: ["Access-Control-Allow-Origin"],
@@ -203,8 +204,6 @@ cron.schedule("*/10 * * * *", async function () {
     });
 });
 cron.schedule("*/10 6-23 * * *", async function () {
-
-
     try {
         // Replace 'http://your-server-endpoint' with the actual endpoint of your server
 
