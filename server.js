@@ -20,6 +20,7 @@ const paymentRoute = require("./routers/paymentRoute");
 const restaurantRoute = require("./routers/restaurantRoute");
 const userRoute = require("./routers/userRoute");
 const waiterCallRoute = require("./routers/waiterCallRoute");
+const roomCustomerLinkRoute = require("./routers/roomCustomerLinkRoute");
 const globalHandler = require("./controllers/errorController");
 const orderSchema = require("./models/OrderModel");
 const orderTempSchema = require("./models/OrderModelTemp");
@@ -140,6 +141,9 @@ app.use("/api/v1/feedback", feedbackRoute);
 // Register waiter call routes
 app.use("/api/v1/waiter", waiterCallRoute);
 console.log("Waiter call routes registered");
+// Register room-customer link routes
+app.use("/api/v1/room-customer-link", roomCustomerLinkRoute);
+console.log("Room-customer link routes registered");
 
 app.get("/test", (req, res) => {
     res.status(200).json({
@@ -151,6 +155,23 @@ app.get("/", (req, res) => {
     res.status(200).json({
         status: 200,
         message: "Hello from server",
+    });
+});
+
+// Health check endpoint for connectivity testing
+app.get("/api/health", (req, res) => {
+    // Add CORS headers explicitly for the health endpoint
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    // Return basic server health information
+    res.status(200).json({
+        status: "success",
+        message: "API server is running",
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || "development",
+        version: "1.0.0",
     });
 });
 
