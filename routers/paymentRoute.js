@@ -12,7 +12,7 @@ const parseJson = express.json({ extended: false });
 // const PaytmChecksum = require('./PaytmChecksum');
 var Razorpay = require("razorpay");
 const AppError = require("../helpers/appError");
-const { createRazorPayOrder,getAccountPaymentDetails,getAccountTransferDetails } = require("../controllers/paymentController");
+const { createRazorPayOrder,getAccountPaymentDetails,getAccountTransferDetails ,verifyCaptcha } = require("../controllers/paymentController");
 const { getPaymentGatewayCredentials } = require("../helpers/razorPayHelper");
 const {
     customerProtect,
@@ -22,6 +22,7 @@ const authenticateController = require("../controllers/authenticaionController")
 router.post(
     "/razorpay",
     customerProtect,
+    verifyCaptcha,
     getPaymentGatewayCredentials,
     createRazorPayOrder
 );

@@ -2,6 +2,61 @@ const catchAsync = require("../helpers/catchAsync");
 var Razorpay = require("razorpay");
 const AppError = require("../helpers/appError");
 const { getRazorPayKey } = require("../helpers/razorPayHelper");
+const axios = require("axios");
+
+const verifyRecaptcha = async (recaptchaResponse) => {
+  try {
+    if (!recaptchaResponse) return false;
+
+    const response = await axios.post(
+      "https://www.google.com/recaptcha/api/siteverify",
+      null,
+      {
+        params: {
+          // secret: process.env.RECAPTCHA_SECRET_KEY,
+          secret: "6Ld97LkrAAAAADegk_RoxGMXsE2j0gcMV8DzzLxZ",
+          response: recaptchaResponse
+        },
+        timeout: 5000
+      }
+    );
+
+    // For v2 checkbox, we check success boolean
+    // For v3, you'd check score: response.data.success && response.data.score >= 0.5
+    return response.data.success;
+  } catch (error) {
+    console.error("reCAPTCHA verification error:", error);
+    return false;
+  }
+};
+
+// Middleware to verify reCAPTCHA
+exports.verifyCaptcha = catchAsync(async (req, res, next) => {
+  // Skip captcha for cash on delivery
+  if (req.body.paymentMethod === "cashOnDelivery") {
+    return next();
+  }
+
+  // Optional: skip in development if needed
+  if (process.env.NODE_ENV === "development" && process.env.SKIP_CAPTCHA === "true") {
+    console.log("Skipping captcha verification in development");
+    return next();
+  }
+
+  const captchaResponse = req.body.captchaResponse;
+  
+  if (!captchaResponse) {
+    return next(new AppError("Security verification required. Please complete the captcha.", 400));
+  }
+
+  const isCaptchaValid = await verifyRecaptcha(captchaResponse);
+  
+  if (!isCaptchaValid) {
+    return next(new AppError("Security verification failed. Please try again.", 400));
+  }
+
+  next();
+});
 
 exports.createRazorPayOrder = catchAsync(async (req, res, next) => {
   const razorpayKeys = getRazorPayKey();
@@ -20,13 +75,6 @@ exports.createRazorPayOrder = catchAsync(async (req, res, next) => {
         account: req.paymentData.restaurantAccountId,
         amount: Math.round(amount * 0.9764),
         currency: "INR",
-        // notes: {
-        //     // branch: "Acme Corp Bangalore North",
-        //     // name: "Gaurav Kumar",
-        // },
-        // linked_account_notes: ["branch"],
-        // on_hold: 1,
-        // on_hold_until: 1671222870,
       },
     ],
   };
